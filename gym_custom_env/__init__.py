@@ -14,3 +14,10 @@ register(
     max_episode_steps=2000,
     reward_threshold=2000.0,
 )
+ # mujoco环境
+register(  
+    id='HumanoidCustomEnv-v0',
+    entry_point='gym_custom_env.humanoidCustom:HumanoidCustomEnv',
+    max_episode_steps=1000,
+)
+

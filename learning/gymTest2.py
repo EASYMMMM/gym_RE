@@ -4,8 +4,10 @@ python learning/gymTest2.py
 '''
 import os
 
-os.add_dll_directory("C://Users//zdh//.mujoco//mujoco200//bin")
-os.add_dll_directory("C://Users//zdh//.mujoco//mujoco-py-2.0.2.0//mujoco_py")
+#os.add_dll_directory("C://Users//zdh//.mujoco//mujoco200//bin")
+#os.add_dll_directory("C://Users//zdh//.mujoco//mujoco-py-2.0.2.0//mujoco_py")
+os.add_dll_directory("C://Users//孟一凌//.mujoco//mujoco200//bin")
+os.add_dll_directory("C://Users//孟一凌//.mujoco//mujoco-py-2.0.2.0//mujoco_py")
 import gym
 import pybullet_envs
 print(gym.__version__)

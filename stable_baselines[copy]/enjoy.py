@@ -4,7 +4,20 @@
 # You can run it using: python -m pybullet_envs.stable_baselines.enjoy --algo td3 --env HalfCheetahBulletEnv-v0
 # Author: Antonin RAFFIN
 # MIT License
+
+'''
+python stable_baselines[copy]/train.py --algo td3 --env HalfCheetah-v2
+
+python stable_baselines[copy]/train.py --algo sac --env Humanoid-v3
+'''
+# ------- 来自于mujoco150在win+py3.9下的矫情的要求 --------
 import os
+
+#os.add_dll_directory("C://Users//孟一凌//.mujoco//mujoco200//bin")
+#os.add_dll_directory("C://Users//孟一凌//.mujoco//mujoco-py-2.0.2.0//mujoco_py")
+os.add_dll_directory("C://Users//zdh//.mujoco//mujoco200//bin")
+os.add_dll_directory("C://Users//zdh//.mujoco//mujoco-py-2.0.2.0//mujoco_py")
+# -------------------------------------------------------
 import time
 import argparse
 
@@ -61,7 +74,9 @@ if __name__ == "__main__":
     }[args.algo]
 
     # We assume that the saved model is in the same folder
-    save_path = f"{args.algo}_{env_id}.zip"
+
+    # 存放在sb3model/文件夹下
+    save_path = f"sb3model/{args.algo}_{env_id}.zip"
 
     if not os.path.isfile(save_path) or args.load_best:
         print("Loading best model")

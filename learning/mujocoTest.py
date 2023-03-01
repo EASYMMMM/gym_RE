@@ -4,8 +4,8 @@ python learning/mujocoTest.py
 
 
 import os
-os.add_dll_directory("C://Users//孟一凌//.mujoco//mjpro150//bin")
-os.add_dll_directory("C://Users//孟一凌//.mujoco//mujoco-py-1.50.1.0//mujoco_py")
+os.add_dll_directory("C://Users//zdh//.mujoco//mujoco200//bin")
+os.add_dll_directory("C://Users//zdh//.mujoco//mujoco-py-2.0.2.0//mujoco_py")
 import mujoco_py
 mj_path, _ = mujoco_py.utils.discover_mujoco()
 xml_path = os.path.join(mj_path, 'model', 'humanoid.xml')

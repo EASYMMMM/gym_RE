@@ -59,12 +59,14 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
     @property
     def healthy_reward(self):
+        # 机器人正常运行的reward值，_healthy_reward默认为5，即正常训练时healthy_reward = 5
         return (
             float(self.is_healthy or self._terminate_when_unhealthy)
             * self._healthy_reward
         )
 
     def control_cost(self, action):
+        # 控制花费。所有控制量的开方和。
         control_cost = self._ctrl_cost_weight * np.sum(np.square(self.sim.data.ctrl))
         return control_cost
 
@@ -78,6 +80,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
     @property
     def is_healthy(self):
+        # 机器人状态是否正常，通过qpos[2]的z轴位置判断（是否跌倒）
         min_z, max_z = self._healthy_z_range
         is_healthy = min_z < self.sim.data.qpos[2] < max_z
 
@@ -85,6 +88,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
     @property
     def done(self):
+        # episode是否结束的标志，在step()函数中返回
+        # 如果机器人的状态是unhealthy，则done = True，训练终止
         done = (not self.is_healthy) if self._terminate_when_unhealthy else False
         return done
 
@@ -124,7 +129,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         xy_velocity = (xy_position_after - xy_position_before) / self.dt
         x_velocity, y_velocity = xy_velocity
 
-        # 控制花费
+        # cost值 控制cost + 接触力cost
         ctrl_cost = self.control_cost(action)
         contact_cost = self.contact_cost
 

@@ -7,6 +7,7 @@ humanoidCustom.py
 import numpy as np
 from gym.envs.mujoco import mujoco_env
 from gym import utils
+import os
 
 
 DEFAULT_CAMERA_CONFIG = {
@@ -26,7 +27,7 @@ def mass_center(model, sim):
 class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(
         self,
-        xml_file="humanoid.xml",
+        xml_file="humanoid_custom.xml",
         forward_reward_weight=1.25,
         ctrl_cost_weight=0.1,
         contact_cost_weight=5e-7,
@@ -112,16 +113,23 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         )
 
     def step(self, action):
+        '''
+        step(self, action) -> observation, reward, done, info
+        '''
         xy_position_before = mass_center(self.model, self.sim)
         self.do_simulation(action, self.frame_skip)
         xy_position_after = mass_center(self.model, self.sim)
 
+        # dt为父类mujoco_env中的一个@property函数 
         xy_velocity = (xy_position_after - xy_position_before) / self.dt
         x_velocity, y_velocity = xy_velocity
 
+        # 控制花费
         ctrl_cost = self.control_cost(action)
         contact_cost = self.contact_cost
 
+        # reward值 
+        # _forward_reward_weight 默认为1.25
         forward_reward = self._forward_reward_weight * x_velocity
         healthy_reward = self.healthy_reward
 

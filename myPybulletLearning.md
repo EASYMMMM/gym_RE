@@ -3,7 +3,6 @@
 
 
 # Pybullet+gym+pytorch+stable baselines 学习笔记
-**最后更新于 2023年2月11日**
 
 ## 1. Pybullet
 
@@ -63,8 +62,7 @@ import pybullet as p
 - **安装pybullet及其他需要的包**
     ` pip install pybullet`
     ` pip install numpy==1.19.3` 
-    ` pip install gym==0.20.0` 
-    ` pip install ipdb`  #不知道是什么东西
+    ` pip install gym==0.21.0` 
 
 ##  3. windows环境
 - **环境：conda虚拟环境 python3.9**
@@ -83,11 +81,115 @@ import pybullet as p
     ` conda install gym=0.21.0`
     ` conda install pyglet`
 
-##  4. gym
+## 4. Mujoco
+
+**[Mujoco官网](https://mujoco.readthedocs.io/en/latest/overview.html)**
+
+**[Mujoco py官网](https://openai.github.io/mujoco-py/build/html/index.html)**
+
+**[colab教程](https://colab.research.google.com/github/deepmind/mujoco/blob/main/python/tutorial.ipynb#scrollTo=-P95E-QHizQq)**
+
+### 安装mujoco
+
+- **win**
+  在win11系统下安装mujoco。 
+
+  由于mujoco官方已经放弃win：
+
+  >  Windows support has been DEPRECATED and removed in [2.0.2.0](https://github.com/openai/mujoco-py/releases/tag/v2.0.2.0a1). One known good past version is [1.50.1.68]
+
+  虽然他说放弃了，但仍然选择安装mujoco200 + mujoco-py 2.0.2.0。 网络上有不少教程是关于win安装mujoco200。亲测还能用。
+
+  需要下载visual studio build tools，我的版本是2022，目前可以运行。 在[ms官网](https://visualstudio.microsoft.com/zh-hans/downloads/) 下载installer，安装`visual studio 2022生成工具`。  
+
+  在[mujoco官网](https://www.roboti.us/download.html)上下载mujoco安装包，选择`mujoco200 win64`。随后在user文件夹下创建` .mujoco`文件夹，在这个文件夹里解压压缩包，并配置环境变量。[具体过程参照这篇](https://blog.csdn.net/Sunctam/article/details/124354051)。配置环境变量后若仍提示找不到key文件，重启一下即可。   
+
+  安装mujoco-py时，从[github](https://github.com/openai/mujoco-py)上下载mujoco-py压缩包。版本选择`2.0.2.0`。建议将mujoco-py的文件夹也放到.mujoco下面，后续会用到。解压后，将文件夹`.mujoco\mujoco-py-2.0.2.0\`内的`mujoco-py\`文件夹拷贝到虚拟环境储存安装包的路径下。我的路径为`E:\anaconda3\envs\GYM\Lib\site-packages`。
+
+  随后打开anaonda prompt终端，先定位到从github上下载的压缩包。
+
+  ` cd C:\Users\xxx\.mujoco\mujoco-py-2.0.2.0 ` 
+
+  ` pip install -r requirements.txt  `   
+
+  ` pip install -r requirements.dev.txt  ` 
+
+  ` python setup.py install`
+
+  我参考的教程上执行完这一步后，在` conda list `里就可以看到mujoco-py了。  
+
+  测试代码：
+
+  ```python
+  import mujoco_py
+  import os
+  mj_path, _ = mujoco_py.utils.discover_mujoco()
+  xml_path = os.path.join(mj_path, 'model', 'humanoid.xml')
+  model = mujoco_py.load_model_from_path(xml_path)
+  sim = mujoco_py.MjSim(model)
+  print(sim.data.qpos)
+  #[0.  0.  1.4 1.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
+  # 0.  0.  0.  0.  0.  0.  0.  0.  0.  0. ]
+  sim.step()
+  print(sim.data.qpos)
+  #[-1.12164337e-05  7.29847036e-22  1.39975300e+00  9.99999999e-01
+  #  1.80085466e-21  4.45933954e-05 -2.70143345e-20  1.30126513e-19
+  # -4.63561234e-05 -1.88020744e-20 -2.24492958e-06  4.79357124e-05
+  # -6.38208396e-04 -1.61130312e-03 -1.37554006e-03  5.54173825e-05
+  # -2.24492958e-06  4.79357124e-05 -6.38208396e-04 -1.61130312e-03
+  # -1.37554006e-03 -5.54173825e-05 -5.73572648e-05  7.63833991e-05
+  # -2.12765194e-05  5.73572648e-05 -7.63833991e-05 -2.12765194e-05]
+  ```
+
+    在` import mujoco_py`时有可能会报错：
+
+    ```shell
+    ...
+      File "E:\ANACONDA\envs\GYM\lib\site-packages\mujoco_py\builder.py", line 55, in load_cython_ext
+        mod = imp.load_dynamic("cymj", cext_so_path)
+      File "E:\ANACONDA\envs\GYM\lib\imp.py", line 342, in load_dynamic
+        return _load(spec)
+  ImportError: DLL load failed while importing cymj: 找不到指定的模块。
+    ```
+
+    网上有教程说这是python版本太高导致的问题。解决方法为，在调用mujoco-py前手动添加mujoco路径。xxx为你的用户名。
+
+  ```python
+  import os
+  from getpass import getuser
+  user_id = getuser()
+  os.add_dll_directory(f"C://Users//{user_id}//.mujoco//mujoco200//bin")
+  os.add_dll_directory(f"C://Users//{user_id}//.mujoco//mujoco-py-2.0.2.0//mujoco_py")
+  ```
+
+    参考：https://blog.csdn.net/alan1ly/article/details/126087866 
+
+    参考：https://zhuanlan.zhihu.com/p/502112539
+
+- **linux**
+  mujoco安装210
+
+  [Mujoco210和Mujoco-py的安装 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/486957504)     
+
+  [openai/mujoco-py: MuJoCo is a physics engine for detailed, efficient rigid body simulations with contacts. mujoco-py allows using MuJoCo from Python 3. (github.com)](https://github.com/openai/mujoco-py)
+
+  第二个链接里包含了mujoco和mujoco-py的安装 先根据教程安装mujoco210 并在bashrc中添加这几个 具体根据实际路径就行
+
+  有个教程里说要加什么nVidia不知道干吗用 我没加但也能正常使用
+
+  ```
+  export MUJOCO_KEY_PATH=/home/sam/.mujoco${MUJOCO_KEY_PATH}
+  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/sam/.mujoco/mujoco210/bin
+  export MUJOCO_PY_MUJOCO_PATH=/home/sam/.mujoco/mujoco210
+  ```
+
+  然后pip3 install -U 'mujoco-py<2.2,>=2.1'
+
+##  5. gym
 
 **gym版本目前暂时选用0.21.0，发布于2021年10月。**  
 
-目前最新版本的gym为0.26.2，相比于0.21.0更改了许多关键API，新旧版本并不兼容。
+目前最新版本的gym为0.26.2，相比于0.21.0更改了许多关键API，新旧版本并不兼容。使用pip安装时记得在anaconda prompt中使用。
 
 ` pip install gym==0.21.0 `     
 
@@ -126,101 +228,6 @@ gym的一些例程：
   尝试通过pybullet引入gym环境，生成一个倒立摆
 - **[CSDN] gym搭建自己的环境，全网最详细版本，3分钟你就学会了！**
 https://blog.csdn.net/sinat_39620217/article/details/115519622
-
-### 安装mujoco
-
-- **win**
-  在win11系统下安装mujoco。 
-
-  由于mujoco官方已经放弃win：
-
-  >  Windows support has been DEPRECATED and removed in [2.0.2.0](https://github.com/openai/mujoco-py/releases/tag/v2.0.2.0a1). One known good past version is [1.50.1.68]
-
-  选择安装mujoco200 + mujoco-py 2.0.2.0。 网络上有不少教程是关于win安装mujoco200。
-
-  需要下载visual studio build tools，我的版本是2022，目前可以运行。 在[ms官网](https://visualstudio.microsoft.com/zh-hans/downloads/) 下载installer，安装`visual studio 2022生成工具`。  
-
-  在[mujoco官网](https://www.roboti.us/download.html)上下载mujoco安装包，选择`mujoco200 win64`。随后在user文件夹下创建` .mujoco`文件夹，在这个文件夹里解压压缩包，并配置环境变量。[具体过程参照这篇](https://blog.csdn.net/Sunctam/article/details/124354051)。配置环境变量后若仍提示找不到key文件，重启一下即可。   
-
-  安装mujoco-py时，从[github](https://github.com/openai/mujoco-py)上下载mujoco-py压缩包。版本选择`2.0.2.0`。建议将mujoco-py的文件夹也放到.mujoco下面，后续会用到。解压后，将文件夹`.mujoco\mujoco-py-2.0.2.0\`内的`mujoco-py\`文件夹拷贝到虚拟环境储存安装包的路径下。我的路径为`E:\anaconda3\envs\GYM\Lib\site-packages`。
-
-  随后打开anaonda prompt终端，先定位到从github上下载的压缩包。
-
-  ` cd C:\Users\xxx\.mujoco\mujoco-py-2.0.2.0 ` 
-
-  ` pip install -r requirements.txt  `   
-
-  ` pip install -r requirements.dev.txt  ` 
-
-  ` python setup.py install`
-
-  我参考的教程上执行完这一步后，在` conda list `里就可以看到mujoco-py了。  
-
-  测试代码：
-  
-  ```python
-  import mujoco_py
-  import os
-  mj_path, _ = mujoco_py.utils.discover_mujoco()
-  xml_path = os.path.join(mj_path, 'model', 'humanoid.xml')
-  model = mujoco_py.load_model_from_path(xml_path)
-  sim = mujoco_py.MjSim(model)
-  print(sim.data.qpos)
-  #[0.  0.  1.4 1.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
-  # 0.  0.  0.  0.  0.  0.  0.  0.  0.  0. ]
-  sim.step()
-  print(sim.data.qpos)
-  #[-1.12164337e-05  7.29847036e-22  1.39975300e+00  9.99999999e-01
-  #  1.80085466e-21  4.45933954e-05 -2.70143345e-20  1.30126513e-19
-  # -4.63561234e-05 -1.88020744e-20 -2.24492958e-06  4.79357124e-05
-  # -6.38208396e-04 -1.61130312e-03 -1.37554006e-03  5.54173825e-05
-  # -2.24492958e-06  4.79357124e-05 -6.38208396e-04 -1.61130312e-03
-  # -1.37554006e-03 -5.54173825e-05 -5.73572648e-05  7.63833991e-05
-# -2.12765194e-05  5.73572648e-05 -7.63833991e-05 -2.12765194e-05]
-  ```
-
-  在` import mujoco_py`时有可能会报错：
-  
-  ```shell
-  ...
-    File "E:\ANACONDA\envs\GYM\lib\site-packages\mujoco_py\builder.py", line 55, in load_cython_ext
-      mod = imp.load_dynamic("cymj", cext_so_path)
-    File "E:\ANACONDA\envs\GYM\lib\imp.py", line 342, in load_dynamic
-      return _load(spec)
-ImportError: DLL load failed while importing cymj: 找不到指定的模块。
-  ```
-
-  网上有教程说这是python版本太高导致的问题。解决方法为，在调用mujoco-py前手动添加mujoco路径。xxx为你的用户名。
-  
-  ```python
-  import os
-  os.add_dll_directory("C://Users//XXX//.mujoco//mujoco200//bin")
-  os.add_dll_directory("C://Users//XXX//.mujoco//mujoco-py-2.0.2.0//mujoco_py")
-import mujoco_py
-  ```
-
-  参考：https://blog.csdn.net/alan1ly/article/details/126087866 
-
-  参考：https://zhuanlan.zhihu.com/p/502112539
-  
-- **linux**
-  mujoco安装210
-
-  [Mujoco210和Mujoco-py的安装 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/486957504)     
-
-  [openai/mujoco-py: MuJoCo is a physics engine for detailed, efficient rigid body simulations with contacts. mujoco-py allows using MuJoCo from Python 3. (github.com)](https://github.com/openai/mujoco-py)
-
-  第二个链接里包含了mujoco和mujoco-py的安装 先根据教程安装mujoco210 并在bashrc中添加这几个 具体根据实际路径就行
-
-  有个教程里说要加什么nVidia不知道干吗用 我没加但也能正常使用
-
-  ```
-  export MUJOCO_KEY_PATH=/home/sam/.mujoco${MUJOCO_KEY_PATH}
-  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/sam/.mujoco/mujoco210/bin
-  export MUJOCO_PY_MUJOCO_PATH=/home/sam/.mujoco/mujoco210
-  ```
-
-  然后pip3 install -U 'mujoco-py<2.2,>=2.1'
 
 ### Space类
 
@@ -296,7 +303,7 @@ gym-basic/
 
 
 
-##  5. stable_baselines
+##  6. stable_baselines
 
 安装stablebaselines3，同时安装pyrender用于图像展示。
 ` conda install stable_baselines3`
@@ -379,7 +386,7 @@ gym-basic/
 
 
 
-##  6. GPU加速pytorch
+##  7. GPU加速pytorch
 
 为了使用GPU加速的pytorch，单独创建一个虚拟环境。  
 

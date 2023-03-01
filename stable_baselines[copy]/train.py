@@ -6,19 +6,21 @@
 # MIT License
 
 '''
+来自pybullet的sb3例程
+作出部分更改
 python stable_baselines[copy]/train.py --algo td3 --env HalfCheetah-v2
 
-python stable_baselines[copy]/train.py --algo sac --env Humanoid-v3
+python stable_baselines[copy]/train.py --algo sac --env Humanoid-v3  --model-name 2e6
 '''
 import argparse
 
 # ------- 来自于mujoco150在win+py3.9下的矫情的要求 --------
+# 手动添加mujoco路径
 import os
-
-#os.add_dll_directory("C://Users//孟一凌//.mujoco//mujoco200//bin")
-#os.add_dll_directory("C://Users//孟一凌//.mujoco//mujoco-py-2.0.2.0//mujoco_py")
-os.add_dll_directory("C://Users//zdh//.mujoco//mujoco200//bin")
-os.add_dll_directory("C://Users//zdh//.mujoco//mujoco-py-2.0.2.0//mujoco_py")
+from getpass import getuser
+user_id = getuser()
+os.add_dll_directory(f"C://Users//{user_id}//.mujoco//mujoco200//bin")
+os.add_dll_directory(f"C://Users//{user_id}//.mujoco//mujoco-py-2.0.2.0//mujoco_py")
 # -------------------------------------------------------
 import pybullet_envs  # register pybullet envs
 
@@ -56,12 +58,19 @@ if __name__ == "__main__":
         default=-1,
         type=int,
     )
+    parser.add_argument(
+        "--model-name",
+        help="Name of the model's save path",
+        default="",
+        type=str,
+    )
     args = parser.parse_args()
 
     env_id = args.env
     n_timesteps = args.n_timesteps
+    model_name = args.model_name + "_"
      # 存放在sb3model/文件夹下
-    save_path = f"sb3model/{args.algo}_{env_id}"
+    save_path = f"sb3model/{model_name}{args.algo}_{env_id}"
 
     # Instantiate and wrap the environment
     env = gym.make(env_id)

@@ -11,12 +11,12 @@ python stable_baselines[copy]/train.py --algo td3 --env HalfCheetah-v2
 python stable_baselines[copy]/train.py --algo sac --env Humanoid-v3
 '''
 # ------- 来自于mujoco150在win+py3.9下的矫情的要求 --------
+# 手动添加mujoco路径
 import os
-
-#os.add_dll_directory("C://Users//孟一凌//.mujoco//mujoco200//bin")
-#os.add_dll_directory("C://Users//孟一凌//.mujoco//mujoco-py-2.0.2.0//mujoco_py")
-os.add_dll_directory("C://Users//zdh//.mujoco//mujoco200//bin")
-os.add_dll_directory("C://Users//zdh//.mujoco//mujoco-py-2.0.2.0//mujoco_py")
+from getpass import getuser
+user_id = getuser()
+os.add_dll_directory(f"C://Users//{user_id}//.mujoco//mujoco200//bin")
+os.add_dll_directory(f"C://Users//{user_id}//.mujoco//mujoco-py-2.0.2.0//mujoco_py")
 # -------------------------------------------------------
 import time
 import argparse
@@ -58,6 +58,12 @@ if __name__ == "__main__":
         default=False,
         help="Load best model instead of last model if available",
     )
+    parser.add_argument(
+        "--model-name",
+        help="Name of the model's save path",
+        default="",
+        type=str,
+    )
     args = parser.parse_args()
 
     env_id = args.env
@@ -75,8 +81,9 @@ if __name__ == "__main__":
 
     # We assume that the saved model is in the same folder
 
-    # 存放在sb3model/文件夹下
-    save_path = f"sb3model/{args.algo}_{env_id}.zip"
+    model_name = args.model_name + "_"
+     # 存放在sb3model/文件夹下
+    save_path = f"sb3model/{model_name}{args.algo}_{env_id}"
 
     if not os.path.isfile(save_path) or args.load_best:
         print("Loading best model")

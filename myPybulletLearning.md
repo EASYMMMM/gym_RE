@@ -50,7 +50,10 @@ import pybullet as p
 - 获取关节信息 
   `  jointInfo = p.getJointInfo(self._robot, i, physicsClientId=self._physicsClientId)`
 
-##  2. linux环境
+##  2. 虚拟环境
+
+### linux环境
+
 - **环境：conda虚拟环境 python3.9**
 - **创建虚拟环境**
     ` conda create -n my_pybulletLearning python=3.9 `
@@ -64,7 +67,8 @@ import pybullet as p
     ` pip install numpy==1.19.3` 
     ` pip install gym==0.21.0` 
 
-##  3. windows环境
+###  windows环境
+
 - **环境：conda虚拟环境 python3.9**
 - **创建虚拟环境**
     windows下使用conda的配置更复杂一些，需要配置环境变量。百度即可。
@@ -81,7 +85,7 @@ import pybullet as p
     ` conda install gym=0.21.0`
     ` conda install pyglet`
 
-## 4. Mujoco
+## 3. Mujoco
 
 **[Mujoco官网](https://mujoco.readthedocs.io/en/latest/overview.html)**
 
@@ -185,7 +189,7 @@ import pybullet as p
 
   然后pip3 install -U 'mujoco-py<2.2,>=2.1'
 
-##  5. gym
+##  4. gym
 
 **gym版本目前暂时选用0.21.0，发布于2021年10月。**  
 
@@ -303,7 +307,7 @@ gym-basic/
 
 
 
-##  6. stable_baselines
+##  5. stable_baselines
 
 安装stablebaselines3，同时安装pyrender用于图像展示。
 ` conda install stable_baselines3`
@@ -386,7 +390,7 @@ gym-basic/
 
 
 
-##  7. GPU加速pytorch
+##  6. GPU加速pytorch
 
 为了使用GPU加速的pytorch，单独创建一个虚拟环境。  
 
@@ -429,5 +433,3 @@ torch.cuda.is_available()
 `Using cuda device`
 
 
-
-- 

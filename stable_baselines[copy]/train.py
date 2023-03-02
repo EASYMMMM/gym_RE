@@ -11,6 +11,8 @@
 python stable_baselines[copy]/train.py --algo td3 --env HalfCheetah-v2
 
 python stable_baselines[copy]/train.py --algo sac --env Humanoid-v3  --model-name 2e6
+
+python stable_baselines[copy]/train.py --algo ppo --env Humanoid-v3  --n-timesteps 2e6 --model-name 2e6 
 '''
 import argparse
 
@@ -122,8 +124,9 @@ if __name__ == "__main__":
             ),
         ),
         "ppo": dict(
-
-
+            batch_size=512,
+            learning_rate=2.5e-4,
+            gamma=0.99
         )
     }[args.algo]
 

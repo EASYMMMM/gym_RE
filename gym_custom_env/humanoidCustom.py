@@ -27,12 +27,12 @@ def mass_center(model, sim):
 class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(
         self,
-        xml_file="humanoid_custom.xml",
+        xml_file="E://CASIA//gym_RobotEvolution//gym_custom_env//assets//humanoid_custom.xml",
         forward_reward_weight=1.25,
         ctrl_cost_weight=0.1,
         contact_cost_weight=5e-7,
         contact_cost_range=(-np.inf, 10.0),
-        healthy_reward=5.0,
+        healthy_reward=5.0,                     # 存活奖励
         terminate_when_unhealthy=True,
         healthy_z_range=(1.0, 2.0),
         reset_noise_scale=1e-2,

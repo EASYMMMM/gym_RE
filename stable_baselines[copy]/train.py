@@ -23,10 +23,13 @@ os.add_dll_directory(f"C://Users//{user_id}//.mujoco//mujoco200//bin")
 os.add_dll_directory(f"C://Users//{user_id}//.mujoco//mujoco-py-2.0.2.0//mujoco_py")
 # -------------------------------------------------------
 import pybullet_envs  # register pybullet envs
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+import gym_custom_env       # 注册自定义环境
 
 import gym
 import numpy as np
-from stable_baselines3 import SAC, TD3
+from stable_baselines3 import SAC, TD3, PPO
 from stable_baselines3.common.noise import NormalActionNoise
 from stable_baselines3.common.callbacks import EvalCallback, CheckpointCallback
 from stable_baselines3.common.monitor import Monitor
@@ -40,7 +43,7 @@ if __name__ == "__main__":
         default="sac",
         type=str,
         required=False,
-        choices=["sac", "td3"],
+        choices=["sac", "td3", "ppo"],
     )
     parser.add_argument(
         "--env", type=str, default="HalfCheetahBulletEnv-v0", help="environment ID"
@@ -91,6 +94,7 @@ if __name__ == "__main__":
     algo = {
         "sac": SAC,
         "td3": TD3,
+        "ppo": PPO,
     }[args.algo]
 
     n_actions = env.action_space.shape[0]
@@ -117,6 +121,10 @@ if __name__ == "__main__":
                 mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions)
             ),
         ),
+        "ppo": dict(
+
+
+        )
     }[args.algo]
 
     model = algo("MlpPolicy", env, verbose=1, **hyperparams)

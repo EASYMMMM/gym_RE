@@ -19,9 +19,11 @@ from time import sleep
 
 print(gym.__version__)
 #env = gym.make('HalfCheetah-v2')
-env = gym.make('Humanoid-v3')            # mujoco的env
+#env = gym.make('Humanoid-v3')            # mujoco的env
 #env = gym.make('HumanoidBulletEnv-v0')   # bullet的env
-#env = gym.make('HumanoidCustomEnv-v0')    # 自定义的mujoco env
+env = gym.make('HumanoidCustomEnv-v0', healthy_reward = 3.0)    # 自定义的mujoco env
+
+
 env.reset()
 print(os.path.dirname(__file__))
 for _ in range(10000):

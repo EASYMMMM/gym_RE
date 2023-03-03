@@ -28,7 +28,7 @@ import pybullet_envs  # register pybullet envs
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 import gym_custom_env       # 注册自定义环境
-
+import time
 import gym
 import numpy as np
 from stable_baselines3 import SAC, TD3, PPO
@@ -130,11 +130,17 @@ if __name__ == "__main__":
         )
     }[args.algo]
 
+    begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     model = algo("MlpPolicy", env, verbose=1, **hyperparams)
     try:
         model.learn(n_timesteps, callback=callbacks)
     except KeyboardInterrupt:
         pass
-
+    
+    print('=====================================')
     print(f"Saving to {save_path}.zip")
     model.save(save_path)
+    end_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    print('Started at: ' + begin_time)
+    print('Ended at: ' + end_time)
+    print('=====================================')

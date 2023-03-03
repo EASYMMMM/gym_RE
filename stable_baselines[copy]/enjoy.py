@@ -6,9 +6,11 @@
 # MIT License
 
 '''
-python stable_baselines[copy]/train.py --algo td3 --env HalfCheetah-v2
+python stable_baselines[copy]/enjoy.py --algo td3 --env HalfCheetah-v2
 
-python stable_baselines[copy]/train.py --algo sac --env Humanoid-v3
+python stable_baselines[copy]/enjoy.py --algo sac --env Humanoid-v3
+
+python stable_baselines[copy]/enjoy.py --algo ppo --env Humanoid-v3  --model-name 2e6 
 '''
 # ------- 来自于mujoco150在win+py3.9下的矫情的要求 --------
 # 手动添加mujoco路径
@@ -25,7 +27,7 @@ import gym
 import numpy as np
 import pybullet_envs
 
-from stable_baselines3 import SAC, TD3
+from stable_baselines3 import SAC, TD3, PPO
 
 
 if __name__ == "__main__":
@@ -38,7 +40,7 @@ if __name__ == "__main__":
         default="sac",
         type=str,
         required=False,
-        choices=["sac", "td3"],
+        choices=["sac", "td3", "ppo"],
     )
     parser.add_argument(
         "--env", type=str, default="HalfCheetahBulletEnv-v0", help="environment ID"
@@ -77,13 +79,14 @@ if __name__ == "__main__":
     algo = {
         "sac": SAC,
         "td3": TD3,
+        "ppo": PPO,
     }[args.algo]
 
     # We assume that the saved model is in the same folder
 
     model_name = args.model_name + "_"
      # 存放在sb3model/文件夹下
-    save_path = f"sb3model/{model_name}{args.algo}_{env_id}"
+    save_path = f"sb3model/{model_name}{args.algo}_{env_id}.zip"
 
     if not os.path.isfile(save_path) or args.load_best:
         print("Loading best model")
@@ -93,6 +96,11 @@ if __name__ == "__main__":
     # Load the saved model
     model = algo.load(save_path, env=env)
 
+
+    print("==============================")
+    print(f"Method: {args.algo}")
+    print(f"Time steps: {args.model_name}")
+    print("==============================")
     try:
         # Use deterministic actions for evaluation
         episode_rewards, episode_lengths = [], []
@@ -121,8 +129,7 @@ if __name__ == "__main__":
         std_reward = np.std(episode_rewards)
 
         mean_len, std_len = np.mean(episode_lengths), np.std(episode_lengths)
-
-        print("==== Results ====")
+        print("========== Results ===========")
         print(f"Episode_reward={mean_reward:.2f} +/- {std_reward:.2f}")
         print(f"Episode_length={mean_len:.2f} +/- {std_len:.2f}")
     except KeyboardInterrupt:

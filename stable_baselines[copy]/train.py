@@ -12,7 +12,7 @@ python stable_baselines[copy]/train.py --algo td3 --env HalfCheetah-v2
 
 python stable_baselines[copy]/train.py --algo sac --env Humanoid-v3  --model-name 2e6
 
-python stable_baselines[copy]/train.py --algo ppo --env Humanoid-v3  --n-timesteps 2e6 --model-name 2e6 
+python stable_baselines[copy]/train.py --algo ppo --env Humanoid-v3  --n-timesteps 2000000 --model-name 2e6 
 '''
 import argparse
 

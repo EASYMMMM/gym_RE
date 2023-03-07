@@ -100,6 +100,7 @@ if __name__ == "__main__":
     print("==============================")
     print(f"Method: {args.algo}")
     print(f"Time steps: {args.model_name}")
+    print("model path:"+save_path)
     print("==============================")
     try:
         # Use deterministic actions for evaluation
@@ -132,6 +133,7 @@ if __name__ == "__main__":
         print("========== Results ===========")
         print(f"Episode_reward={mean_reward:.2f} +/- {std_reward:.2f}")
         print(f"Episode_length={mean_len:.2f} +/- {std_len:.2f}")
+        print("==============================")
     except KeyboardInterrupt:
         pass
 

@@ -94,6 +94,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         return done
 
     def _get_obs(self):
+        # obs空间
         position = self.sim.data.qpos.flat.copy()
         velocity = self.sim.data.qvel.flat.copy()
 
@@ -116,6 +117,52 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                 external_contact_forces,
             )
         )
+
+    def print_obs_space(self):
+        # 打印obs空间
+        print('=========== q position ===========')
+        position = self.sim.data.qpos.flat.copy()
+        print('shape:',position.shape)
+        print(position)
+
+        print('=========== q velocity ===========')
+        velocity = self.sim.data.qvel.flat.copy()
+        print('shape:',velocity.shape)       
+        print(velocity)
+
+        print('=========== com_inertia ===========')
+        com_inertia = self.sim.data.cinert.flat.copy()
+        print('shape:',com_inertia.shape) 
+        print(com_inertia)
+
+        print('=========== com_velocity ===========')
+        com_velocity = self.sim.data.cvel.flat.copy()
+        print('shape:',com_velocity.shape) 
+        print(com_velocity)
+
+        print('=========== actuator_forces ===========')
+        actuator_forces = self.sim.data.qfrc_actuator.flat.copy()
+        print('shape:',actuator_forces.shape) 
+        print(actuator_forces)
+
+        print('=========== external_contact_forces ===========')
+        external_contact_forces = self.sim.data.cfrc_ext.flat.copy()
+        print('shape:',external_contact_forces.shape) 
+        print(external_contact_forces)
+
+        if self._exclude_current_positions_from_observation:
+            position = position[2:]
+
+        return np.concatenate(
+            (
+                position,
+                velocity,
+                com_inertia,
+                com_velocity,
+                actuator_forces,
+                external_contact_forces,
+            )
+        )    
 
     def step(self, action):
         '''

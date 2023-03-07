@@ -26,6 +26,11 @@ env = gym.make('HumanoidCustomEnv-v0', healthy_reward = 3.0)    # 自定义的mu
 
 env.reset()
 print(os.path.dirname(__file__))
+env.render()                            # 渲染
+act = env.action_space.sample()         # 在动作空间中随机采样
+obs, reward, done, _ = env.step(act)    # 与环境交互
+env.print_obs_space()
+
 for _ in range(10000):
     sleep(0.05)
     env.render()                            # 渲染

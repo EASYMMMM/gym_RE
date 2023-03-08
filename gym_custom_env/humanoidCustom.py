@@ -27,7 +27,7 @@ def mass_center(model, sim):
 class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(
         self,
-        xml_file="E://CASIA//gym_RobotEvolution//gym_custom_env//assets//humanoid_custom.xml",
+        xml_file="humanoid_custom.xml",
         forward_reward_weight=1.25,
         ctrl_cost_weight=0.1,
         contact_cost_weight=5e-7,
@@ -40,6 +40,9 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     ):
         utils.EzPickle.__init__(**locals())
 
+        dir_path = os.path.dirname(__file__)
+        xml_file_path = f"{dir_path}\\assets\\{xml_file}"
+        
         self._forward_reward_weight = forward_reward_weight
         self._ctrl_cost_weight = ctrl_cost_weight
         self._contact_cost_weight = contact_cost_weight
@@ -55,7 +58,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         )
 
         print("=========== HUMANOID Custom Env ============")
-        mujoco_env.MujocoEnv.__init__(self, xml_file, 5)
+        mujoco_env.MujocoEnv.__init__(self, xml_file_path, 5)
 
     @property
     def healthy_reward(self):

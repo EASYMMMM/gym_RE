@@ -36,7 +36,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         terminate_when_unhealthy=True,
         healthy_z_range=(1.0, 2.0),
         reset_noise_scale=1e-2,
-        exclude_current_positions_from_observation=True,
+        exclude_current_positions_from_observation=False,  # 使obs空间包括躯干的x，y坐标
     ):
         utils.EzPickle.__init__(**locals())
 

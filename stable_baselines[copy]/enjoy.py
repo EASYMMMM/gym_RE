@@ -11,6 +11,8 @@ python stable_baselines[copy]/enjoy.py --algo td3 --env HalfCheetah-v2
 python stable_baselines[copy]/enjoy.py --algo sac --env Humanoid-v3
 
 python stable_baselines[copy]/enjoy.py --algo ppo --env Humanoid-v3  --model-name 2e6 
+
+python stable_baselines[copy]/enjoy.py --algo sac --env HumanoidCustomEnv-v0   --model-name 2e6 
 '''
 # ------- 来自于mujoco150在win+py3.9下的矫情的要求 --------
 # 手动添加mujoco路径
@@ -22,7 +24,9 @@ os.add_dll_directory(f"C://Users//{user_id}//.mujoco//mujoco-py-2.0.2.0//mujoco_
 # -------------------------------------------------------
 import time
 import argparse
-
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+import gym_custom_env       # 注册自定义环境
 import gym
 import numpy as np
 import pybullet_envs

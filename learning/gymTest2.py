@@ -16,6 +16,8 @@ import gym
 import pybullet_envs
 import gym_custom_env  #注册自定义的环境
 from time import sleep
+from stable_baselines3.common.env_checker import check_env
+
 
 print(gym.__version__)
 #env = gym.make('HalfCheetah-v2')
@@ -29,10 +31,13 @@ print(os.path.dirname(__file__))
 env.render()                            # 渲染
 act = env.action_space.sample()         # 在动作空间中随机采样
 obs, reward, done, _ = env.step(act)    # 与环境交互
-env.print_obs_space()
+#env.print_obs_space()
+print('='*30)
+check_env(env)
+print('='*30)
 
 for _ in range(10000):
-    sleep(0.05)
+    
     env.render()                            # 渲染
     act = env.action_space.sample()         # 在动作空间中随机采样
     obs, reward, done, _ = env.step(act)    # 与环境交互

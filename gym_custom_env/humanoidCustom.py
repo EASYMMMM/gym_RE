@@ -36,7 +36,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         terminate_when_unhealthy=True,
         healthy_z_range=(1.0, 2.0),
         reset_noise_scale=1e-2,
-        exclude_current_positions_from_observation=False,  # 使obs空间包括躯干的x，y坐标
+        exclude_current_positions_from_observation=False,  # Flase: 使obs空间包括躯干的x，y坐标; True: 不包括
     ):
         utils.EzPickle.__init__(**locals())
 
@@ -57,16 +57,31 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             exclude_current_positions_from_observation
         )
 
-        print("=========== HUMANOID Custom Env ============")
+        print("============ HUMANOID CUSTOM ENV ============")
         mujoco_env.MujocoEnv.__init__(self, xml_file_path, 5)
 
     @property
-    def healthy_reward(self):
+    def healthy_reward(self, xy_velocity):
         # 机器人正常运行的reward值，_healthy_reward默认为5，即正常训练时healthy_reward = 5
+        # 当机器人前进速度小于0.05时，判定为摔倒，停止训练。
+        x_velocity, _y_velocity = xy_velocity
+        if x_velocity < 0.05: 
+            is_walking = False
+        else:
+            is_walking = True
         return (
-            float(self.is_healthy or self._terminate_when_unhealthy)
+            ( float(self.is_healthy or self._terminate_when_unhealthy) and is_walking )
             * self._healthy_reward
         )
+
+    @property
+    def forward_reward(self, xy_velocity):
+        # 计算前进奖励 
+        # 前进奖励 = 速度权重*前进速度 + 前进距离
+        # 前进距离 + 1，因为机器人起始点在x=-1
+        x_velocity, _y_velocity = xy_velocity
+        forward_reward = self._forward_reward_weight * x_velocity + (self.sim.data.qpos[0] + 1) # self.sim.data.qpos[0]: x coordinate of torso (centre)
+        return forward_reward
 
     def control_cost(self, action):
         # 控制花费。所有控制量的开方和。
@@ -85,8 +100,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def is_healthy(self):
         # 机器人状态是否正常，通过qpos[2]的z轴位置判断（是否跌倒）
         min_z, max_z = self._healthy_z_range
-        is_healthy = min_z < self.sim.data.qpos[2] < max_z
-
+        is_healthy = min_z < self.sim.data.qpos[2] < max_z  #  self.sim.data.qpos[2]: z-coordinate of the torso (centre)
         return is_healthy
 
     @property
@@ -117,7 +131,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                 com_inertia,
                 com_velocity,
                 actuator_forces,
-                external_contact_forces,
+                #external_contact_forces,
             )
         )
 
@@ -170,6 +184,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def step(self, action):
         '''
         step(self, action) -> observation, reward, done, info
+        在父类mujoco_env初始化时，会调用该函数，并根据返回的observation来确定observation space。
+        因此更改返回值中的observation，同时可更改该env的observation space。
         '''
         xy_position_before = mass_center(self.model, self.sim)
         self.do_simulation(action, self.frame_skip)
@@ -184,9 +200,9 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         contact_cost = self.contact_cost
 
         # reward值 
-        # _forward_reward_weight 默认为1.25
-        forward_reward = self._forward_reward_weight * x_velocity
-        healthy_reward = self.healthy_reward
+        # _forward_reward_weight 默认为1.25, 将x轴位移添加到奖励值中，鼓励前进。
+        forward_reward = self.forward_reward(xy_velocity)  
+        healthy_reward = self.healthy_reward(xy_velocity)
 
         rewards = forward_reward + healthy_reward
         costs = ctrl_cost + contact_cost

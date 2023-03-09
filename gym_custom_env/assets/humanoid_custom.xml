@@ -10,7 +10,7 @@
     </option>
     <size nkey="5" nuser_geom="1"/>
     <!-- 增加内存 -->
-    <size njmax="500" nconmax="500"/>
+    <size njmax="5000" nconmax="5000"/>
     <visual>
         <map fogend="5" fogstart="3"/>
     </visual>

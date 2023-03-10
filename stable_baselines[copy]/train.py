@@ -14,7 +14,7 @@ python stable_baselines[copy]/train.py --algo sac --env Humanoid-v3  --model-nam
 
 python stable_baselines[copy]/train.py --algo ppo --env Humanoid-v3  --n-timesteps 2000000 --model-name 2e6
 
-python stable_baselines[copy]/train.py --algo sac --env HumanoidCustomEnv-v0  --n-timesteps 2000000 --model-name 2e6 
+python stable_baselines[copy]/train.py --algo sac --env HumanoidCustomEnv-v0  --n-timesteps 2000000 --model-name 2e6_t2 
 '''
 import argparse
 
@@ -78,7 +78,7 @@ if __name__ == "__main__":
     n_timesteps = args.n_timesteps
     model_name = args.model_name + "_"
      # 存放在sb3model/文件夹下
-    save_path = f"sb3model/{model_name}{args.algo}_{env_id}"
+    save_path = f"sb3model/{env_id}/{model_name}{args.algo}_{env_id}"
 
     # Instantiate and wrap the environment
     env = gym.make(env_id)

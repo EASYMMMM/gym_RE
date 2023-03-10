@@ -60,7 +60,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         print("============ HUMANOID CUSTOM ENV ============")
         mujoco_env.MujocoEnv.__init__(self, xml_file_path, 5)
 
-    @property
+
     def healthy_reward(self, xy_velocity):
         # 机器人正常运行的reward值，_healthy_reward默认为5，即正常训练时healthy_reward = 5
         # 当机器人前进速度小于0.05时，判定为摔倒，停止训练。
@@ -74,7 +74,6 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             * self._healthy_reward
         )
 
-    @property
     def forward_reward(self, xy_velocity):
         # 计算前进奖励 
         # 前进奖励 = 速度权重*前进速度 + 前进距离

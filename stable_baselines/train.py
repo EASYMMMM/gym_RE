@@ -8,13 +8,13 @@
 '''
 来自pybullet的sb3例程
 作出部分更改
-python stable_baselines[copy]/train.py --algo td3 --env HalfCheetah-v2
+python stable_baselines/train.py --algo td3 --env HalfCheetah-v2
 
-python stable_baselines[copy]/train.py --algo sac --env Humanoid-v3  --model-name 2e6
+python stable_baselines/train.py --algo sac --env Humanoid-v3  --model-name 2e6
 
-python stable_baselines[copy]/train.py --algo ppo --env Humanoid-v3  --n-timesteps 2000000 --model-name 2e6
+python stable_baselines/train.py --algo ppo --env Humanoid-v3  --n-timesteps 2000000 --model-name 2e6
 
-python stable_baselines[copy]/train.py --algo sac --env HumanoidCustomEnv-v0  --n-timesteps 2000000 --model-name 2e6_t2 
+python stable_baselines/train.py --algo sac --env HumanoidCustomEnv-v0  --n-timesteps 2000000 --model-name 2e6_t2 
 '''
 import argparse
 

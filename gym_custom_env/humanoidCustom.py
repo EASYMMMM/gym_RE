@@ -17,11 +17,17 @@ DEFAULT_CAMERA_CONFIG = {
     "elevation": -20.0,
 }
 
+HORIZONTAL_CAMERA_CONFIG = {
+    "trackbodyid": 1,
+    "distance": 10.0,
+    "lookat": np.array((0.0, 0.0, 1.0)),
+    "elevation": 0.0,
+}
 
 def mass_center(model, sim):
     mass = np.expand_dims(model.body_mass, axis=1)
     xpos = sim.data.xipos
-    return (np.sum(mass * xpos, axis=0) / np.sum(mass))[0:2].copy()
+    return (np.sum(mass * xpos, axis=0) / np.sum(mass))[0:3].copy()
 
 
 class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
@@ -32,10 +38,11 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         ctrl_cost_weight=0.1,
         contact_cost_weight=5e-7,
         contact_cost_range=(-np.inf, 10.0),
-        healthy_reward=5.0,                     # 存活奖励
+        healthy_reward=2.0,                     # 存活奖励
         terminate_when_unhealthy=True,
-        healthy_z_range=(1.0, 2.0),
+        healthy_z_range=(1.0, 5.0),
         reset_noise_scale=1e-2,
+        camera_config = "horizontal",
         exclude_current_positions_from_observation=False,  # Flase: 使obs空间包括躯干的x，y坐标; True: 不包括
     ):
         utils.EzPickle.__init__(**locals())
@@ -52,34 +59,51 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self._healthy_z_range = healthy_z_range
 
         self._reset_noise_scale = reset_noise_scale
+        
+        self.camera_config = {
+            "defalt":DEFAULT_CAMERA_CONFIG,
+            "horizontal":HORIZONTAL_CAMERA_CONFIG,
+        }[camera_config]
 
         self._exclude_current_positions_from_observation = (
             exclude_current_positions_from_observation
         )
+        self.x_velocity = 0                         # 质心沿x速度
+        self._walking_counter = 0                   # 判定正常前进计数器
 
         print("============ HUMANOID CUSTOM ENV ============")
         mujoco_env.MujocoEnv.__init__(self, xml_file_path, 5)
 
+    @property
+    def is_walking(self):
+        # 判断机器人是否正常行走，若连续10步速度小于某值，停止
+        _is_walking = True
+        if self.sim.data.qpos[0]  < 0:   # 未进入阶梯时，直接返回True
+            return _is_walking
+        if self.x_velocity < 0.1: 
+            if self._walking_counter > 100:
+                _is_walking = False
+                self._walking_counter = 0
+            else:
+                self._walking_counter = self._walking_counter + 1
+        return _is_walking
+        
 
-    def healthy_reward(self, xy_velocity):
+    @property
+    def healthy_reward(self):
         # 机器人正常运行的reward值，_healthy_reward默认为5，即正常训练时healthy_reward = 5
         # 当机器人前进速度小于0.05时，判定为摔倒，停止训练。
-        x_velocity, _y_velocity = xy_velocity
-        if x_velocity < 0.05: 
-            is_walking = False
-        else:
-            is_walking = True
         return (
-            ( float(self.is_healthy or self._terminate_when_unhealthy) and is_walking )
+            ( float(self.is_healthy or self._terminate_when_unhealthy) and  self._is_walking  )
             * self._healthy_reward
         )
-
-    def forward_reward(self, xy_velocity):
+    
+    @property
+    def forward_reward(self):
         # 计算前进奖励 
         # 前进奖励 = 速度权重*前进速度 + 前进距离
         # 前进距离 + 1，因为机器人起始点在x=-1
-        x_velocity, _y_velocity = xy_velocity
-        forward_reward = self._forward_reward_weight * x_velocity + (self.sim.data.qpos[0] + 1) # self.sim.data.qpos[0]: x coordinate of torso (centre)
+        forward_reward = self._forward_reward_weight * self.x_velocity + (self.sim.data.qpos[0] + 1) # self.sim.data.qpos[0]: x coordinate of torso (centre)
         return forward_reward
 
     def control_cost(self, action):
@@ -106,7 +130,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def done(self):
         # episode是否结束的标志，在step()函数中返回
         # 如果机器人的状态是unhealthy，则done = True，训练终止
-        done = (not self.is_healthy) if self._terminate_when_unhealthy else False
+        done = ( (not self.is_healthy) or (not self._is_walking) ) if self._terminate_when_unhealthy else False
         return done
 
     def _get_obs(self):
@@ -186,13 +210,17 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         在父类mujoco_env初始化时，会调用该函数，并根据返回的observation来确定observation space。
         因此更改返回值中的observation，同时可更改该env的observation space。
         '''
-        xy_position_before = mass_center(self.model, self.sim)
+        xyz_position_before = mass_center(self.model, self.sim)
         self.do_simulation(action, self.frame_skip)
-        xy_position_after = mass_center(self.model, self.sim)
+        xyz_position_after = mass_center(self.model, self.sim)
 
         # dt为父类mujoco_env中的一个@property函数 
-        xy_velocity = (xy_position_after - xy_position_before) / self.dt
+        xy_velocity = (xyz_position_after[0:2] - xyz_position_before[0:2]) / self.dt
         x_velocity, y_velocity = xy_velocity
+        self.x_velocity = x_velocity
+
+        # 是否仍在前进
+        self._is_walking = self.is_walking
 
         # cost值 控制cost + 接触力cost
         ctrl_cost = self.control_cost(action)
@@ -200,8 +228,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
         # reward值 
         # _forward_reward_weight 默认为1.25, 将x轴位移添加到奖励值中，鼓励前进。
-        forward_reward = self.forward_reward(xy_velocity)  
-        healthy_reward = self.healthy_reward(xy_velocity)
+        forward_reward = self.forward_reward
+        healthy_reward = self.healthy_reward
 
         rewards = forward_reward + healthy_reward
         costs = ctrl_cost + contact_cost
@@ -214,12 +242,16 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             "reward_quadctrl": -ctrl_cost,
             "reward_alive": healthy_reward,
             "reward_impact": -contact_cost,
-            "x_position": xy_position_after[0],
-            "y_position": xy_position_after[1],
-            "distance_from_origin": np.linalg.norm(xy_position_after, ord=2),
+            "x_position": xyz_position_after[0],
+            "y_position": xyz_position_after[1],
+            "z_position": xyz_position_after[2],
+            "xyz_position": xyz_position_after,
+            "distance_from_origin": np.linalg.norm(xyz_position_after, ord=2),
             "x_velocity": x_velocity,
             "y_velocity": y_velocity,
             "forward_reward": forward_reward,
+            "is_healthy": self.is_healthy,
+            "is_walking": self._is_walking,
         }
 
         return observation, reward, done, info
@@ -240,7 +272,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         return observation
 
     def viewer_setup(self):
-        for key, value in DEFAULT_CAMERA_CONFIG.items():
+        for key, value in self.camera_config.items():
             if isinstance(value, np.ndarray):
                 getattr(self.viewer.cam, key)[:] = value
             else:

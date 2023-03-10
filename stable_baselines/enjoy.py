@@ -6,13 +6,13 @@
 # MIT License
 
 '''
-python stable_baselines[copy]/enjoy.py --algo td3 --env HalfCheetah-v2
+python stable_baselines/enjoy.py --algo td3 --env HalfCheetah-v2
 
-python stable_baselines[copy]/enjoy.py --algo sac --env Humanoid-v3
+python stable_baselines/enjoy.py --algo sac --env Humanoid-v3
 
-python stable_baselines[copy]/enjoy.py --algo ppo --env Humanoid-v3  --model-name 2e6 
+python stable_baselines/enjoy.py --algo ppo --env Humanoid-v3  --model-name 2e6 
 
-python stable_baselines[copy]/enjoy.py --algo sac --env HumanoidCustomEnv-v0   --model-name 2e6 
+python stable_baselines/enjoy.py --algo sac --env HumanoidCustomEnv-v0   --model-name 2e6 
 '''
 # ------- 来自于mujoco150在win+py3.9下的矫情的要求 --------
 # 手动添加mujoco路径

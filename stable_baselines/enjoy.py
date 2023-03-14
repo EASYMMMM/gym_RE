@@ -97,6 +97,7 @@ if __name__ == "__main__":
         # Try to load best model
         save_path = os.path.join(f"{args.algo}_{env_id}", "best_model.zip")
 
+    print(save_path)
     # Load the saved model
     model = algo.load(save_path, env=env)
 

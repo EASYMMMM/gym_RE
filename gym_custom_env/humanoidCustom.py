@@ -78,7 +78,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def is_walking(self):
         # 判断机器人是否正常行走，若连续10步速度小于某值，停止
         _is_walking = True
-        if self.sim.data.qpos[0]  < 0:   # 未进入阶梯时，直接返回True
+        if self.sim.data.qpos[0] < 1:   # 未进入阶梯时，直接返回True
             return _is_walking
         if self.x_velocity < 0.1: 
             if self._walking_counter > 100:
@@ -129,7 +129,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     @property
     def done(self):
         # episode是否结束的标志，在step()函数中返回
-        # 如果机器人的状态是unhealthy，则done = True，训练终止
+        # 如果机器人的状态是unhealthy或摔倒，则done = True，训练终止
         done = ( (not self.is_healthy) or (not self._is_walking) ) if self._terminate_when_unhealthy else False
         return done
 

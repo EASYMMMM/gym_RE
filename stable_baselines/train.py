@@ -77,8 +77,12 @@ if __name__ == "__main__":
     env_id = args.env
     n_timesteps = args.n_timesteps
     model_name = args.model_name + "_"
-     # 存放在sb3model/文件夹下
+    # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{args.algo}_{env_id}"
+
+    # tensorboard log 路径
+    tensorboard_log_path = f"tensorboard_log/{env_id}/{model_name}{args.algo}_{env_id}"
+    tensorboard_log_name = f"{model_name}{args.algo}_{env_id}"
 
     # Instantiate and wrap the environment
     env = gym.make(env_id)
@@ -133,10 +137,12 @@ if __name__ == "__main__":
         )
     }[args.algo]
 
+
+
     begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-    model = algo("MlpPolicy", env, verbose=1, **hyperparams)
+    model = algo("MlpPolicy", env, verbose=1, tensorboard_log = tensorboard_log_path, **hyperparams)
     try:
-        model.learn(n_timesteps, callback=callbacks)
+        model.learn(n_timesteps, callback=callbacks , tb_log_name = tensorboard_log_name )
     except KeyboardInterrupt:
         pass
     print('=====================================')

@@ -14,7 +14,7 @@ python stable_baselines/train.py --algo sac --env Humanoid-v3  --model-name 2e6
 
 python stable_baselines/train.py --algo ppo --env Humanoid-v3  --n-timesteps 2000000 --model-name 2e6
 
-python stable_baselines/train.py --algo sac --env HumanoidCustomEnv-v0  --n-timesteps 2000000 --model-name 2e6_t2 
+python stable_baselines/train.py --algo sac --env HumanoidCustomEnv-v0  --n-timesteps 2000000 --model-name 2e6_t4 
 '''
 import argparse
 

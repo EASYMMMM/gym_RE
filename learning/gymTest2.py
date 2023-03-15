@@ -37,12 +37,17 @@ print('='*30)
 check_env(env)
 print('='*30)
 
+action_zero = np.zeros(env.action_space.shape)
 for _ in range(10000):
     
     env.render()                            # 渲染
     act = env.action_space.sample()         # 在动作空间中随机采样
-    obs, reward, done, _ = env.step(act)    # 与环境交互
+    
+    # obs, reward, done, _ = env.step(act)    # 随机采样动作，与环境交互
+    obs, reward, done, _ = env.step(action_zero)    # 零输入
     env.viewer.add_marker(pos=[1,0,2.0], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+    env.viewer.add_marker(pos=[1,0,1.0], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+    env.viewer.add_marker(pos=[1,0,5.0], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
     env.viewer.add_marker(pos=[0,0,2.0], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
     env.viewer.add_marker(pos=[-1,0,2.0], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
     if done:

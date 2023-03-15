@@ -126,6 +126,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         is_healthy = min_z < self.sim.data.qpos[2] < max_z  #  self.sim.data.qpos[2]: z-coordinate of the torso (centre)
         return is_healthy
 
+
     @property
     def done(self):
         # episode是否结束的标志，在step()函数中返回

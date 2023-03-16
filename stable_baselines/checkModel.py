@@ -139,12 +139,14 @@ if __name__ == "__main__":
                     time.sleep(dt)
                 
                 #print(f"x velocity: {info['x_velocity']}")
+                print('=====')
+                print(info["x_velocity"])
                 env.viewer.add_marker(pos=[0,0,1.0], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
                 env.viewer.add_marker(pos=[0,0,2.0], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
                 if j % 4 == 0:
                     #coms.append(info['xyz_position'])
-
-                    coms.append(np.array(env.sim.data.qpos[0:3]))
+                    coms.append(np.array([info["x_position"], info["y_position"] , info["z_position"]  ]))
+                    #coms.append(np.array(env.sim.data.qpos[0:3]))
                 for com in coms:
                     env.viewer.add_marker(pos=com, size=np.array([0.01, 0.01, 0.01]), rgba=np.array([1., 0, 0, 1]), type=const.GEOM_SPHERE)
             end_info.append(info)

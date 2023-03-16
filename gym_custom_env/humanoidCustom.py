@@ -94,7 +94,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         # 机器人正常运行的reward值，_healthy_reward默认为5，即正常训练时healthy_reward = 5
         # 当机器人前进速度小于0.05时，判定为摔倒，停止训练。
         return (
-            ( float(self.is_healthy or self._terminate_when_unhealthy) and  self._is_walking  )
+            ( float((self.is_healthy or self._terminate_when_unhealthy) and  self._is_walking ) )
             * self._healthy_reward
         )
     
@@ -123,7 +123,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def is_healthy(self):
         # 机器人状态是否正常，通过qpos[2]的z轴位置判断（是否跌倒）
         min_z, max_z = self._healthy_z_range
-        is_healthy = min_z < self.sim.data.qpos[2] < max_z  #  self.sim.data.qpos[2]: z-coordinate of the torso (centre)
+        is_healthy = min_z < self.sim.data.qpos[2] < 10  #  self.sim.data.qpos[2]: z-coordinate of the torso (centre)
         return is_healthy
 
 
@@ -220,7 +220,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         x_velocity, y_velocity = xy_velocity
         self.x_velocity = x_velocity
 
-        # 是否仍在前进
+        # 是否仍在前进，只调用一次，防止反复调用is_walking出错
         self._is_walking = self.is_walking
 
         # cost值 控制cost + 接触力cost

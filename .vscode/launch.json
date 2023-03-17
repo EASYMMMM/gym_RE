@@ -14,7 +14,8 @@
             "program": "${file}",
             "console": "integratedTerminal",
             //"args": ["--algo", "sac", "--env", "HumanoidBulletEnv-v0"],
-            "justMyCode": true
+            "args": [ "--algo", "ppo", "--env", "HumanoidCustomEnv-v0", "--n-timesteps", "2000000", "--model-name", "2e6"],
+            "justMyCode": false
         }
     ]
 }

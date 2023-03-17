@@ -35,7 +35,7 @@
         <!-- <geom condim="3" friction="1 .1 .1" material="MatPlane" name="floor" pos="0 0 0" rgba="0.8 0.9 0.8 1" size="20 20 2" type="plane"/> -->
         
         <!-- 生成hfield类型的geom，作为地面 -->
-        <geom condim="3" type="hfield" material="MatPlane" name="floor" pos="0 0 0" rgba="0.5 0.5 0.9 1" hfield="stairs"/>
+        <geom condim="3" friction="1 .1 .1" type="hfield" material="MatPlane" name="floor" pos="0 0 0" rgba="0.5 0.5 0.9 1" hfield="stairs"/>
         
         <!-- 导入stl楼梯  设置坐标位置  condim="3" friction="1.0 0.5 0.1"-->
         <!-- <geom mesh="steps"  type="mesh" condim="3" friction="1.0 0.5 0.1" material="MatPlastic" conaffinity="1" contype="1" pos="0 0 0" quat="1 0 0 0 "/> -->  

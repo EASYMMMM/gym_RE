@@ -90,7 +90,7 @@ if __name__ == "__main__":
 
     model_name = args.model_name + "_"
      # 存放在sb3model/文件夹下
-    save_path = f"sb3model/{env_id}/{model_name}{args.algo}_{env_id}.zip"
+    save_path = f"sb3model/{env_id}/{model_name}{args.algo}_{env_id}/best_model.zip"
 
     if not os.path.isfile(save_path) or args.load_best:
         print("Loading best model")

@@ -34,7 +34,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(
         self,
         xml_file="humanoid_custom.xml",
-        forward_reward_weight=1.25,
+        forward_speed_reward_weight=0.9,
+        forward_distance_reward_weight=1.2,
         ctrl_cost_weight=0.1,
         contact_cost_weight=5e-7,
         contact_cost_range=(-np.inf, 10.0),
@@ -50,7 +51,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         dir_path = os.path.dirname(__file__)
         xml_file_path = f"{dir_path}\\assets\\{xml_file}"
         
-        self._forward_reward_weight = forward_reward_weight
+        self._forward_speed_reward_weight = forward_speed_reward_weight
+        self._forward_distance_reward_weight = forward_distance_reward_weight
         self._ctrl_cost_weight = ctrl_cost_weight
         self._contact_cost_weight = contact_cost_weight
         self._contact_cost_range = contact_cost_range
@@ -101,9 +103,9 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     @property
     def forward_reward(self):
         # 计算前进奖励 
-        # 前进奖励 = 速度权重*前进速度 + 前进距离
-        # 前进距离 + 1，因为机器人起始点在x=-1
-        forward_reward = self._forward_reward_weight * self.x_velocity + (self.sim.data.qpos[0] + 1) # self.sim.data.qpos[0]: x coordinate of torso (centre)
+        # 前进奖励 = 速度权重*前进速度 + 距离权重*前进距离
+        # 计算前进距离时 +1，因为机器人起始点在x=-1
+        forward_reward = self._forward_speed_reward_weight * self.x_velocity + self._forward_distance_reward_weight * (self.sim.data.qpos[0] + 1) # self.sim.data.qpos[0]: x coordinate of torso (centre)
         return forward_reward
 
     def control_cost(self, action):
@@ -123,7 +125,9 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def is_healthy(self):
         # 机器人状态是否正常，通过qpos[2]的z轴位置判断（是否跌倒）
         min_z, max_z = self._healthy_z_range
-        is_healthy = min_z < self.sim.data.qpos[2] < 10  #  self.sim.data.qpos[2]: z-coordinate of the torso (centre)
+        is_standing = min_z < self.sim.data.qpos[2] < 10  #  self.sim.data.qpos[2]: z-coordinate of the torso (centre)
+        is_inthemap = self.sim.data.qpos[0] < 4.7         #  机器人仍然在阶梯范围内   
+        is_healthy  = is_standing and is_inthemap
         return is_healthy
 
 

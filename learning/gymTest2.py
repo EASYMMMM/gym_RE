@@ -50,6 +50,8 @@ for _ in range(10000):
     env.viewer.add_marker(pos=[1,0,5.0], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
     env.viewer.add_marker(pos=[0,0,2.0], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
     env.viewer.add_marker(pos=[-1,0,2.0], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+    env.viewer.add_marker(pos=[4.5,0,2.0], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+
     if done:
         env.reset()
 env.close()

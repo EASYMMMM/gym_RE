@@ -13,7 +13,9 @@ python stable_baselines/multiEnvTrain.py --algo sac --env Humanoid-v3  --model-n
 
 python stable_baselines/multiEnvTrain.py --algo ppo --env Humanoid-v3  --n-timesteps 2000000 --model-name 2e6
 
-python stable_baselines/multiEnvTrain.py --algo sac --env HumanoidCustomEnv-v0 --num-cpu 2 --n-timesteps 2000000 --model-name 2e6_t4 
+python stable_baselines/multiEnvTrain.py --algo ppo --env HumanoidCustomEnv-v0 --num-cpu 2 --n-timesteps 2000000 --model-name 2e6_t4 
+
+python stable_baselines/multiEnvTrain.py --algo sac --env HumanoidCustomEnv-v0 --num-cpu 1 --n-timesteps 2000000 --model-name 2e6_t4 
 '''
 import argparse
 
@@ -103,7 +105,7 @@ if __name__ == "__main__":
     env_id = args.env
     num_cpu = args.num_cpu
     n_timesteps = args.n_timesteps
-    model_name = args.model_name + "_"
+    model_name = args.model_name + "_cpu" + str(num_cpu) + "_"
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{args.algo}_{env_id}"
 
@@ -113,7 +115,8 @@ if __name__ == "__main__":
 
     # Instantiate and wrap the environment
     #env = gym.make(env_id)
-    env = SubprocVecEnv([make_env(env_id, i) for i in range(num_cpu)])
+    #env = SubprocVecEnv([make_env(env_id, i) for i in range(num_cpu)])
+    env = make_vec_env(env_id = env_id, n_envs = num_cpu, vec_env_cls=SubprocVecEnv)
 
     # Create the evaluation environment and callbacks
     eval_env = Monitor(gym.make(env_id))
@@ -143,8 +146,9 @@ if __name__ == "__main__":
             gamma=0.98,
             policy_kwargs=dict(net_arch=[256, 256]),
             learning_starts=10000,
-            buffer_size=int(3e5),
+            buffer_size=int(5e5),
             tau=0.01,
+            gradient_steps=-1,
         ),
         "td3": dict(
             batch_size=100,

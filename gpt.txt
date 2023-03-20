@@ -1,3 +1,13 @@
+
+I need you to write a code in python, which can generate a xml file used by mujoco simulate enviornment. 
+In order to give you more informations about the xml file used by mujoco, I will give you two examples and some requirements. 
+Before you get the examples and requirements, you do not to write any code. Is that ok?
+
+Can you write a code in python, which has the functions below:
+1. Generate a .xml file used by Mujoco simulate enviornment, contains a simple humanoid robot.
+2. Has a ground in it.
+3. The parameters of the robot, such as the length of right arm, can be adjusted.
+
 能否写一段python程序，使其具有以下功能：
   1. 能够生成mujoco仿真环境的xml文档，具有一个简单的双足机器人。
   2. 具有地面。
@@ -6,7 +16,8 @@
   5. xml文档满足mujoco仿真环境的各种要求，尽可能完备。 
   6. xml文档排版美观，在恰当的地方换行。
 为了你能够更好的了解mujoco仿真环境使用的xml文档格式，我将给你两个例子。
-这是第一个例子，是一个仿人机器人的例子。
+
+This is the first example:
 <mujoco model="humanoid">
     <compiler angle="degree" inertiafromgeom="true"/>
     <default>
@@ -212,3 +223,13 @@
   </actuator>
 </mujoco>
 到这里第二个例子结束。
+
+
+
+When running the code you gave to me, an error occured: Traceback (most recent call last):
+  File "E:\CASIA\gym_RobotEvolution\learning\generateXML3.py", line 19, in <module>
+    root.setAttribute("model", "humanoid")
+  File "E:\ANACONDA\envs\GYM\lib\xml\dom\minidom.py", line 750, in setAttribute
+    attr.ownerDocument = self.ownerDocument
+AttributeError: ownerDocument 
+Can you adjust the code?

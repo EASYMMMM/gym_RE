@@ -1,12 +1,41 @@
 """
-来自newbing，给了两个例子（由于字数限制都被截断了）
+来自newbing，给了两个xml例子（由于字数限制都被截断了）
 生成一段代码
+
 """
 
 # This is a python program that can generate xml documents of mujoco simulation environment, with a simple biped robot.
 
 # Importing the xml library
 import xml.etree.ElementTree as ET
+
+def prettyXml(element, indent, newline, level = 0):
+    '''
+    从CSDN搬的美化XML文档格式的函数。
+    '''
+    # 判断element是否有子元素
+    if element:
+ 
+        # 如果element的text没有内容
+        if element.text == None or element.text.isspace():
+            element.text = newline + indent * (level + 1)
+        else:
+            element.text = newline + indent * (level + 1) + element.text.strip() + newline + indent * (level + 1)
+ 
+    # 此处两行如果把注释去掉，Element的text也会另起一行 
+    #else:
+        #element.text = newline + indent * (level + 1) + element.text.strip() + newline + indent * level
+ 
+    temp = list(element) # 将elemnt转成list
+    for subelement in temp:
+        # 如果不是list的最后一个元素，说明下一个行是同级别元素的起始，缩进应一致
+        if temp.index(subelement) < (len(temp) - 1):
+            subelement.tail = newline + indent * (level + 1)
+        else:  # 如果是list的最后一个元素， 说明下一行是母元素的结束，缩进应该少一个
+            subelement.tail = newline + indent * level   
+ 
+        # 对子元素进行递归操作 
+        prettyXml(subelement, indent, newline, level = level + 1)
 
 # Defining some parameters for the robot
 torso_size = 0.2 # The size of the torso sphere
@@ -120,14 +149,14 @@ floor.set("type", "plane")
 
 torso = ET.SubElement(worldbody, "body") # The torso of the robot
 torso_geom = ET.SubElement(torso, "geom") # The torso geom
-torso_geom .set ("name" ,   torso_geom )
+torso_geom .set ("name" ,   "torso_geom" )
 torso_geom .set ("pos" ,   f" { torso_size }   { torso_size }   { torso_size } ")
 torso_geom .set ("size" ,   f" { torso_size } ")
 torso_geom .set ("type" ,   "sphere" )
 root_joint = ET.SubElement(torso, "joint" ) # The root joint of the robot
 root_joint . set ( "armature" ,   f" { torso_mass } ")
 root_joint . set ( "damping" ,   f" { torso_mass /10} ")
-root_joint . set ( "name" ,   root )
+root_joint . set ( "name" ,   "root" )
 root_joint . set ( "pos" ,   f" { torso_size }   { torso_size }   { torso_size } ")
 root_joint . set ( "type" ,   "free" )
 torso_inertial = ET.SubElement(torso, "inertial") # The torso inertial
@@ -139,7 +168,7 @@ right_thigh_geom = ET.SubElement(right_thigh, "geom") # The right thigh geom
 right_thigh_geom . set ( "fromto" ,   f"0 0 0 0 -{ leg_length /2} -{ leg_length /2}")
 right_thigh_geom . set ( "name" ,   "right_thigh" )
 right_thigh_geom . set ( "size" ,   f" { leg_radius } ")
-right_thigh_geom . set ( type ,   "capsule" )
+right_thigh_geom . set ( "type" ,   "capsule" )
 right_hip = ET.SubElement(right_thigh, "joint") # The right hip joint
 right_hip . set ( "axis" ,   "0 1 1" )
 right_hip . set ( "name" ,   "right_hip" )
@@ -278,5 +307,6 @@ left_arm_inertial = ET.SubElement(left_arm, "inertial") # The left arm inertial
 left_arm_inertial . set ("mass" ,   f" { arm_mass } ")
 right_arm_inertial.set("pos", f"{arm_length/4} 0 0")
 
+prettyXml(root, '\t', '\n')   
 tree = ET.ElementTree(root)
 tree.write("example.xml", encoding="utf-8", xml_declaration=True)

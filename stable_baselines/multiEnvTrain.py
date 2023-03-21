@@ -115,8 +115,8 @@ if __name__ == "__main__":
 
     # Instantiate and wrap the environment
     #env = gym.make(env_id)
-    #env = SubprocVecEnv([make_env(env_id, i) for i in range(num_cpu)])
-    env = make_vec_env(env_id = env_id, n_envs = num_cpu, vec_env_cls=SubprocVecEnv)
+    #env = make_vec_env(env_id = env_id, n_envs = num_cpu, vec_env_cls=SubprocVecEnv)
+    env = make_vec_env(env_id = env_id, n_envs = num_cpu)
 
     # Create the evaluation environment and callbacks
     eval_env = Monitor(gym.make(env_id))
@@ -165,6 +165,7 @@ if __name__ == "__main__":
         "ppo": dict(
             batch_size=512,
             learning_rate=2.5e-4,
+            policy_kwargs=dict(net_arch=[256, 256]),
             gamma=0.99
         )
     }[args.algo]

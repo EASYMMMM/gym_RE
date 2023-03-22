@@ -34,12 +34,12 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(
         self,
         xml_file="humanoid_custom.xml",
-        forward_speed_reward_weight=0.9,
-        forward_distance_reward_weight=1.2,
+        forward_speed_reward_weight=1.0,
+        forward_distance_reward_weight=1.5,
         ctrl_cost_weight=0.1,
         contact_cost_weight=5e-7,
         contact_cost_range=(-np.inf, 10.0),
-        healthy_reward=2.0,                     # 存活奖励
+        healthy_reward=1.5,                     # 存活奖励
         terminate_when_unhealthy=True,
         healthy_z_range=(1.0, 5.0),
         reset_noise_scale=1e-2,

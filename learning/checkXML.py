@@ -15,7 +15,7 @@ import mujoco_py
 
 # 加载 XML 文件
 # model = mujoco_py.load_model_from_path("gym_custom_env\\assets\\humanoid_custom.xml")
-model = mujoco_py.load_model_from_path("example.xml")
+model = mujoco_py.load_model_from_path("humanoid.xml")
 
 # 创建仿真环境和渲染器
 sim = mujoco_py.MjSim(model)

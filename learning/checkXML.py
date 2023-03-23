@@ -24,7 +24,7 @@ viewer = mujoco_py.MjViewer(sim)
 # 设置仿真时间步长和仿真时长
 dt = 0.01
 timesteps = 5000
-
+viewer.render()
 # 运行仿真并在每个时间步骤中进行渲染
 for i in range(timesteps):
     sim.step()

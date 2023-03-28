@@ -11,30 +11,57 @@ user_id = getuser()
 os.add_dll_directory(f"C://Users//{user_id}//.mujoco//mujoco200//bin")
 os.add_dll_directory(f"C://Users//{user_id}//.mujoco//mujoco-py-2.0.2.0//mujoco_py")
 # -------------------------------------------------------
-
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+from gym_custom_env.generateXML import HumanoidXML
 import mujoco_py
 import numpy as np
+from mujoco_py.generated import const
+
+
+# params list
+paramas = { 'torso_width':0.5,
+            'init_position':[0,0,2.5],
+            'pelvis_width':0.2,
+            'upper_arm_lenth':0.31,
+            'lower_arm_lenth':0.4,
+            'shin_lenth':0.5,
+            'torso_height':0.6,
+            }
+
+# 生成XML文件
+t = HumanoidXML()
+t.write_xml(file_path="ee.xml")
+
+
+# 更新XML文件
+t.set_params(paramas)
+t.update_xml(file_path='ee.xml')
+
 # 加载 XML 文件
 # model = mujoco_py.load_model_from_path("gym_custom_env\\assets\\humanoid_custom.xml")
-model = mujoco_py.load_model_from_path("e.xml")
-
+# model = mujoco_py.load_model_from_path("e.xml")
+model = mujoco_py.load_model_from_path("ee.xml")
 # 创建仿真环境和渲染器
 sim = mujoco_py.MjSim(model)
 viewer = mujoco_py.MjViewer(sim)
 
 # 设置仿真时间步长和仿真时长
 dt = 0.01
-timesteps = 5000
+timesteps = 50000
 viewer.render()
 
-""" ctrl = np.zeros(17)
-ctrl[12] = 0.0
-sim.data.ctrl[:] = ctrl """
+ctrl = np.zeros(17)
+ctrl[12] = +0.00  # right shoulder 2
+ctrl[15] = -0.00  # left shoulder 2
+ctrl[14] = -0.00  # left shoulder 1
+ctrl[11] = +0.00  # right shoulder 1
+sim.data.ctrl[:] = ctrl
 # 运行仿真并在每个时间步骤中进行渲染
 for i in range(timesteps):
     sim.step()
     viewer.render()
-
+    viewer.add_marker(pos=[0,-0.14,1.4], size=np.array([0.01, 0.01, 0.01]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
 # 关闭仿真环境和渲染器
 viewer.close()
 sim.close()

@@ -97,10 +97,7 @@ if __name__ == "__main__":
 
     model_name = args.model_name + "_"
      # 存放在sb3model/文件夹下
-    if len(args.model_path) == 0: 
-        save_path = f"sb3model/{env_id}/{model_name}{args.algo}_{env_id}.zip"
-    else:
-        save_path = f"{args.model_path}"
+    save_path = f"sb3model/{env_id}/{model_name}{args.algo}_{env_id}/best_model.zip"
 
     if not os.path.isfile(save_path) or args.load_best:
         print("Loading best model")
@@ -126,7 +123,7 @@ if __name__ == "__main__":
             episode_length = 0
             coms = deque(maxlen=600)
             j = 0
-            while not done:
+            while not done:  # step 循环开始
                 j = j+1
                 action, _ = model.predict(obs, deterministic=True)
                 obs, reward, done, info = env.step(action)
@@ -139,16 +136,20 @@ if __name__ == "__main__":
                     time.sleep(dt)
                 
                 #print(f"x velocity: {info['x_velocity']}")
-                print('=====')
-                print(info["x_velocity"])
+                # print('=====')
+                # print(info["x_velocity"])
+
+                # 参考用标定点
                 env.viewer.add_marker(pos=[0,0,1.0], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
                 env.viewer.add_marker(pos=[0,0,2.0], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+                # 躯干跟踪点
                 if j % 4 == 0:
                     #coms.append(info['xyz_position'])
                     coms.append(np.array([info["x_position"], info["y_position"] , info["z_position"]  ]))
                     #coms.append(np.array(env.sim.data.qpos[0:3]))
                 for com in coms:
                     env.viewer.add_marker(pos=com, size=np.array([0.01, 0.01, 0.01]), rgba=np.array([1., 0, 0, 1]), type=const.GEOM_SPHERE)
+                
             end_info.append(info)
             episode_rewards.append(episode_reward)
             episode_lengths.append(episode_length)

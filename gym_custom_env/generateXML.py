@@ -43,7 +43,7 @@ class XMLPart():
         root: bool = None,         # 是否为根节点
         parent = None ,            # 父节点
         child : Union[List,None] = None ,             # 子节点
-        attributes : Union[Dict[str,str],None] = None ,    # 参数                        # 属性 
+        attributes : Union[Dict[str,str],None] = None ,    # 参数
     ):
         if root:
             self.xmlpart = ET.Element(tag)

@@ -8,6 +8,7 @@ import numpy as np
 from gym.envs.mujoco import mujoco_env
 from gym import utils
 import os
+from scipy.spatial.transform import Rotation as R
 
 
 DEFAULT_CAMERA_CONFIG = {
@@ -40,6 +41,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         contact_cost_weight=5e-7,
         contact_cost_range=(-np.inf, 10.0),
         healthy_reward=1.5,                     # 存活奖励
+        stand_reward_weight = 1.0,              # 站立奖励
         terminate_when_unhealthy=True,
         healthy_z_range=(1.0, 5.0),
         reset_noise_scale=1e-2,
@@ -59,7 +61,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self._healthy_reward = healthy_reward
         self._terminate_when_unhealthy = terminate_when_unhealthy
         self._healthy_z_range = healthy_z_range
-
+        self._stand_reward_weight = stand_reward_weight
         self._reset_noise_scale = reset_noise_scale
         
         self.camera_config = {
@@ -107,6 +109,22 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         # 计算前进距离时 +1，因为机器人起始点在x=-1
         forward_reward = self._forward_speed_reward_weight * self.x_velocity + self._forward_distance_reward_weight * (self.sim.data.qpos[0] + 1) # self.sim.data.qpos[0]: x coordinate of torso (centre)
         return forward_reward
+
+    @property
+    def stand_reward(self):
+        # 计算直立奖励
+        quatanion = self.sim.data.qpos[3:7]
+        Rm = R.from_quat(quatanion)  # Rotation matrix
+        rotation_matrix = Rm.as_matrix()
+        # 提取躯干的z轴方向向量
+        vertical_direction = np.array([0, 0, 1])
+        body_z_axis = rotation_matrix.dot(vertical_direction)
+        # 计算z轴方向向量与竖直向上方向向量的点积
+        dot_product = np.dot(body_z_axis, vertical_direction)
+        # 将点积映射到[0, 1]范围内的奖励值
+        # TODO: 这里计算出的点积取负。实验证明站立时点积为-1，暂时还不知道是为什么
+        stand_reward = self._stand_reward_weight * (( - dot_product + 1.0) / 2.0)  
+        return stand_reward
 
     def control_cost(self, action):
         # 控制花费。所有控制量的开方和。
@@ -235,8 +253,9 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         # _forward_reward_weight 默认为1.25, 将x轴位移添加到奖励值中，鼓励前进。
         forward_reward = self.forward_reward
         healthy_reward = self.healthy_reward
+        stand_reward   = self.stand_reward
 
-        rewards = forward_reward + healthy_reward
+        rewards = forward_reward + healthy_reward + stand_reward
         costs = ctrl_cost + contact_cost
 
         observation = self._get_obs()

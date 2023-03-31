@@ -105,6 +105,7 @@ if __name__ == "__main__":
     print("==============================")
     print(f"Method: {args.algo}")
     print(f"Time steps: {args.model_name}")
+    print(f"gradient steps:{model.gradient_steps}")
     print("model path:"+save_path)
     print("==============================")
     try:

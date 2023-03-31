@@ -438,8 +438,12 @@ torch.cuda.is_available()
 
 ### 问题记录
 
-- 强化学习越训练越慢？训练一段时间后，同样的time steps耗时明显变长。
-- 同样的模型和代码，在笔记本3050ti上训练耗时32分钟，gpu占用率接近100。在桌面端TITAN RTX上训练耗时20分钟，gpu占用率（cuda占用率）不到50。
+- [ ] 强化学习越训练越慢？训练一段时间后，同样的time steps耗时明显变长。
+
+- [x] 同样的模型和代码，在笔记本3050ti上训练耗时32分钟，gpu占用率接近100。在桌面端TITAN RTX上训练耗时20分钟，gpu占用率（cuda占用率）不到50。
+
+  多开几个ENV环境，能够有效解决这个问题。
 
 ## 8. tensorboard
+
   ` tensorboard --logdir`

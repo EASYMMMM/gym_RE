@@ -49,29 +49,56 @@ t.update_xml(file_path='ee.xml')
 # 加载 XML 文件
 # model = mujoco_py.load_model_from_path("gym_custom_env\\assets\\humanoid_custom.xml")
 # model = mujoco_py.load_model_from_path("e.xml")
-model = mujoco_py.load_model_from_path("humanoid.xml")
+model = mujoco_py.load_model_from_path("humanoid_exp.xml")
 # 创建仿真环境和渲染器
 sim = mujoco_py.MjSim(model)
 viewer = mujoco_py.MjViewer(sim)
 
 # 设置仿真时间步长和仿真时长
 dt = 0.01
-timesteps = 50000
+timesteps = 500000
 viewer.render()
 
 ctrl = np.zeros(17)
-ctrl[12] = +0.00  # right shoulder 2
+ctrl[0] = +0.00  # right shoulder 2
 ctrl[15] = -0.00  # left shoulder 2
 ctrl[14] = -0.00  # left shoulder 1
 ctrl[11] = +0.00  # right shoulder 1
 ctrl[10] = -0.00 # left knee
 sim.data.ctrl[:] = ctrl
+j = 0
+k = 0
 # 运行仿真并在每个时间步骤中进行渲染
 for i in range(timesteps):
     sim.step()
     viewer.render()
-    viewer.add_marker(pos=[0,-0.14,1.4], size=np.array([0.01, 0.01, 0.01]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
 
+    j = j+1
+    if j < 2000:
+        ctrl = np.zeros(17)
+        ctrl[k] = +0.05
+    if j>2000 and j <= 4000:
+        ctrl = np.zeros(17)
+        ctrl[k] = -0.05
+    if j == 4000:
+        k = k+1
+        j = 0  
+    if k >16: break      
+
+    sim.data.ctrl[:] = ctrl
+
+    torso_z = sim.data.qpos[2]
+    print(torso_z)
+    viewer.add_marker(pos=[0,0,torso_z], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([1.0, 0, 0.0, 1]), type=const.GEOM_SPHERE)
+
+    torso_x = sim.data.qpos[0]
+    #print(torso_x)
+    viewer.add_marker(pos=[torso_x,1,torso_z], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([1.0, 0, 0.0, 1]), type=const.GEOM_SPHERE)
+
+
+    viewer.add_marker(pos=[0,-0.14,0.4], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+    viewer.add_marker(pos=[-1,0,1.7], size=np.array([0.01, 0.01, 0.01]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+    viewer.add_marker(pos=[0,0,0.4], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
     quatanion = sim.data.qpos[3:7]
     Rm = R.from_quat(quatanion)  # Rotation matrix
     #rotation_matrix = Rm.as_matrix()
@@ -82,7 +109,7 @@ for i in range(timesteps):
     vertical_direction = np.array([0, 0, 1])
     body_z_axis = rotation_matrix.dot(vertical_direction)
     dot_product = np.dot(body_z_axis, vertical_direction)
-    print(dot_product)
+    
 
 # 关闭仿真环境和渲染器
 viewer.close()

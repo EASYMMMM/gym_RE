@@ -135,10 +135,7 @@ if __name__ == "__main__":
                     dt = 1.0 / 240.0
                     time.sleep(dt)
                 
-                #print(f"x velocity: {info['x_velocity']}")
-                # print('=====')
-                # print(info["x_velocity"])
-
+                print(env.sim.data.qpos[2])
                 # 参考用标定点
                 env.viewer.add_marker(pos=[0,0,1.0], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
                 env.viewer.add_marker(pos=[0,0,2.0], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)

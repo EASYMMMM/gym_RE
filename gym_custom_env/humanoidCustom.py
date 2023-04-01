@@ -9,7 +9,9 @@ from gym.envs.mujoco import mujoco_env
 from gym import utils
 import os
 from scipy.spatial.transform import Rotation as R
-
+import sys,os
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+from generateXML import HumanoidXML
 
 DEFAULT_CAMERA_CONFIG = {
     "trackbodyid": 1,
@@ -35,6 +37,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(
         self,
         xml_file="humanoid_custom.xml",
+        terrain="steps",
         forward_speed_reward_weight=1.0,
         forward_distance_reward_weight=1.5,
         ctrl_cost_weight=0.1,
@@ -50,8 +53,12 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     ):
         utils.EzPickle.__init__(**locals())
 
+        self.terrain = terrain
+        xml_name = 'humanoid_exp.xml'
+        self.xml_model = HumanoidXML(terrain_type=self.terrain)
+        self.xml_model.write_xml(file_path=f"gym_custom_env/assets/{xml_name}")
         dir_path = os.path.dirname(__file__)
-        xml_file_path = f"{dir_path}\\assets\\{xml_file}"
+        xml_file_path = f"{dir_path}\\assets\\{xml_name}"
         
         self._forward_speed_reward_weight = forward_speed_reward_weight
         self._forward_distance_reward_weight = forward_distance_reward_weight
@@ -181,51 +188,32 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             )
         )
 
-    def print_obs_space(self):
-        # 打印obs空间
-        print('=========== q position ===========')
+    def print_obs(self):
+        # obs空间
         position = self.sim.data.qpos.flat.copy()
-        print('shape:',position.shape)
-        print(position)
+        print('position shape:')
+        print(position.shape)
 
-        print('=========== q velocity ===========')
         velocity = self.sim.data.qvel.flat.copy()
-        print('shape:',velocity.shape)       
-        print(velocity)
+        print('velocity shape:')
+        print(velocity.shape)
 
-        print('=========== com_inertia ===========')
         com_inertia = self.sim.data.cinert.flat.copy()
-        print('shape:',com_inertia.shape) 
-        print(com_inertia)
+        print('com_inertia shape:')
+        print(com_inertia.shape)        
 
-        print('=========== com_velocity ===========')
         com_velocity = self.sim.data.cvel.flat.copy()
-        print('shape:',com_velocity.shape) 
-        print(com_velocity)
+        print('com_velocity shape:')
+        print(com_velocity.shape)  
 
-        print('=========== actuator_forces ===========')
         actuator_forces = self.sim.data.qfrc_actuator.flat.copy()
-        print('shape:',actuator_forces.shape) 
-        print(actuator_forces)
-
-        print('=========== external_contact_forces ===========')
+        print('actuator_forces shape:')
+        print(actuator_forces.shape)  
         external_contact_forces = self.sim.data.cfrc_ext.flat.copy()
-        print('shape:',external_contact_forces.shape) 
-        print(external_contact_forces)
 
         if self._exclude_current_positions_from_observation:
             position = position[2:]
 
-        return np.concatenate(
-            (
-                position,
-                velocity,
-                com_inertia,
-                com_velocity,
-                actuator_forces,
-                external_contact_forces,
-            )
-        )    
 
     def step(self, action):
         '''

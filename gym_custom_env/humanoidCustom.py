@@ -37,13 +37,13 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(
         self,
         xml_file="humanoid_custom.xml",
-        terrain="steps",
+        terrain_type="steps",
         forward_speed_reward_weight=1.0,
         forward_distance_reward_weight=1.5,
         ctrl_cost_weight=0.1,
         contact_cost_weight=5e-7,
         contact_cost_range=(-np.inf, 10.0),
-        healthy_reward=1.5,                     # 存活奖励
+        healthy_reward=0.5,                     # 存活奖励
         stand_reward_weight = 1.0,              # 站立奖励
         terminate_when_unhealthy=True,
         healthy_z_range=(1.0, 5.0),
@@ -53,9 +53,12 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     ):
         utils.EzPickle.__init__(**locals())
 
-        self.terrain = terrain
+        # set the terrain, generate XML file
+        self.terrain_type = terrain_type        
+        terrain_list = ('default','steps','ladders') # 默认平地，台阶，梯子
+        assert self.terrain_type in terrain_list, 'ERROR:Undefined terrain type'  
         xml_name = 'humanoid_exp.xml'
-        self.xml_model = HumanoidXML(terrain_type=self.terrain)
+        self.xml_model = HumanoidXML(terrain_type=self.terrain_type)
         self.xml_model.write_xml(file_path=f"gym_custom_env/assets/{xml_name}")
         dir_path = os.path.dirname(__file__)
         xml_file_path = f"{dir_path}\\assets\\{xml_name}"
@@ -89,8 +92,12 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def is_walking(self):
         # 判断机器人是否正常行走，若连续10步速度小于某值，停止
         _is_walking = True
-        if self.sim.data.qpos[0] < 1:   # 未进入阶梯时，直接返回True
-            return _is_walking
+
+        # 对于阶梯地形，未进入阶梯时，直接返回True
+        if self.terrain_type == 'steps':
+            if self.sim.data.qpos[0] < 1:   
+                return _is_walking
+
         if self.x_velocity < 0.1: 
             if self._walking_counter > 100:
                 _is_walking = False
@@ -112,9 +119,18 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     @property
     def forward_reward(self):
         # 计算前进奖励 
+
+        # 楼梯地形
         # 前进奖励 = 速度权重*前进速度 + 距离权重*前进距离
         # 计算前进距离时 +1，因为机器人起始点在x=-1
-        forward_reward = self._forward_speed_reward_weight * self.x_velocity + self._forward_distance_reward_weight * (self.sim.data.qpos[0] + 1) # self.sim.data.qpos[0]: x coordinate of torso (centre)
+        if self.terrain_type == 'steps':
+            forward_reward = self._forward_speed_reward_weight * self.x_velocity + self._forward_distance_reward_weight * (self.sim.data.qpos[0] + 1) # self.sim.data.qpos[0]: x coordinate of torso (centre)
+        
+        # 梯子地形
+        # 前进奖励 = 速度权重*前进速度 + 5*距离权重*高度
+        if self.terrain_type == 'ladders':
+            forward_reward = self._forward_speed_reward_weight * self.x_velocity + 5*self._forward_distance_reward_weight * (self.sim.data.qpos[2]) # self.sim.data.qpos[0]: x coordinate of torso (centre)
+    
         return forward_reward
 
     @property
@@ -131,6 +147,10 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         # 将点积映射到[0, 1]范围内的奖励值
         # TODO: 这里计算出的点积取负。实验证明站立时点积为-1，暂时还不知道是为什么
         stand_reward = self._stand_reward_weight * (( - dot_product + 1.0) / 2.0)  
+        
+        # 如果是楼梯地形，直接返回reward值。如果是阶梯地形，乘以系数0.5
+        if self.terrain_type == "ladders":
+            stand_reward = stand_reward * 0.5
         return stand_reward
 
     def control_cost(self, action):

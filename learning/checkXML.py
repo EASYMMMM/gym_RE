@@ -49,7 +49,7 @@ t.update_xml(file_path='ee.xml')
 # 加载 XML 文件
 # model = mujoco_py.load_model_from_path("gym_custom_env\\assets\\humanoid_custom.xml")
 # model = mujoco_py.load_model_from_path("e.xml")
-model = mujoco_py.load_model_from_path("humanoid_exp.xml")
+model = mujoco_py.load_model_from_path("humanoid.xml")
 # 创建仿真环境和渲染器
 sim = mujoco_py.MjSim(model)
 viewer = mujoco_py.MjViewer(sim)
@@ -88,7 +88,7 @@ for i in range(timesteps):
     sim.data.ctrl[:] = ctrl
 
     torso_z = sim.data.qpos[2]
-    print(torso_z)
+    # print(torso_z)
     viewer.add_marker(pos=[0,0,torso_z], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([1.0, 0, 0.0, 1]), type=const.GEOM_SPHERE)
 
     torso_x = sim.data.qpos[0]
@@ -109,7 +109,17 @@ for i in range(timesteps):
     vertical_direction = np.array([0, 0, 1])
     body_z_axis = rotation_matrix.dot(vertical_direction)
     dot_product = np.dot(body_z_axis, vertical_direction)
-    
+
+    # 读取mujoco碰撞参数
+    contact = list(sim.data.contact)
+    print('==================================')
+    print('geom number: ', sim.model.ngeom)
+    print('number of detected contacts:',sim.data.ncon)
+    print('geom name floor id:' , sim.model.geom_name2id("floor"))
+    print('geom name lwaist id:' , sim.model.geom_name2id("lwaist"))
+    print('geom1 id:',contact[1].geom1,' geom1 name:',sim.model.name_geomadr[contact[1].geom1])
+    print('geom2 id:',contact[1].geom2,' geom2 name:',sim.model.name_geomadr[contact[1].geom2])
+    print('  ')
 
 # 关闭仿真环境和渲染器
 viewer.close()

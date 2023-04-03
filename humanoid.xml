@@ -45,16 +45,16 @@
         
         
         <!-- steps-->
-        <geom type="box" size=".6  1.2 .1" pos="0.3 0 0.0" rgba="0 .9 0 1" condim="3" friction="1 .1 .1"/>
-        <geom type="box" size=".6  1.2 .1" pos="0.9 0 0.2" rgba="0 .9 0 1" condim="3" friction="1 .1 .1"/>
-	    <geom type="box" size=".6  1.2 .1" pos="1.5 0 0.4" rgba="0 .9 0 1" condim="3" friction="1 .1 .1"/>
-    	<geom type="box" size=".6  1.2 .1" pos="2.1 0 0.6" rgba="0 .9 0 1" condim="3" friction="1 .1 .1"/>
-    	<geom type="box" size=".6  1.2 .1" pos="2.7 0 0.8" rgba="0 .9 0 1" condim="3" friction="1 .1 .1"/>
-    	<geom type="box" size=".6  1.2 .1" pos="3.3 0 1.0" rgba="0 .9 0 1" condim="3" friction="1 .1 .1"/>
-    	<geom type="box" size=".6  1.2 .1" pos="3.9 0 1.2" rgba="0 .9 0 1" condim="3" friction="1 .1 .1"/>
-    	<geom type="box" size=".6  1.2 .1" pos="4.5 0 1.4" rgba="0 .9 0 1" condim="3" friction="1 .1 .1"/>
-    	<geom type="box" size=".6  1.2 .1" pos="5.1 0 1.6" rgba="0 .9 0 1" condim="3" friction="1 .1 .1"/>
-    	<geom type="box" size=".6  1.2 .1" pos="5.7 0 1.8" rgba="0 .9 0 1" condim="3" friction="1 .1 .1"/>
+        <geom name="box1" type="box" size=".6  1.2 .1" pos="0.3 0 0.0" rgba="0 .9 0 1" condim="3" friction="1 .1 .1"/>
+        <geom name="box2" type="box" size=".6  1.2 .1" pos="0.9 0 0.2" rgba="0 .9 0 1" condim="3" friction="1 .1 .1"/>
+	    <geom name="box3" type="box" size=".6  1.2 .1" pos="1.5 0 0.4" rgba="0 .9 0 1" condim="3" friction="1 .1 .1"/>
+    	<geom name="box4" type="box" size=".6  1.2 .1" pos="2.1 0 0.6" rgba="0 .9 0 1" condim="3" friction="1 .1 .1"/>
+    	<geom name="box5" type="box" size=".6  1.2 .1" pos="2.7 0 0.8" rgba="0 .9 0 1" condim="3" friction="1 .1 .1"/>
+    	<geom name="box6" type="box" size=".6  1.2 .1" pos="3.3 0 1.0" rgba="0 .9 0 1" condim="3" friction="1 .1 .1"/>
+    	<geom name="box7" type="box" size=".6  1.2 .1" pos="3.9 0 1.2" rgba="0 .9 0 1" condim="3" friction="1 .1 .1"/>
+    	<geom name="box8" type="box" size=".6  1.2 .1" pos="4.5 0 1.4" rgba="0 .9 0 1" condim="3" friction="1 .1 .1"/>
+    	<geom name="box9" type="box" size=".6  1.2 .1" pos="5.1 0 1.6" rgba="0 .9 0 1" condim="3" friction="1 .1 .1"/>
+    	<geom name="box10" type="box" size=".6  1.2 .1" pos="5.7 0 1.8" rgba="0 .9 0 1" condim="3" friction="1 .1 .1"/>
 
 
 

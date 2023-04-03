@@ -16,6 +16,9 @@ python stable_baselines/multiEnvTrain.py --algo ppo --env Humanoid-v3  --n-times
 python stable_baselines/multiEnvTrain.py --algo ppo --env HumanoidCustomEnv-v0 --num-cpu 2 --n-timesteps 2000000 --model-name 2e6_t4 
 
 python stable_baselines/multiEnvTrain.py --algo sac --env HumanoidCustomEnv-v0 --num-cpu 1 --n-timesteps 2000000 --model-name 2e6_t4 
+
+python stable_baselines/multiEnvTrain.py --algo sac --env HumanoidCustomEnv-v0 --num-cpu 6 --n-timesteps 2000000 --model-name 2e6_ladder_t1 --terrain-type ladders 
+
 '''
 import argparse
 
@@ -100,12 +103,23 @@ if __name__ == "__main__":
         default=1,
         type=int,
     )
+    parser.add_argument(
+        "--terrain-type",
+        help="Type of the traning terrain",
+        default='steps',
+        type=str,
+    )    
     args = parser.parse_args()
 
     env_id = args.env
     num_cpu = args.num_cpu
     n_timesteps = args.n_timesteps
     model_name = args.model_name + "_cpu" + str(num_cpu) + "_"
+    terrain_type = args.terrain_type
+
+    # env kwargs
+    env_kwargs = {'terrain_type':terrain_type}
+
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{args.algo}_{env_id}"
 
@@ -114,9 +128,8 @@ if __name__ == "__main__":
     tensorboard_log_name = f"{model_name}{args.algo}_{env_id}"
 
     # Instantiate and wrap the environment
-    #env = gym.make(env_id)
     #env = make_vec_env(env_id = env_id, n_envs = num_cpu, vec_env_cls=SubprocVecEnv)
-    env = make_vec_env(env_id = env_id, n_envs = num_cpu)
+    env = make_vec_env(env_id = env_id, n_envs = num_cpu, env_kwargs = env_kwargs)
 
     # Create the evaluation environment and callbacks
     eval_env = Monitor(gym.make(env_id))
@@ -146,7 +159,7 @@ if __name__ == "__main__":
             gamma=0.98,
             policy_kwargs=dict(net_arch=[256, 256]),
             learning_starts=10000,
-            buffer_size=int(5e6),
+            buffer_size=int(5e5),
             tau=0.01,
             gradient_steps=3,
         ),

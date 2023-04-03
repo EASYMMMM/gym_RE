@@ -187,7 +187,55 @@ import pybullet as p
   export MUJOCO_PY_MUJOCO_PATH=/home/sam/.mujoco/mujoco210
   ```
 
-  然后pip3 install -U 'mujoco-py<2.2,>=2.1'
+  然后 `pip3 install -U 'mujoco-py<2.2,>=2.1'`      
+
+  
+
+  
+
+   Mujoco接触：Mjcontact
+
+  可以通过
+
+### Mujoco接触：Mjcontact
+
+Github上关于mjcontact的issue： https://github.com/openai/mujoco-py/issues/725
+
+可以通过` sim.data.contact`来访问`Mjdata`中的`contact`数据，是一个结构体数组。
+
+```c++
+struct _mjContact                   // result of collision detection functions
+{
+    // contact parameters set by geom-specific collision detector
+    mjtNum dist;                    // distance between nearest points; neg: penetration
+    mjtNum pos[3];                  // position of contact point: midpoint between geoms
+    mjtNum frame[9];                // normal is in [0-2]
+
+    // contact parameters set by mj_collideGeoms
+    mjtNum includemargin;           // include if dist<includemargin=margin-gap
+    mjtNum friction[5];             // tangent1, 2, spin, roll1, 2
+    mjtNum solref[mjNREF];          // constraint solver reference
+    mjtNum solimp[mjNIMP];          // constraint solver impedance
+
+    // internal storage used by solver
+    mjtNum mu;                      // friction of regularized cone, set by mj_makeR
+    mjtNum H[36];                   // cone Hessian, set by mj_updateConstraint
+
+    // contact descriptors set by mj_collideGeoms
+    int dim;                        // contact space dimensionality: 1, 3, 4 or 6
+    int geom1;                      // id of geom 1
+    int geom2;                      // id of geom 2
+
+    // flag set by mj_fuseContact or mj_instantianteEquality
+    int exclude;                    // 0: include, 1: in gap, 2: fused, 3: equality
+
+    // address computed by mj_instantiateContact
+    int efc_address;                // address in efc; -1: not included, -2-i: distance constraint i
+};
+typedef struct _mjContact mjContact;
+```
+
+
 
 ##  4. gym
 

@@ -20,7 +20,12 @@ class HumanoidXML(MujocoXML):
                  terrain_type:str = "default",
                  ):
         super(HumanoidXML ,self).__init__(root_tag=root_tag)
-        self.__default_param_list = { 'init_position':[-1,0,1.4],
+
+        self.terrain_type = terrain_type
+        terrain_type_list = ('default','steps','ladders') # 默认平地，台阶，梯子
+        assert self.terrain_type in terrain_type_list, 'ERROR:Undefined terrain type'
+        init_pos = {'default':[-1,0,1.4] , 'steps':[-1,0,1.4], 'ladders':[-0.2,0,1.4]}[self.terrain_type]
+        self.__default_param_list = { 'init_position':init_pos,
                             'head_radius' : 0.18,          # 头部半径
                             'torso_width': 0.14,           # 躯干宽
                             'torso_height': 0.425,         # 躯干高
@@ -36,7 +41,7 @@ class HumanoidXML(MujocoXML):
                             'lower_arm_size':0.031,        # 小臂粗
                             }
         self.param_list = self.__default_param_list.copy()
-        self.terrain_type = terrain_type
+        
 
     def _basic_structure(self):
         '''
@@ -74,7 +79,7 @@ class HumanoidXML(MujocoXML):
 
         terrain_type = self.terrain_type
         # 使用默认地板的地形种类
-        default_floor_terrain_type = ('default','ladder','steps')
+        default_floor_terrain_type = ('default','steps','ladders') # 默认平地，台阶，梯子
         tag = "geom"
 
         if terrain_type in default_floor_terrain_type:
@@ -96,15 +101,15 @@ class HumanoidXML(MujocoXML):
             self.elements["worldbody"].child_element(tag, terrain_attr)
 
         # 定义梯子
-        if terrain_type == "ladder":
+        if terrain_type == "ladders":
             # Define the parameters for the box geometries
-            box_size = ".03 1.2 .01"
+            box_size = ".06 1.2 .01"
             box_rgba = "0 .9 0 1"
             box_condim = "3"
             box_friction = "1 .1 .1"
 
             # Define the positions using an arithmetic sequence with a common difference of 0.2
-            positions = [(round(i * 0.1, 3), 0, round(i * 0.2 * 2 / 2, 3)) for i in range(11)]
+            positions = [(round(i * 0.1, 3), 0, round(i * 0.2 * 3 / 2, 3)) for i in range(11)]
 
             # Create a geometry for each position
             for i, pos in enumerate(positions):

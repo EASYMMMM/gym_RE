@@ -86,6 +86,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self._walking_counter = 0                   # 判定正常前进计数器
 
         print("============ HUMANOID CUSTOM ENV ============")
+        print(f"=====terrain type:{self.terrain_type}=====")
         mujoco_env.MujocoEnv.__init__(self, xml_file_path, 5)
 
     @property
@@ -129,7 +130,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         # 梯子地形
         # 前进奖励 = 速度权重*前进速度 + 5*距离权重*高度
         if self.terrain_type == 'ladders':
-            forward_reward = self._forward_speed_reward_weight * self.x_velocity + 5*self._forward_distance_reward_weight * (self.sim.data.qpos[2]) # self.sim.data.qpos[0]: x coordinate of torso (centre)
+            forward_reward = self._forward_speed_reward_weight * self.x_velocity + 3*self._forward_distance_reward_weight * (self.sim.data.qpos[2]-1.3) # self.sim.data.qpos[0]: x coordinate of torso (centre)
     
         return forward_reward
 

@@ -495,3 +495,71 @@ torch.cuda.is_available()
 ## 8. tensorboard
 
   ` tensorboard --logdir`
+
+
+
+
+
+# NLimb Project
+
+最外层主函数中：
+
+```python
+    alg = Algorithm(run_args.logdir, env_fn, model_fn, args.nenv,
+                    args.rollout_length,
+                    args.batchsize,
+                    epochs_per_iter=args.epochs,
+                    lr=args.lr,
+                    momentum=args.momentum,
+                    ent_coef=args.entcoeff,
+                    gamma=args.gamma,
+                    lambda_=args.lmbda,
+                    clip_norm=args.grad_clip_norm,
+                    clip_param=args.ppo_clip_param,
+                    robot_lr=args.robot_lr,
+                    robot_momentum=args.robot_momentum,
+                    fixed_robot=args.fixed_robot,
+                    steps_before_robot_update=args.steps_before_robot_update,
+                    steps_after_robot_update=args.steps_after_robot_update,
+                    chop_freq=args.chop_freq,
+                    tmax=args.maxtimesteps)
+
+    alg.train(args.maxtimesteps, run_args.maxseconds, run_args.save_freq)
+    alg.close()
+```
+
+其中，`train()`函数是定义在最底层类`OnlineRLAlgorithm`中。继承关系为：`Algorithm -> MPIPPO -> PPO -> OnlineRLAlgorithm` 。`Algorithm`为自定义的最高层类。
+
+`train`函数的定义：
+
+```python
+    def train(self, maxtimesteps=None, maxseconds=None, save_freq=None):
+        assert maxtimesteps is not None or maxseconds is not None
+        start_time = time.time()
+        while True:
+            if maxtimesteps is not None and self.t >= maxtimesteps:
+                break
+            if maxseconds is not None and time.time() - start_time >= maxtimesteps:
+                break
+            t = self.t
+            self.step()
+            if save_freq and t // save_freq != self.t // save_freq:
+                self.save()
+        self.save()
+```
+
+其中最关键的一步为`self.step()`：
+
+```python
+    def step(self):
+        if self.callback is not None:
+            self.callback(locals(), globals())
+        self._before_step()
+        rollout = self.runner.rollout()
+        self.t += self.timesteps_per_step
+        data = self._process_rollout(rollout)
+        outs = self._update_model(data)
+        self._after_step(rollout, data, outs)
+```
+
+`self._before_step`定义在

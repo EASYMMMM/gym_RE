@@ -48,8 +48,8 @@ t.update_xml(file_path='ee.xml')
 
 # 加载 XML 文件
 # model = mujoco_py.load_model_from_path("gym_custom_env\\assets\\humanoid_custom.xml")
-# model = mujoco_py.load_model_from_path("e.xml")
-model = mujoco_py.load_model_from_path("humanoid.xml")
+model = mujoco_py.load_model_from_path("e.xml")
+# model = mujoco_py.load_model_from_path("humanoid.xml")
 # 创建仿真环境和渲染器
 sim = mujoco_py.MjSim(model)
 viewer = mujoco_py.MjViewer(sim)
@@ -72,7 +72,7 @@ k = 0
 for i in range(timesteps):
     sim.step()
     viewer.render()
-
+    '''
     j = j+1
     if j < 2000:
         ctrl = np.zeros(17)
@@ -84,11 +84,11 @@ for i in range(timesteps):
         k = k+1
         j = 0  
     if k >16: break      
-
     sim.data.ctrl[:] = ctrl
+    '''
 
     torso_z = sim.data.qpos[2]
-    # print(torso_z)
+    print(torso_z)
     viewer.add_marker(pos=[0,0,torso_z], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([1.0, 0, 0.0, 1]), type=const.GEOM_SPHERE)
 
     torso_x = sim.data.qpos[0]
@@ -115,8 +115,8 @@ for i in range(timesteps):
     print('==================================')
     print('geom number: ', sim.model.ngeom)
     print('number of detected contacts:',sim.data.ncon)
-    print('geom name floor id:' , sim.model.geom_name2id("floor"))
-    print('geom name lwaist id:' , sim.model.geom_name2id("lwaist"))
+    #print('geom name floor id:' , sim.model.geom_name2id("floor"))
+    #print('geom name lwaist id:' , sim.model.geom_name2id("lwaist"))
     print('geom1 id:',contact[1].geom1,' geom1 name:',sim.model.name_geomadr[contact[1].geom1])
     print('geom2 id:',contact[1].geom2,' geom2 name:',sim.model.name_geomadr[contact[1].geom2])
     print('  ')

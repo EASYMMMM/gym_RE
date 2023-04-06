@@ -12,6 +12,7 @@ from scipy.spatial.transform import Rotation as R
 import sys,os
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 from generateXML import HumanoidXML
+from generateXML_v1 import HumanoidXML_v1
 
 DEFAULT_CAMERA_CONFIG = {
     "trackbodyid": 1,
@@ -38,12 +39,12 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self,
         xml_file="humanoid_custom.xml",
         terrain_type="steps",
-        forward_speed_reward_weight=1.0,
+        forward_speed_reward_weight=0.8,
         forward_distance_reward_weight=1.5,
         ctrl_cost_weight=0.1,
         contact_cost_weight=5e-7,
         contact_cost_range=(-np.inf, 10.0),
-        healthy_reward=0.5,                     # 存活奖励
+        healthy_reward=0.4,                     # 存活奖励
         stand_reward_weight = 1.0,              # 站立奖励
         terminate_when_unhealthy=True,
         healthy_z_range=(1.0, 5.0),
@@ -57,8 +58,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.terrain_type = terrain_type        
         terrain_list = ('default','steps','ladders') # 默认平地，台阶，梯子
         assert self.terrain_type in terrain_list, 'ERROR:Undefined terrain type'  
-        xml_name = 'humanoid_exp.xml'
-        self.xml_model = HumanoidXML(terrain_type=self.terrain_type)
+        xml_name = 'humanoid_exp_v1.xml'
+        self.xml_model = HumanoidXML_v1(terrain_type=self.terrain_type)
         self.xml_model.write_xml(file_path=f"gym_custom_env/assets/{xml_name}")
         dir_path = os.path.dirname(__file__)
         xml_file_path = f"{dir_path}\\assets\\{xml_name}"
@@ -84,10 +85,12 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         )
         self.x_velocity = 0                         # 质心沿x速度
         self._walking_counter = 0                   # 判定正常前进计数器
+        self.geomdict = {}                          # geom id name字典
 
         print("============ HUMANOID CUSTOM ENV ============")
         print(f"=====terrain type:{self.terrain_type}=====")
         mujoco_env.MujocoEnv.__init__(self, xml_file_path, 5)
+        
 
     @property
     def is_walking(self):
@@ -184,6 +187,34 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         done = ( (not self.is_healthy) or (not self._is_walking) ) if self._terminate_when_unhealthy else False
         return done
 
+    def contact_reward(self, ) -> int:
+        '''
+        TODO:
+        - 读取contact信息。
+        - 扫描contact数组，寻找其中是否有‘手-梯子’，‘脚-梯子’的碰撞对。注意geom1既可能是梯子也可能是手。
+        - 如果有，将这一对碰撞对保存下来。若该碰撞对已存在，则跳过，不获得奖励函数。
+        - 根据梯子的阶数，赋予奖励值。梯子越高，奖励值越高
+        '''
+        # 计算接触reward
+        reward = 0
+        self.contact_list= {'right_hand':'ladder1','right_hand':'ladder2'}
+        if self.terrain_type == 'ladders':
+            contact = list(self.sim.data.contact)  # 读取一个元素为mjContact的结构体数组
+            ncon = self.sim.data.ncon # 碰撞对的个数
+            for i in range(ncon): # 遍历所有碰撞对
+                con = contact[i]
+                temp = {self.geomdict[con.geom1]:self.geomdict[con.geom1]}
+                if temp in self.contact_list: # 寻找能够提供奖励的碰撞对
+                    # TODO:
+                    if temp in self.already_touched:  # 如果已经存在
+                        continue
+                    reward= reward + 100*1
+                    print(f'{self.geomdict[con.geom1]} touch {self.geomdict[con.geom2]}')
+            
+                if ():
+                    pass
+        return reward
+
     def _get_obs(self):
         # obs空间
         position = self.sim.data.qpos.flat.copy()
@@ -208,6 +239,13 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                 #external_contact_forces,
             )
         )
+
+    def get_geom_idname(self,):
+        geom_name_list = self.xml_model.get_geom_namelist()
+        for name in geom_name_list :
+            geom_id = self.sim.model.geom_name2id(name)
+            self.geomdict[geom_id] = name
+        return
 
     def print_obs(self):
         # obs空间

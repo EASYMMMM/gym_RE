@@ -48,7 +48,7 @@ t.update_xml(file_path='ee.xml')
 
 # 加载 XML 文件
 # model = mujoco_py.load_model_from_path("gym_custom_env\\assets\\humanoid_custom.xml")
-model = mujoco_py.load_model_from_path("e.xml")
+model = mujoco_py.load_model_from_path("e_v1.xml")
 # model = mujoco_py.load_model_from_path("humanoid.xml")
 # 创建仿真环境和渲染器
 sim = mujoco_py.MjSim(model)
@@ -59,12 +59,12 @@ dt = 0.01
 timesteps = 500000
 viewer.render()
 
-ctrl = np.zeros(17)
+ctrl = np.zeros(len(sim.data.ctrl[:]))
 ctrl[0] = +0.00  # right shoulder 2
 ctrl[15] = -0.00  # left shoulder 2
 ctrl[14] = -0.00  # left shoulder 1
 ctrl[11] = +0.00  # right shoulder 1
-ctrl[10] = -0.00 # left knee
+ctrl[7] = -0.050 # left knee
 sim.data.ctrl[:] = ctrl
 j = 0
 k = 0
@@ -72,33 +72,31 @@ k = 0
 for i in range(timesteps):
     sim.step()
     viewer.render()
-    '''
-    j = j+1
-    if j < 2000:
-        ctrl = np.zeros(17)
-        ctrl[k] = +0.05
-    if j>2000 and j <= 4000:
-        ctrl = np.zeros(17)
-        ctrl[k] = -0.05
-    if j == 4000:
-        k = k+1
-        j = 0  
-    if k >16: break      
-    sim.data.ctrl[:] = ctrl
-    '''
+
+    if i % 1000 == 0:
+        if j == 0:
+            ctrl[7] = -0.050 # right ankle
+            ctrl[12] = 0.050 # left ankle
+            sim.data.ctrl[:] = ctrl
+            j = 1
+        else:
+            ctrl[7] = 0.050 # right ankle
+            ctrl[12] = -0.05 # left ankle
+            sim.data.ctrl[:] = ctrl
+            j = 0            
 
     torso_z = sim.data.qpos[2]
     print(torso_z)
-    viewer.add_marker(pos=[0,0,torso_z], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([1.0, 0, 0.0, 1]), type=const.GEOM_SPHERE)
+    #viewer.add_marker(pos=[0,0,torso_z], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([1.0, 0, 0.0, 1]), type=const.GEOM_SPHERE)
 
     torso_x = sim.data.qpos[0]
     #print(torso_x)
-    viewer.add_marker(pos=[torso_x,1,torso_z], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([1.0, 0, 0.0, 1]), type=const.GEOM_SPHERE)
+    #viewer.add_marker(pos=[torso_x,1,torso_z], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([1.0, 0, 0.0, 1]), type=const.GEOM_SPHERE)
 
 
-    viewer.add_marker(pos=[0,-0.14,0.4], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
-    viewer.add_marker(pos=[-1,0,1.7], size=np.array([0.01, 0.01, 0.01]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
-    viewer.add_marker(pos=[0,0,0.4], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+    #viewer.add_marker(pos=[0,-0.14,0.4], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+    #viewer.add_marker(pos=[-1,0,1.7], size=np.array([0.01, 0.01, 0.01]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+    #viewer.add_marker(pos=[0,0,0.4], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
     quatanion = sim.data.qpos[3:7]
     Rm = R.from_quat(quatanion)  # Rotation matrix
     #rotation_matrix = Rm.as_matrix()

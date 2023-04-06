@@ -24,7 +24,7 @@ class HumanoidXML(MujocoXML):
         self.terrain_type = terrain_type
         terrain_type_list = ('default','steps','ladders') # 默认平地，台阶，梯子
         assert self.terrain_type in terrain_type_list, 'ERROR:Undefined terrain type'
-        init_pos = {'default':[-1,0,1.4] , 'steps':[-1,0,1.4], 'ladders':[-0.5,0,1.4]}[self.terrain_type]
+        init_pos = {'default':[-1,0,1.4] , 'steps':[-1,0,1.4], 'ladders':[-0.3,0,1.4]}[self.terrain_type]
         self.__default_param_list = { 'init_position':init_pos,
                             'head_radius' : 0.18,          # 头部半径 0.18
                             'torso_width': 0.14,           # 躯干宽 0.14

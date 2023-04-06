@@ -133,7 +133,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         # 梯子地形
         # 前进奖励 = 速度权重*前进速度 + 5*距离权重*高度
         if self.terrain_type == 'ladders':
-            forward_reward = self._forward_speed_reward_weight * self.x_velocity + 3*self._forward_distance_reward_weight * (self.sim.data.qpos[2]-1.3) # self.sim.data.qpos[0]: x coordinate of torso (centre)
+            forward_reward = self._forward_speed_reward_weight * self.x_velocity + 3*self._forward_distance_reward_weight * (self.sim.data.qpos[2]-1.4) # self.sim.data.qpos[0]: x coordinate of torso (centre)
     
         return forward_reward
 
@@ -154,7 +154,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         
         # 如果是楼梯地形，直接返回reward值。如果是阶梯地形，乘以系数0.5
         if self.terrain_type == "ladders":
-            stand_reward = stand_reward * 0.5
+            stand_reward = stand_reward * 0.1
         return stand_reward
 
     def control_cost(self, action):

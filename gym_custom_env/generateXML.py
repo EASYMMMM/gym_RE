@@ -41,9 +41,7 @@ class HumanoidXML(MujocoXML):
                             'lower_arm_size':0.031,        # 小臂粗 0.2944
                             }
         self.param_list = self.__default_param_list.copy()
-        self.geom_dict = {} #geom id:name字典
-        self.geom_id = 0
-        self.geom_name_list = list()
+        self.geom_name_list = list() 
 
     def _basic_structure(self):
         '''
@@ -101,8 +99,6 @@ class HumanoidXML(MujocoXML):
                             "size": Size,
                             "type": "plane", }
             self.elements["worldbody"].child_element(tag, terrain_attr)
-            self.geom_dict[self.geom_id] = name
-            self.geom_id = self.geom_id + 1
             self.geom_name_list.append(name)
 
         # 定义梯子
@@ -119,6 +115,7 @@ class HumanoidXML(MujocoXML):
             # Create a geometry for each position
             for i, pos in enumerate(positions):
                 box_attr = {
+                    "name": f"ladder{i + 1}",
                     "type": "box",
                     "size": box_size,
                     "pos": f"{pos[0]} {pos[1]} {pos[2]}",
@@ -155,6 +152,7 @@ class HumanoidXML(MujocoXML):
                     "rgba": box_rgba,
                     "condim": box_condim,
                     "friction": box_friction,
+                    "name": f"step{i+1}"
                 }
                 self.elements["worldbody"].child_element(tag, box_attr)
 
@@ -585,6 +583,10 @@ class HumanoidXML(MujocoXML):
         self.write_xml(file_path=file_path)
 
     def get_geom_namelist(self):
+        '''
+        获得XML的全部几何体名称
+        TODO: 在每个定义geom后，添加self.geom_name_list.append(xxx)
+        '''
         return self.geom_name_list
 
 

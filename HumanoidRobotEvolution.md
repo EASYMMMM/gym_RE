@@ -2,13 +2,13 @@
 
 ## 零、题目
 
-Two-layer optimization of Morphology and Controller of Complex Robot's Based on DRL
+**Co-optimization of Morphology and Controller of Complex Robot's Based on DRL**
+
+**基于深度强化学习的复杂机器人形态-控制联合优化**
 
 ## 一、 背景
 
-### 1. 机器人形态优化
-
-### 2. 文献综述
+### 1. 机器人形态优化文献综述
 
 - **Data-efficient Co-Adaptation of Morphology and Behaviour with Deep Reinforcement Learning**
 
@@ -43,7 +43,9 @@ Two-layer optimization of Morphology and Controller of Complex Robot's Based on 
 
   **为何能降低运算时间**：将单个设计的训练数据同时用于训练全局训练网络。此全局训练网络可应用于后续的新的设计。由此，每个新的设计无需从零开始学习。
 
-  
+### 2. 为什么进行机器人的控制器-形态联合优化？
+
+机器人的形态决定其功能。不同的形态又需要不同的控制器。在针对特定任务设计并优化机器人形态时，需要始终评估不同形态的性能。为众多形态分别设计控制器并进行实验是非常费时费力的。希望能够在仿真中构建控制器-形态联合优化的框架，减少优化时长，并提升最终效能。
 
 ## 二、 机器人控制器
 

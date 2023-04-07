@@ -120,6 +120,7 @@ class HumanoidXML_v1(MujocoXML):
             # Create a geometry for each position
             for i, pos in enumerate(positions):
                 box_attr = {
+                    "name": f"ladder{i + 1}",
                     "type": "box",
                     "size": box_size,
                     "pos": f"{pos[0]} {pos[1]} {pos[2]}",
@@ -156,6 +157,7 @@ class HumanoidXML_v1(MujocoXML):
                     "rgba": box_rgba,
                     "condim": box_condim,
                     "friction": box_friction,
+                    "name": f"step{i+1}"
                 }
                 self.elements["worldbody"].child_element(tag, box_attr)
 

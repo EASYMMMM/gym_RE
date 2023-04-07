@@ -86,6 +86,13 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.x_velocity = 0                         # 质心沿x速度
         self._walking_counter = 0                   # 判定正常前进计数器
         self.geomdict = {}                          # geom id name字典
+        self.already_touched =[]                    # 记录已经碰撞过的geom对
+        ladders = ['ladder' + str(i) for i in range(1, 12)]
+        contact_pairs = [('right_hand', ladder) for ladder in ladders] + [('left_hand', ladder) for ladder in ladders] + \
+                        [(ladder, 'right_hand') for ladder in ladders] + [(ladder, 'left_hand') for ladder in ladders] + \
+                        [('right_foot_geom', ladder) for ladder in ladders] + [('left_foot_geom', ladder) for ladder in ladders] + \
+                        [(ladder, 'right_foot_geom') for ladder in ladders] + [(ladder, 'left_foot_geom') for ladder in ladders]
+        self.contact_list = contact_pairs
 
         print("============ HUMANOID CUSTOM ENV ============")
         print(f"=====terrain type:{self.terrain_type}=====")
@@ -197,22 +204,25 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         '''
         # 计算接触reward
         reward = 0
-        self.contact_list= {'right_hand':'ladder1','right_hand':'ladder2'}
         if self.terrain_type == 'ladders':
             contact = list(self.sim.data.contact)  # 读取一个元素为mjContact的结构体数组
             ncon = self.sim.data.ncon # 碰撞对的个数
             for i in range(ncon): # 遍历所有碰撞对
                 con = contact[i]
-                temp = {self.geomdict[con.geom1]:self.geomdict[con.geom1]}
-                if temp in self.contact_list: # 寻找能够提供奖励的碰撞对
-                    # TODO:
-                    if temp in self.already_touched:  # 如果已经存在
-                        continue
-                    reward= reward + 100*1
-                    print(f'{self.geomdict[con.geom1]} touch {self.geomdict[con.geom2]}')
-            
-                if ():
-                    pass
+                if 'ladders' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
+                    # 保存ladder阶数
+                    ladder = self.geomdict[con.geom1] if 'ladders' in self.geomdict[con.geom1] else self.geomdict[con.geom2]
+                if 'hand' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
+                    limb = self.geomdict[con.geom1] if 'hand' in self.geomdict[con.geom1] else self.geomdict[con.geom2]
+                elif 'foot' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
+                    limb = self.geomdict[con.geom1] if 'foot' in self.geomdict[con.geom1] else self.geomdict[con.geom2]    
+                cont_pair = (limb,ladder)
+                if cont_pair in self.already_touched: # 判断是否曾经碰撞过
+                    continue
+                else:
+                    ladder_num = int(ladder[-1])
+                    reward = reward + 25*ladder_num
+      
         return reward
 
     def _get_obs(self):

@@ -104,14 +104,17 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def is_walking(self):
         # 判断机器人是否正常行走，若连续10步速度小于某值，停止
         _is_walking = True
-
+        if self.terrain_type == 'ladders':
+            threshold = 300
+        else:
+            threshold = 100
         # 对于阶梯地形，未进入阶梯时，直接返回True
         if self.terrain_type == 'steps':
             if self.sim.data.qpos[0] < 0:   
                 return _is_walking
 
         if self.x_velocity < 0.1: 
-            if self._walking_counter > 100:
+            if self._walking_counter > threshold:
                 _is_walking = False
                 self._walking_counter = 0
             else:
@@ -182,6 +185,9 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def is_healthy(self):
         # 机器人状态是否正常，通过qpos[2]的z轴位置判断（是否跌倒）
         min_z, max_z = self._healthy_z_range
+        if self.terrain_type == 'ladders':
+            min_z = 0.5
+
         is_standing = min_z < self.sim.data.qpos[2] < 10  #  self.sim.data.qpos[2]: z-coordinate of the torso (centre)
         is_inthemap = self.sim.data.qpos[0] < 4.7         #  机器人仍然在阶梯范围内   
         is_healthy  = is_standing and is_inthemap

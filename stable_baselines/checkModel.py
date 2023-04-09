@@ -81,7 +81,7 @@ if __name__ == "__main__":
 
     env_id = args.env
     # Create an env similar to the training env
-    env = gym.make(env_id)
+    env = gym.make(env_id, terrain_type='ladders')
 
     # Enable GUI
     if not args.no_render:

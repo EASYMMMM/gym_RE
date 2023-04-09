@@ -71,14 +71,15 @@ class XMLPart():
 
 class MujocoXML():
     '''
-    维护一个XML树
+    Mujoco仿真环境XML树 基础模板
     '''
     def __init__(
         self, 
         root_tag:str = "mujoco" ,  # 部位名称
-
+        gravity:float = -9.81
     ):
         # 生成根节点
+        self.gravity = gravity
         self.root = XMLPart(root_tag, root = True, attributes={"model":"humanoid"} )
         self.elements : Dict[str, XMLPart] = {} # 根节点所包含的子节点的元素集，只包括往下一级的子节点，便于查找
         self.texture = list()
@@ -142,7 +143,7 @@ class MujocoXML():
                         "iterations":"50",
                         "solver":"PGS",
                         "timestep":"0.003",
-                        "gravity":"0 0 -9.8"
+                        "gravity":f"0 0 {self.gravity}"
                       }  
         if attributes :
             option_attr.update(attributes)      

@@ -28,27 +28,27 @@ def quaternion_to_rotation_matrix(q):  # x, y ,z ,w
     return rot_matrix
 
 # params list
-paramas = { 'torso_width':0.5,
-            'init_position':[0,0,2.5],
-            'pelvis_width':0.2,
+paramas = { #'torso_width':0.5,
+            #'init_position':[0,0,2.5],
+            #'pelvis_width':0.2,
             'upper_arm_lenth':0.31,
             'lower_arm_lenth':0.4,
-            'shin_lenth':0.5,
-            'torso_height':0.6,
+            #'shin_lenth':0.5,
+            #'torso_height':0.6,
             }
 
 # 生成XML文件
-t = HumanoidXML()
-t.write_xml(file_path="ee.xml")
+t = HumanoidXML(terrain_type='ladders',gravity=0)
+t.write_xml(file_path="e.xml")
 
 
 # 更新XML文件
-t.set_params(paramas)
-t.update_xml(file_path='ee.xml')
+""" t.set_params(paramas)
+t.update_xml(file_path='e.xml') """
 
 # 加载 XML 文件
 # model = mujoco_py.load_model_from_path("gym_custom_env\\assets\\humanoid_custom.xml")
-model = mujoco_py.load_model_from_path("e_v1.xml")
+model = mujoco_py.load_model_from_path("e.xml")
 # model = mujoco_py.load_model_from_path("humanoid.xml")
 # 创建仿真环境和渲染器
 sim = mujoco_py.MjSim(model)
@@ -60,14 +60,20 @@ timesteps = 500000
 viewer.render()
 
 ctrl = np.zeros(len(sim.data.ctrl[:]))
-ctrl[0] = +0.00  # right shoulder 2
-ctrl[15] = -0.00  # left shoulder 2
-ctrl[14] = -0.00  # left shoulder 1
-ctrl[11] = +0.00  # right shoulder 1
-ctrl[7] = -0.050 # left knee
+
+#ctrl[13] =  0.050 # right shoulder 1
+#ctrl[16] =  0.050 # left shoulder 1
+
 sim.data.ctrl[:] = ctrl
 j = 0
 k = 0
+
+geomdict = {}
+for i in range(sim.model.ngeom):
+    geomdict[i] = sim.model.geom_id2name(i)
+print(geomdict)
+
+
 # 运行仿真并在每个时间步骤中进行渲染
 for i in range(timesteps):
     sim.step()
@@ -75,18 +81,46 @@ for i in range(timesteps):
 
     if i % 1000 == 0:
         if j == 0:
-            ctrl[7] = -0.050 # right ankle
-            ctrl[12] = 0.050 # left ankle
+            #ctrl[3] = -0.050 # right hip x
+            #ctrl[4] =  -0.050 # right hip z  
+            #ctrl[5] =  -0.050 # right hip y            
+            #ctrl[6] =  -0.050 # right knee
+            #ctrl[8] = -0.050 # left hip x
+            #ctrl[9] =  -0.050 # left hip z  
+            #ctrl[10] =  -0.050 # left hip y  
+            #ctrl[11] = -0.050 # left knee           
+            #ctrl[7] = -0.050 # right ankle
+            #ctrl[12] = 0.050 # left ankle
+            ctrl[13] = -0.050 # right shoulder 1
+            #ctrl[14] = -0.050 # right shoulder 2
+            ctrl[15] = -0.050 # right elbow
+            ctrl[16] = -0.050 # left shoulder 1
+            #ctrl[17] = -0.050 # left shoulder 2
+            ctrl[18] = -0.050 # left elbow             
             sim.data.ctrl[:] = ctrl
             j = 1
         else:
-            ctrl[7] = 0.050 # right ankle
-            ctrl[12] = -0.05 # left ankle
+            #ctrl[3] =  0.050 # right hip x  
+            #ctrl[4] =  0.050 # right hip z  
+            #ctrl[5] =  0.050 # right hip y                       
+            #ctrl[6] =  0.050 # right knee
+            #ctrl[7] = 0.050 # right ankle
+            #ctrl[8] =  0.050 # left hip x
+            #ctrl[9] =  0.050 # left hip z  
+            #ctrl[10] =  0.050 # left hip y   
+            #ctrl[11] =  0.050 # left knee            
+            #ctrl[12] = -0.05 # left ankle
+            ctrl[13] =  0.050 # right shoulder 1
+            #ctrl[14] =  0.050 # right shoulder 2
+            ctrl[15] =  0.050 # right elbow 
+            ctrl[16] =  0.050 # left shoulder 1
+            #ctrl[17] =  0.050 # left shoulder 2
+            ctrl[18] =  0.050 # left elbow               
             sim.data.ctrl[:] = ctrl
             j = 0            
 
     torso_z = sim.data.qpos[2]
-    print(torso_z)
+    #print(torso_z)
     #viewer.add_marker(pos=[0,0,torso_z], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([1.0, 0, 0.0, 1]), type=const.GEOM_SPHERE)
 
     torso_x = sim.data.qpos[0]
@@ -107,7 +141,7 @@ for i in range(timesteps):
     vertical_direction = np.array([0, 0, 1])
     body_z_axis = rotation_matrix.dot(vertical_direction)
     dot_product = np.dot(body_z_axis, vertical_direction)
-
+'''
     # 读取mujoco碰撞参数
     contact = list(sim.data.contact)
     print('==================================')
@@ -118,7 +152,7 @@ for i in range(timesteps):
     print('geom1 id:',contact[1].geom1,' geom1 name:',sim.model.name_geomadr[contact[1].geom1])
     print('geom2 id:',contact[1].geom2,' geom2 name:',sim.model.name_geomadr[contact[1].geom2])
     print('  ')
-
+    '''
 # 关闭仿真环境和渲染器
 viewer.close()
 sim.close()

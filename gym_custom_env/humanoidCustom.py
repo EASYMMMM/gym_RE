@@ -12,7 +12,7 @@ from scipy.spatial.transform import Rotation as R
 import sys,os
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 from generateXML import HumanoidXML
-from generateXML_v1 import HumanoidXML_v1
+
 
 DEFAULT_CAMERA_CONFIG = {
     "trackbodyid": 1,
@@ -46,6 +46,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         contact_cost_range=(-np.inf, 10.0),
         healthy_reward= -0.2,                     # 存活奖励
         stand_reward_weight = 1.0,              # 站立奖励
+        contact_reward_weight = 1.0,            # 梯子/阶梯 接触奖励
         terminate_when_unhealthy=True,
         healthy_z_range=(1.0, 5.0),
         reset_noise_scale=1e-2,
@@ -59,7 +60,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         terrain_list = ('default','steps','ladders') # 默认平地，台阶，梯子
         assert self.terrain_type in terrain_list, 'ERROR:Undefined terrain type'  
         xml_name = 'humanoid_exp_v1.xml'
-        self.xml_model = HumanoidXML_v1(terrain_type=self.terrain_type)
+        self.xml_model = HumanoidXML(terrain_type=self.terrain_type)
         self.xml_model.write_xml(file_path=f"gym_custom_env/assets/{xml_name}")
         dir_path = os.path.dirname(__file__)
         xml_file_path = f"{dir_path}\\assets\\{xml_name}"
@@ -73,6 +74,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self._terminate_when_unhealthy = terminate_when_unhealthy
         self._healthy_z_range = healthy_z_range
         self._stand_reward_weight = stand_reward_weight
+        self._contact_reward_weight = contact_reward_weight
         self._reset_noise_scale = reset_noise_scale
         
         self.camera_config = {
@@ -85,7 +87,6 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         )
         self.x_velocity = 0                         # 质心沿x速度
         self._walking_counter = 0                   # 判定正常前进计数器
-        self.geomdict = {}                          # geom id name字典
         self.already_touched =[]                    # 记录已经碰撞过的geom对
         ladders = ['ladder' + str(i) for i in range(1, 12)]
         contact_pairs = [('right_hand', ladder) for ladder in ladders] + [('left_hand', ladder) for ladder in ladders] + \
@@ -97,7 +98,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         print("============ HUMANOID CUSTOM ENV ============")
         print(f"=====terrain type:{self.terrain_type}=====")
         mujoco_env.MujocoEnv.__init__(self, xml_file_path, 5)
-        
+        self.geomdict = self.get_geom_idname()      # geom id name字典
 
     @property
     def is_walking(self):
@@ -194,7 +195,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         done = ( (not self.is_healthy) or (not self._is_walking) ) if self._terminate_when_unhealthy else False
         return done
 
-    def contact_reward(self, ) -> int:
+    @property
+    def contact_reward(self):
         '''
         TODO:
         - 读取contact信息。
@@ -209,22 +211,34 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             ncon = self.sim.data.ncon # 碰撞对的个数
             for i in range(ncon): # 遍历所有碰撞对
                 con = contact[i]
+                # 判断ladder是否参与碰撞
                 if 'ladders' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
-                    # 保存ladder阶数
                     ladder = self.geomdict[con.geom1] if 'ladders' in self.geomdict[con.geom1] else self.geomdict[con.geom2]
-                if 'hand' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
-                    limb = self.geomdict[con.geom1] if 'hand' in self.geomdict[con.geom1] else self.geomdict[con.geom2]
-                elif 'foot' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
-                    limb = self.geomdict[con.geom1] if 'foot' in self.geomdict[con.geom1] else self.geomdict[con.geom2]    
+                    # 判断是手还是脚
+                    if 'hand' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
+                        # 区分左右手加分
+                        limb = 'right_hand' if 'right' in self.geomdict[con.geom1]+self.geomdict[con.geom2] else 'left_hand'
+                    elif 'foot' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
+                        limb = 'right_foot' if 'right' in self.geomdict[con.geom1]+self.geomdict[con.geom2] else 'left_foot'
+                    else: # 若非手脚，跳过
+                        continue
+                else:
+                    continue
                 cont_pair = (limb,ladder)
                 if cont_pair in self.already_touched: # 判断是否曾经碰撞过
                     continue
                 else:
-                    ladder_num = int(ladder[-1])
+                    ladder_num = int(ladder[6:])
+                    # 手部仅可碰撞到6阶以上时有奖励分
+                    if 'hand' in limb and ladder_num < 6:
+                        continue
                     reward = reward + 25*ladder_num
                     self.already_touched.append(cont_pair)
-      
-        return reward
+                    
+        if self.terrain_type == 'steps':
+            reward = 0
+        contact_reward = reward * self._contact_reward_weight           
+        return contact_reward
 
     def _get_obs(self):
         # obs空间
@@ -252,11 +266,11 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         )
 
     def get_geom_idname(self,):
-        geom_name_list = self.xml_model.get_geom_namelist()
-        for name in geom_name_list :
-            geom_id = self.sim.model.geom_name2id(name)
-            self.geomdict[geom_id] = name
-        return
+        geomdict = {}
+        for i in range(self.model.ngeom):
+            geomdict[i] = self.model.geom_id2name(i)
+        return geomdict
+
 
     def print_obs(self):
         # obs空间
@@ -312,8 +326,9 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         forward_reward = self.forward_reward
         healthy_reward = self.healthy_reward
         stand_reward   = self.stand_reward
+        contact_reward = self.contact_reward
 
-        rewards = forward_reward + healthy_reward + stand_reward
+        rewards = forward_reward + healthy_reward + stand_reward + contact_reward
         costs = ctrl_cost + contact_cost
 
         observation = self._get_obs()

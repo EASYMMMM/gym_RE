@@ -178,7 +178,7 @@ if __name__ == "__main__":
         "ppo": dict(
             batch_size=512,
             learning_rate=2.5e-4,
-            policy_kwargs=dict(net_arch=[256, 256]),
+            policy_kwargs=dict(net_arch=({'pi':[128,128]},{'vf':[128,128]})),
             gamma=0.99
         )
     }[args.algo]

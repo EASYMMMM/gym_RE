@@ -59,7 +59,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.terrain_type = terrain_type        
         terrain_list = ('default','steps','ladders') # 默认平地，台阶，梯子
         assert self.terrain_type in terrain_list, 'ERROR:Undefined terrain type'  
-        xml_name = 'humanoid_exp_v1.xml'
+        xml_name = 'humanoid_exp.xml'
         self.xml_model = HumanoidXML(terrain_type=self.terrain_type)
         self.xml_model.write_xml(file_path=f"gym_custom_env/assets/{xml_name}")
         dir_path = os.path.dirname(__file__)
@@ -141,7 +141,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         # 梯子地形
         # 前进奖励 = 速度权重*前进速度 + 5*距离权重*高度
         if self.terrain_type == 'ladders':
-            forward_reward = self._forward_speed_reward_weight * self.x_velocity + 3*self._forward_distance_reward_weight * (self.sim.data.qpos[2]-1.4) # self.sim.data.qpos[0]: x coordinate of torso (centre)
+            forward_reward = self._forward_speed_reward_weight * self.x_velocity + self._forward_distance_reward_weight * (self.sim.data.qpos[2]-1.3) # self.sim.data.qpos[0]: x coordinate of torso (centre)
     
         return forward_reward
 
@@ -234,7 +234,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                         continue
                     reward = reward + 25*ladder_num
                     self.already_touched.append(cont_pair)
-                    
+
         if self.terrain_type == 'steps':
             reward = 0
         contact_reward = reward * self._contact_reward_weight           

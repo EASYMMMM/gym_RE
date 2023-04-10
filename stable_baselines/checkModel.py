@@ -166,6 +166,7 @@ if __name__ == "__main__":
             print(f"Episode {i+1}: reward={episode_rewards[i]}, length={episode_lengths[i]}, is walking: {end_info[i]['is_walking']}, is healthy: {end_info[i]['is_healthy']}")
             print('contact info:')
             print(contact_info[i])
+            print('************')
         print(f"Episode_reward={mean_reward:.2f} +/- {std_reward:.2f}")
         print(f"Episode_length={mean_len:.2f} +/- {std_len:.2f}")
         print("==============================")

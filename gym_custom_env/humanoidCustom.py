@@ -218,8 +218,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             for i in range(ncon): # 遍历所有碰撞对
                 con = contact[i]
                 # 判断ladder是否参与碰撞
-                if 'ladders' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
-                    ladder = self.geomdict[con.geom1] if 'ladders' in self.geomdict[con.geom1] else self.geomdict[con.geom2]
+                if 'ladder' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
+                    ladder = self.geomdict[con.geom1] if 'ladder' in self.geomdict[con.geom1] else self.geomdict[con.geom2]
                     # 判断是手还是脚
                     if 'hand' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
                         # 区分左右手加分
@@ -235,10 +235,10 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                     continue
                 else:
                     ladder_num = int(ladder[6:])
-                    # 手部仅可碰撞到6阶以上时有奖励分
-                    # if 'hand' in limb and ladder_num < 6:
-                    #    continue
-                    reward = reward + 25*ladder_num
+                    # 手部仅可碰撞到5阶以上时有奖励分
+                    if 'hand' in limb and ladder_num < 5:
+                        continue
+                    reward = reward + 25*ladder_num*ladder_num
                     self.already_touched.append(cont_pair)
 
         if self.terrain_type == 'steps':
@@ -273,8 +273,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
     def get_geom_idname(self,):
         geomdict = {}
-        for i in range(self.model.ngeom):
-            geomdict[i] = self.model.geom_id2name(i)
+        for i in range(self.sim.model.ngeom):
+            geomdict[i] = self.sim.model.geom_id2name(i)
         return geomdict
 
 

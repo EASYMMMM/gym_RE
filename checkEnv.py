@@ -16,5 +16,7 @@ import pybullet_envs
 from stable_baselines3 import SAC, TD3, PPO
 
 
-env = gym.make('HumanoidCustomEnv-v0',terrain='steps')
-env.print_obs()
+env = gym.make('HumanoidCustomEnv-v0',terrain_type='ladders')
+
+geomdict = env.get_geom_idname()
+print(geomdict)

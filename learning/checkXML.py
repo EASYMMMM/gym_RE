@@ -38,8 +38,8 @@ paramas = { #'torso_width':0.5,
             }
 
 # 生成XML文件
-t = HumanoidXML(terrain_type='ladders',gravity=0)
-t.write_xml(file_path="e.xml")
+#t = HumanoidXML(terrain_type='ladders',gravity=-9.8)
+#t.write_xml(file_path="e.xml")
 
 
 # 更新XML文件
@@ -68,9 +68,15 @@ sim.data.ctrl[:] = ctrl
 j = 0
 k = 0
 
-geomdict = {}
-for i in range(sim.model.ngeom):
-    geomdict[i] = sim.model.geom_id2name(i)
+
+def get_geom_idname(sim):
+    geomdict = {}
+    for i in range(sim.model.ngeom):
+        geomdict[i] = sim.model.geom_id2name(i)
+    return geomdict
+
+geomdict = get_geom_idname(sim)
+
 print(geomdict)
 
 
@@ -91,12 +97,12 @@ for i in range(timesteps):
             #ctrl[11] = -0.050 # left knee           
             #ctrl[7] = -0.050 # right ankle
             #ctrl[12] = 0.050 # left ankle
-            ctrl[13] = -0.050 # right shoulder 1
+            #ctrl[13] = -0.050 # right shoulder 1
             #ctrl[14] = -0.050 # right shoulder 2
-            ctrl[15] = -0.050 # right elbow
-            ctrl[16] = -0.050 # left shoulder 1
+            #ctrl[15] = -0.050 # right elbow
+            #ctrl[16] = -0.050 # left shoulder 1
             #ctrl[17] = -0.050 # left shoulder 2
-            ctrl[18] = -0.050 # left elbow             
+            #ctrl[18] = -0.050 # left elbow             
             sim.data.ctrl[:] = ctrl
             j = 1
         else:
@@ -110,12 +116,12 @@ for i in range(timesteps):
             #ctrl[10] =  0.050 # left hip y   
             #ctrl[11] =  0.050 # left knee            
             #ctrl[12] = -0.05 # left ankle
-            ctrl[13] =  0.050 # right shoulder 1
+            #ctrl[13] =  0.050 # right shoulder 1
             #ctrl[14] =  0.050 # right shoulder 2
-            ctrl[15] =  0.050 # right elbow 
-            ctrl[16] =  0.050 # left shoulder 1
+            #ctrl[15] =  0.050 # right elbow 
+            #ctrl[16] =  0.050 # left shoulder 1
             #ctrl[17] =  0.050 # left shoulder 2
-            ctrl[18] =  0.050 # left elbow               
+            #ctrl[18] =  0.050 # left elbow               
             sim.data.ctrl[:] = ctrl
             j = 0            
 
@@ -141,18 +147,52 @@ for i in range(timesteps):
     vertical_direction = np.array([0, 0, 1])
     body_z_axis = rotation_matrix.dot(vertical_direction)
     dot_product = np.dot(body_z_axis, vertical_direction)
-'''
+
     # 读取mujoco碰撞参数
-    contact = list(sim.data.contact)
+    ncon = sim.data.ncon
+    contact = list(sim.data.contact)  # 读取一个元素为mjContact的结构体数组
+    for i in range(ncon):
+        con = contact[i]
+        if 'ladders' in geomdict[con.geom1]+geomdict[con.geom2]:
+            ladder = geomdict[con.geom1] if 'ladders' in geomdict[con.geom1] else geomdict[con.geom2]
+            # 判断是手还是脚
+            if 'hand' in geomdict[con.geom1]+geomdict[con.geom2]:
+            # 区分左右手加分
+                limb = 'right_hand' if 'right' in geomdict[con.geom1]+geomdict[con.geom2] else 'left_hand'
+            elif 'foot' in geomdict[con.geom1]+geomdict[con.geom2]:
+                limb = 'right_foot' if 'right' in geomdict[con.geom1]+geomdict[con.geom2] else 'left_foot'
+            else: # 若非手脚，跳过
+                continue
+        else:
+            continue
     print('==================================')
     print('geom number: ', sim.model.ngeom)
     print('number of detected contacts:',sim.data.ncon)
+    for i in range(ncon):
+        print(f'contact : {geomdict[sim.data.contact[i].geom1]} + {geomdict[sim.data.contact[i].geom2]}')
+    print('*************')
+    for i in range(ncon):
+        con = contact[i]
+        if 'ladder' in geomdict[con.geom1]+geomdict[con.geom2]:
+            ladder = geomdict[con.geom1] if 'ladder' in geomdict[con.geom1] else geomdict[con.geom2]
+            # 判断是手还是脚
+            if 'hand' in geomdict[con.geom1]+geomdict[con.geom2]:
+            # 区分左右手加分
+                limb = 'right_hand' if 'right' in geomdict[con.geom1]+geomdict[con.geom2] else 'left_hand'
+                print('contact score: '+ladder+' + '+ limb)
+            elif 'foot' in geomdict[con.geom1]+geomdict[con.geom2]:
+                limb = 'right_foot' if 'right' in geomdict[con.geom1]+geomdict[con.geom2] else 'left_foot'
+                print('contact score: '+ladder+' + '+ limb)
+            else: # 若非手脚，跳过
+                continue
+        else:
+            continue        
     #print('geom name floor id:' , sim.model.geom_name2id("floor"))
     #print('geom name lwaist id:' , sim.model.geom_name2id("lwaist"))
-    print('geom1 id:',contact[1].geom1,' geom1 name:',sim.model.name_geomadr[contact[1].geom1])
-    print('geom2 id:',contact[1].geom2,' geom2 name:',sim.model.name_geomadr[contact[1].geom2])
+    #print('geom1 id:',contact[1].geom1,' geom1 name:',sim.model.name_geomadr[contact[1].geom1])
+    #print('geom2 id:',contact[1].geom2,' geom2 name:',sim.model.name_geomadr[contact[1].geom2])
     print('  ')
-    '''
+  
 # 关闭仿真环境和渲染器
 viewer.close()
 sim.close()

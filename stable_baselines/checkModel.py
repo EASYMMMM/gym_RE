@@ -106,7 +106,7 @@ if __name__ == "__main__":
 
     # Load the saved model
     model = algo.load(save_path, env=env)
-
+    contact_info = list()
 
     print("==============================")
     print(f"Method: {args.algo}")
@@ -135,7 +135,7 @@ if __name__ == "__main__":
                     dt = 1.0 / 240.0
                     time.sleep(dt)
                 
-                print(env.sim.data.qpos[2])
+                #print(env.sim.data.qpos[2])
                 # 参考用标定点
                 env.viewer.add_marker(pos=[1,0,1.0], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([0, 1, 1.0, 1]), type=const.GEOM_SPHERE)
                 env.viewer.add_marker(pos=[0,0,1.0], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
@@ -147,7 +147,7 @@ if __name__ == "__main__":
                     #coms.append(np.array(env.sim.data.qpos[0:3]))
                 for com in coms:
                     env.viewer.add_marker(pos=com, size=np.array([0.01, 0.01, 0.01]), rgba=np.array([1., 0, 0, 1]), type=const.GEOM_SPHERE)
-                
+            contact_info.append(env.already_touched)     
             end_info.append(info)
             episode_rewards.append(episode_reward)
             episode_lengths.append(episode_length)
@@ -164,6 +164,8 @@ if __name__ == "__main__":
         print("========== Results ===========")
         for i in range(len(episode_rewards)):
             print(f"Episode {i+1}: reward={episode_rewards[i]}, length={episode_lengths[i]}, is walking: {end_info[i]['is_walking']}, is healthy: {end_info[i]['is_healthy']}")
+            print('contact info:')
+            print(contact_info[i])
         print(f"Episode_reward={mean_reward:.2f} +/- {std_reward:.2f}")
         print(f"Episode_length={mean_len:.2f} +/- {std_len:.2f}")
         print("==============================")

@@ -366,7 +366,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.set_state(qpos, qvel)
 
         observation = self._get_obs()
-        self.already_touched = [] 
+        self.already_touched = []     # 清除碰撞积分 
         return observation
 
     def viewer_setup(self):

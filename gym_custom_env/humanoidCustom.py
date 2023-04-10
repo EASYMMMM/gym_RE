@@ -88,12 +88,6 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.x_velocity = 0                         # 质心沿x速度
         self._walking_counter = 0                   # 判定正常前进计数器
         self.already_touched =[]                    # 记录已经碰撞过的geom对
-        ladders = ['ladder' + str(i) for i in range(1, 12)]
-        contact_pairs = [('right_hand', ladder) for ladder in ladders] + [('left_hand', ladder) for ladder in ladders] + \
-                        [(ladder, 'right_hand') for ladder in ladders] + [(ladder, 'left_hand') for ladder in ladders] + \
-                        [('right_foot_geom', ladder) for ladder in ladders] + [('left_foot_geom', ladder) for ladder in ladders] + \
-                        [(ladder, 'right_foot_geom') for ladder in ladders] + [(ladder, 'left_foot_geom') for ladder in ladders]
-        self.contact_list = contact_pairs
 
         print("============ HUMANOID CUSTOM ENV ============")
         print(f"=====terrain type:{self.terrain_type}=====")
@@ -372,6 +366,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.set_state(qpos, qvel)
 
         observation = self._get_obs()
+        self.already_touched = [] 
         return observation
 
     def viewer_setup(self):

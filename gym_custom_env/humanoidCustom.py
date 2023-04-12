@@ -191,6 +191,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                          continue
                     else:
                         fallen = True
+        return fallen
                 
     @property
     def is_healthy(self):

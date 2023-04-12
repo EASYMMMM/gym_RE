@@ -39,8 +39,8 @@ paramas = { #'torso_width':0.5,
             }
 
 # 生成XML文件
-#t = HumanoidXML(terrain_type='default',gravity=0)
-#t.write_xml(file_path="ee.xml")
+t = HumanoidXML(terrain_type='steps',gravity=0)
+t.write_xml(file_path="ee.xml")
 
 
 # 更新XML文件
@@ -135,7 +135,10 @@ for i in range(timesteps):
     #viewer.add_marker(pos=[torso_x,1,torso_z], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([1.0, 0, 0.0, 1]), type=const.GEOM_SPHERE)
 
 
-    #viewer.add_marker(pos=[0,-0.14,0.4], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+    viewer.add_marker(pos=[0,0,0.4], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+    viewer.add_marker(pos=[0.6,0,0.4], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+    viewer.add_marker(pos=[6,0,3], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+
     #viewer.add_marker(pos=[-1,0,1.7], size=np.array([0.01, 0.01, 0.01]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
     #viewer.add_marker(pos=[0,0,0.4], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
     quatanion = sim.data.qpos[3:7]

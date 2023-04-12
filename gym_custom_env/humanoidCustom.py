@@ -176,11 +176,11 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         return contact_cost
 
     @property
-    def _is_fallen(self):
+    def _not_fallen(self):
         # 检测是否摔倒
         contact = list(self.sim.data.contact)  # 读取一个元素为mjContact的结构体数组
         ncon = self.sim.data.ncon # 碰撞对的个数
-        fallen = False
+        fallen = True
         if self.terrain_type == 'steps':
             # 台阶地形中，除了脚步以外的肢体碰撞到台阶，即为摔倒
             for i in range(ncon): # 遍历所有碰撞对
@@ -190,7 +190,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                     if 'foot' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
                          continue
                     else:
-                        fallen = True
+                        fallen = False
         return fallen
                 
     @property
@@ -205,7 +205,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
         is_standing = min_z < z < 10  #  self.sim.data.qpos[2]: z-coordinate of the torso (centre)
         is_inthemap = self.sim.data.qpos[0] < 6.6         #  机器人仍然在阶梯范围内   
-        is_healthy  = is_standing and is_inthemap and self._is_fallen
+        is_healthy  = is_standing and is_inthemap and self._not_fallen
         return is_healthy
 
 

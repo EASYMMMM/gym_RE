@@ -85,7 +85,7 @@ if __name__ == "__main__":
     tensorboard_log_name = f"{model_name}{args.algo}_{env_id}"
 
     # Instantiate and wrap the environment
-    env = gym.make(env_id)
+    env = gym.make(env_id,terrain_type='steps')
 
     # Create the evaluation environment and callbacks
     eval_env = Monitor(gym.make(env_id))

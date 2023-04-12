@@ -201,7 +201,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         if self.terrain_type == 'ladders':
             min_z = 0.5
         if self.terrain_type == 'steps':
-            _, z = self._get_steps_pos
+            _, z = self._get_steps_pos()
 
         is_standing = min_z < z < 10  #  self.sim.data.qpos[2]: z-coordinate of the torso (centre)
         is_inthemap = self.sim.data.qpos[0] < 6.6         #  机器人仍然在阶梯范围内   

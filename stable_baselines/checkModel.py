@@ -143,8 +143,8 @@ if __name__ == "__main__":
                 # 躯干跟踪点
                 if j % 4 == 0:
                     #coms.append(info['xyz_position'])
-                    coms.append(np.array([info["x_position"], info["y_position"] , info["z_position"]  ]))
-                    #coms.append(np.array(env.sim.data.qpos[0:3]))
+                    #coms.append(np.array([info["x_position"], info["y_position"] , info["z_position"]  ]))
+                    coms.append(np.array(env.sim.data.qpos[0:3]))
                 for com in coms:
                     env.viewer.add_marker(pos=com, size=np.array([0.01, 0.01, 0.01]), rgba=np.array([1., 0, 0, 1]), type=const.GEOM_SPHERE)
             contact_info.append(env.already_touched)     

@@ -70,7 +70,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self._ctrl_cost_weight = ctrl_cost_weight
         self._contact_cost_weight = contact_cost_weight
         self._contact_cost_range = contact_cost_range
-        self._healthy_reward = 0.2 if terrain_type in 'default'+'steps' else -0.2
+        self._healthy_reward = -0.1 if terrain_type in 'default'+'steps' else -0.2
         self._terminate_when_unhealthy = terminate_when_unhealthy
         self._healthy_z_range = healthy_z_range
         self._stand_reward_weight = stand_reward_weight
@@ -103,9 +103,9 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         else:
             threshold = 100
         # 对于阶梯地形，未进入阶梯时，直接返回True
-        if self.terrain_type == 'steps':
-            if self.sim.data.qpos[0] < 0:   
-                return _is_walking
+        #if self.terrain_type == 'steps':
+        #    if self.sim.data.qpos[0] < 0:   
+        #        return _is_walking
 
         if self.x_velocity < 0.1: 
             if self._walking_counter > threshold:

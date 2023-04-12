@@ -48,7 +48,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         stand_reward_weight = 1.0,              # 站立奖励
         contact_reward_weight = 1.0,            # 梯子/阶梯 接触奖励
         terminate_when_unhealthy=True,
-        healthy_z_range=(1.0, 5.0),
+        healthy_z_range=(0.9, 5.0),
         reset_noise_scale=1e-2,
         camera_config = "horizontal",
         exclude_current_positions_from_observation=False,  # Flase: 使obs空间包括躯干的x，y坐标; True: 不包括
@@ -70,7 +70,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self._ctrl_cost_weight = ctrl_cost_weight
         self._contact_cost_weight = contact_cost_weight
         self._contact_cost_range = contact_cost_range
-        self._healthy_reward = healthy_reward
+        self._healthy_reward = 0.2 if terrain_type in 'default'+'steps' else -0.2
         self._terminate_when_unhealthy = terminate_when_unhealthy
         self._healthy_z_range = healthy_z_range
         self._stand_reward_weight = stand_reward_weight
@@ -133,7 +133,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         # 前进奖励 = 速度权重*前进速度 + 距离权重*前进距离
         # 计算前进距离时 +1，因为机器人起始点在x=-1
         if self.terrain_type == 'steps':
-            forward_reward = self._forward_speed_reward_weight * self.x_velocity + self._forward_distance_reward_weight * (self.sim.data.qpos[0] + 1) # self.sim.data.qpos[0]: x coordinate of torso (centre)
+            forward_reward = self._forward_speed_reward_weight * self.x_velocity + self._forward_distance_reward_weight * (self.sim.data.qpos[0] + 0.6) # self.sim.data.qpos[0]: x coordinate of torso (centre)
         
         # 梯子地形
         # 前进奖励 = 速度权重*前进速度 + 5*距离权重*高度
@@ -176,17 +176,35 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         return contact_cost
 
     @property
+    def _is_fallen(self):
+        # 检测是否摔倒
+        contact = list(self.sim.data.contact)  # 读取一个元素为mjContact的结构体数组
+        ncon = self.sim.data.ncon # 碰撞对的个数
+        fallen = False
+        if self.terrain_type == 'steps':
+            # 台阶地形中，除了脚步以外的肢体碰撞到台阶，即为摔倒
+            for i in range(ncon): # 遍历所有碰撞对
+                con = contact[i]
+                # 判断ladder是否参与碰撞
+                if 'step' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
+                    if 'foot' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
+                         continue
+                    else:
+                        fallen = True
+                
+    @property
     def is_healthy(self):
         # 机器人状态是否正常，通过qpos[2]的z轴位置判断（是否跌倒）
         min_z, max_z = self._healthy_z_range
+        z = self.sim.data.qpos[2]
         if self.terrain_type == 'ladders':
             min_z = 0.5
         if self.terrain_type == 'steps':
-            _, z = self._get_steps_pos()
+            _, z = self._get_steps_pos
 
-        is_standing = min_z < self.sim.data.qpos[2] < 10  #  self.sim.data.qpos[2]: z-coordinate of the torso (centre)
-        is_inthemap = self.sim.data.qpos[0] < 4.7         #  机器人仍然在阶梯范围内   
-        is_healthy  = is_standing and is_inthemap
+        is_standing = min_z < z < 10  #  self.sim.data.qpos[2]: z-coordinate of the torso (centre)
+        is_inthemap = self.sim.data.qpos[0] < 6.6         #  机器人仍然在阶梯范围内   
+        is_healthy  = is_standing and is_inthemap and self._is_fallen
         return is_healthy
 
 
@@ -234,7 +252,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                     # 手部仅可碰撞到6阶以上时有奖励分
                     if 'hand' in limb and ladder_num < 5:
                         continue
-                    reward = reward + 25*ladder_num
+                    reward = reward + 50*ladder_num
                     self.already_touched.append(cont_pair)
 
         if self.terrain_type == 'steps':
@@ -253,8 +271,10 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         actuator_forces = self.sim.data.qfrc_actuator.flat.copy()
         external_contact_forces = self.sim.data.cfrc_ext.flat.copy()
 
-        if self._exclude_current_positions_from_observation:
-            position = position[2:]
+#        if self._exclude_current_positions_from_observation:
+#            position = position[2:]
+        if self.terrain_type == 'steps':
+            position[0], position[2] = self._get_steps_pos()
 
         return np.concatenate(
             (
@@ -273,6 +293,13 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             geomdict[i] = self.model.geom_id2name(i)
         return geomdict
 
+    def _get_steps_pos(self):
+        # 读取当前机器人相对于台阶的x,y,z距离: 
+        step_size_x, step_size_y, step_size_z = self.xml_model.step_size
+        x_w = self.sim.data.qpos[0] + step_size_x + 0.0001  # 机器人在全局的x坐标
+        x =  (x_w // step_size_x + 1)*step_size_x - x_w     # 机器人距离下一级台阶的距离
+        z =  self.sim.data.qpos[2] - (x_w // step_size_x)*step_size_z # 机器人当前的距离地面（台阶）的高度
+        return x,z
 
     def print_obs(self):
         # obs空间

@@ -29,26 +29,27 @@ def quaternion_to_rotation_matrix(q):  # x, y ,z ,w
 
 # params list
 paramas = { #'torso_width':0.5,
-            #'init_position':[0,0,2.5],
-            #'pelvis_width':0.2,
-            'upper_arm_lenth':0.31,
+            'init_position':[0,0,1.5],
+            'pelvis_width':0.2,
+            'upper_arm_lenth':0.11,
             'lower_arm_lenth':0.4,
-            #'shin_lenth':0.5,
+            'shin_lenth':0.5,
+            'thigh_lenth':0.1,
             #'torso_height':0.6,
             }
 
 # 生成XML文件
-#t = HumanoidXML(terrain_type='ladders',gravity=-9.8)
-#t.write_xml(file_path="e.xml")
+#t = HumanoidXML(terrain_type='default',gravity=0)
+#t.write_xml(file_path="ee.xml")
 
 
 # 更新XML文件
-""" t.set_params(paramas)
-t.update_xml(file_path='e.xml') """
+#t.set_params(paramas)
+#t.update_xml(file_path='ee.xml')
 
 # 加载 XML 文件
 # model = mujoco_py.load_model_from_path("gym_custom_env\\assets\\humanoid_custom.xml")
-model = mujoco_py.load_model_from_path("e.xml")
+model = mujoco_py.load_model_from_path("ee.xml")
 # model = mujoco_py.load_model_from_path("humanoid.xml")
 # 创建仿真环境和渲染器
 sim = mujoco_py.MjSim(model)
@@ -145,6 +146,10 @@ for i in range(timesteps):
     rotation_matrix=quaternion_to_rotation_matrix(quatanion)
 
     vertical_direction = np.array([0, 0, 1])
+    x_dir = np.array([1,0,0])
+    y_dir = np.array([0,1,0])
+    body_x_axis = rotation_matrix.dot(x_dir)
+    body_y_axis = rotation_matrix.dot(y_dir)
     body_z_axis = rotation_matrix.dot(vertical_direction)
     dot_product = np.dot(body_z_axis, vertical_direction)
 
@@ -168,6 +173,11 @@ for i in range(timesteps):
     print('==================================')
     print('geom number: ', sim.model.ngeom)
     print('number of detected contacts:',sim.data.ncon)
+    print('quatanion:',quatanion)
+    print('Rm',rotation_matrix)
+    print('body_x_axis',body_x_axis)
+    print('body_y_axis',body_y_axis)
+    print('body_z_axis',body_z_axis)
     for i in range(ncon):
         print(f'contact : {geomdict[sim.data.contact[i].geom1]} + {geomdict[sim.data.contact[i].geom2]}')
     print('*************')

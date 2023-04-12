@@ -2,7 +2,9 @@
 
 ## 零、题目
 
-**Co-optimization of Morphology and Controller of Complex Robot's Based on DRL**
+原题目： Robot structure evolution based on heuristic search
+
+**Co-optimization of Morphology and Controller of Humanoid Robot Based on DRL**
 
 **基于深度强化学习的复杂机器人形态-控制联合优化**
 
@@ -42,6 +44,12 @@
   ---
 
   **为何能降低运算时间**：将单个设计的训练数据同时用于训练全局训练网络。此全局训练网络可应用于后续的新的设计。由此，每个新的设计无需从零开始学习。
+  
+- **Application of reinforcement learning in biped robot gait controlling**  
+
+  - 考虑到当 action 维度增高时，强化学习的收敛性与训练效率会降低 ，因此将机器人上半身关节固定 ，保留髋关节 3 个自由度、膝关节 1 个自由度与踝关节 2 个自由度 ，双腿共计 12 个自由度 ，对应action的12个维度。
+  - 因为在实际行走中，机器人的运动应该为稳定持久 ，不随行走距离增大而发生改变的，因此在观测中，不应包括机器人在仿真
+    世界中的前进距离 ，否则待训练智能体的决策将受到此信息的干扰，当机器人其他信息相同，只有前进距离不同时 ，会出现不同的动作 ，影响持久性。  
 
 ### 2. 为什么进行机器人的控制器-形态联合优化？
 

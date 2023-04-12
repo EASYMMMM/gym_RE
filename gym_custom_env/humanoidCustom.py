@@ -232,7 +232,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                     # 手部仅可碰撞到6阶以上时有奖励分
                     if 'hand' in limb and ladder_num < 5:
                         continue
-                    reward = reward + 25*ladder_num
+                    reward = reward + 50*ladder_num
                     self.already_touched.append(cont_pair)
 
         if self.terrain_type == 'steps':

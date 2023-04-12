@@ -212,8 +212,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             for i in range(ncon): # 遍历所有碰撞对
                 con = contact[i]
                 # 判断ladder是否参与碰撞
-                if 'ladders' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
-                    ladder = self.geomdict[con.geom1] if 'ladders' in self.geomdict[con.geom1] else self.geomdict[con.geom2]
+                if 'ladder' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
+                    ladder = self.geomdict[con.geom1] if 'ladder' in self.geomdict[con.geom1] else self.geomdict[con.geom2]
                     # 判断是手还是脚
                     if 'hand' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
                         # 区分左右手加分

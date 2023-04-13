@@ -161,7 +161,7 @@ if __name__ == "__main__":
             learning_starts=10000,
             buffer_size=int(5e6),
             tau=0.01,
-            gradient_steps=3,
+            gradient_steps=4,
         ),
         "td3": dict(
             batch_size=100,

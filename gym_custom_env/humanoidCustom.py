@@ -86,6 +86,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             exclude_current_positions_from_observation
         )
         self.x_velocity = 0                         # 质心沿x速度
+        self.z_velocity = 0                         # 质心沿z速度
         self._walking_counter = 0                   # 判定正常前进计数器
         self.already_touched =[]                    # 记录已经碰撞过的geom对
 
@@ -138,8 +139,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         # 梯子地形
         # 前进奖励 = 速度权重*前进速度 + 5*距离权重*高度
         if self.terrain_type == 'ladders':
-            forward_reward = self._forward_speed_reward_weight * self.x_velocity + self._forward_distance_reward_weight * (self.sim.data.qpos[2]-1.3) # self.sim.data.qpos[0]: x coordinate of torso (centre)
-    
+            # forward_reward = self._forward_speed_reward_weight * (self.x_velocity + 2*self.z_velocity) + self._forward_distance_reward_weight * (self.sim.data.qpos[2]-1.3) # self.sim.data.qpos[0]: x coordinate of torso (centre)
+            forward_reward = 2 * self._forward_speed_reward_weight * (self.x_velocity + self.z_velocity) 
         return forward_reward
 
     @property
@@ -340,9 +341,10 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         xyz_position_after = mass_center(self.model, self.sim)
 
         # dt为父类mujoco_env中的一个@property函数 
-        xy_velocity = (xyz_position_after[0:2] - xyz_position_before[0:2]) / self.dt
-        x_velocity, y_velocity = xy_velocity
+        xyz_velocity = (xyz_position_after[0:3] - xyz_position_before[0:3]) / self.dt
+        x_velocity, y_velocity, z_velocity = xyz_velocity
         self.x_velocity = x_velocity
+        self.z_velocity = z_velocity
 
         # 是否仍在前进，只调用一次，防止反复调用is_walking出错
         self._is_walking = self.is_walking

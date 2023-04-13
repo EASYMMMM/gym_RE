@@ -12,48 +12,65 @@
 
 ### 1. 机器人形态优化文献综述
 
-- **Data-efficient Co-Adaptation of Morphology and Behaviour with Deep Reinforcement Learning**
+---
 
-  <img src="C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230405170205407.png" alt="image-20230405170205407" style="zoom:50%;" />
+- **Data-efficient Co-Adaptation of Morphology and Behavior with Deep Reinforcement Learning**
 
-  基于强化学习，对形态和控制器联合优化。
+  - 基于强化学习，对形态和控制器联合优化。
 
-  框架构建：
+    框架构建：
 
-  - 构建MDP模型，将设计参数$\xi$添加到MDP中。策略$\pi(s,\xi)$同样依赖于设计参数。
+    ​		构建MDP模型，将设计参数$\xi$添加到MDP中。策略$\pi(s,\xi)$同样依赖于设计参数。
 
-  ![image-20230405202217974](C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230405202217974.png)
+    <img src="C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230405170205407.png" alt="image-20230405170205407" style="zoom:50%;" />
 
-  **整体算法结构：**
+    <img src="C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230405202217974.png" alt="image-20230405202217974" style="zoom: 67%;" />
 
-  ---
+  - ​	**整体算法结构：**
 
-  1.  初始化Replay Buffer，和Actor，Critic网络
+    1.  初始化Replay Buffer，和Actor，Critic网络
+    2.  生成一个初始设计$\xi$。
+    3.  使用全局控制网络的参数对个体控制网络进行赋值。
+    4.  训练设计$\xi$。保存马尔可夫链的数据至全局Buffer和个体Buffer。用得到的数据分别训练全局控制网络（$\pi_{Pop.}, Q_{Pop}$，实际上即Actor网络和Critic网络）和针对本次设计的个体控制网络（$\pi_{Ind.}, Q_{Ind}$）
+    5.  保存该次训练的起始状态$S_O$。
+    6.  根据当前迭代数决定是进行Exploitation还是Exploration:
+        - Exploitation：根据得到的全部$S_O$数据来计算待优化的目标函数：$max_{\xi}\frac{1}{n}\sum_s\in s_{batch} {Q_{Pop.}(s,\pi_{Pop.}(s,\xi),\xi)}$
+        - Exploration：根据探索策略选择新的设计$\xi$。
+    7.  返回步骤2
 
-  2. 生成一个初始设计$\xi$。
-  3. 使用全局控制网络的参数对个体控制网络进行赋值。
-  4. 训练设计$\xi$。保存马尔可夫链的数据至全局Buffer和个体Buffer。用得到的数据分别训练全局控制网络（$\pi_{Pop.}, Q_{Pop}$，实际上即Actor网络和Critic网络）和针对本次设计的个体控制网络（$\pi_{Ind.}, Q_{Ind}$）
+  - **为何能降低运算时间**：将单个设计的训练数据同时用于训练全局训练网络。此全局训练网络可应用于后续的新 的设计。由此，每个新的设计无需从零开始学习。
 
-  3. 保存该次训练的起始状态$S_O$。
-
-  4. 根据当前迭代数决定是进行Exploitation还是Exploration:
-     - Exploitation：根据得到的全部$S_O$数据来计算待优化的目标函数：$max_{\xi}\frac{1}{n}\sum_s\in s_{batch} {Q_{Pop.}(s,\pi_{Pop.}(s,\xi),\xi)}$
-     - Exploration：根据探索策略选择新的设计$\xi$。
-  5. 返回步骤2
-
-  ---
-
-  **为何能降低运算时间**：将单个设计的训练数据同时用于训练全局训练网络。此全局训练网络可应用于后续的新的设计。由此，每个新的设计无需从零开始学习。
-  
 - **Application of reinforcement learning in biped robot gait controlling**  
 
   - 考虑到当 action 维度增高时，强化学习的收敛性与训练效率会降低 ，因此将机器人上半身关节固定 ，保留髋关节 3 个自由度、膝关节 1 个自由度与踝关节 2 个自由度 ，双腿共计 12 个自由度 ，对应action的12个维度。
   - 因为在实际行走中，机器人的运动应该为稳定持久 ，不随行走距离增大而发生改变的，因此在观测中，不应包括机器人在仿真
     世界中的前进距离 ，否则待训练智能体的决策将受到此信息的干扰，当机器人其他信息相同，只有前进距离不同时 ，会出现不同的动作 ，影响持久性。  
+  
+- **Reinforcement Learning for Improving Agent Design**
 
-### 2. 为什么进行机器人的控制器-形态联合优化？
+  <img src="C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230413165832685.png" alt="image-20230413165832685" style="zoom: 33%;" />
 
-机器人的形态决定其功能。不同的形态又需要不同的控制器。在针对特定任务设计并优化机器人形态时，需要始终评估不同形态的性能。为众多形态分别设计控制器并进行实验是非常费时费力的。希望能够在仿真中构建控制器-形态联合优化的框架，减少优化时长，并提升最终效能。
+  使用Ant模型进行设计优化。
+
+  将环境相关的设计参数设置为可学习的参数，与控制器一起学习。
+
+  - 保持所有材料的体积质量密度以及电机关节的参数与原始环境相同，并允许36个参数(每个leg part 3个参数，每个leg part 3个，共4个leg)被学习。特别是，我们允许每个部分缩放到其原始值的$±75\%$范围。这使我们能够保留每个部分的标志和方向，以保留设计的原始预期结构。
+  - In principle, we could allow an agent to augment its body during a rollout to obtain a dense
+    reward signal, but we find this impractical for realistic problems. **Future work may look at separating the learning from dense rewards and sparse rewards into an inner loop and outer loop**, and also examine differences in performance and behaviors in structures learned with various different RL algorithms.
+  - 来自刘华平的评价：文献 [99] 针对越障问题利用强化学习实现形态与控制策略的联合学习.   
+
+- **Jointly learning  to  construct  and  control  agents  using  deep  reinforcement learning**
+
+  - 来自刘华平的评论：将设计参数与控制参数一起用近端策略优化方法（PPO）联合计算. 由于形态搜索空间过大, 且形态与控制的搜索难以解耦, 学习收敛非常困难. 因此作者对形态搜索的空间做了约束, 仅能针对指定的形态优化机器人组件的参数, 而没有优化机器人的结构.   
+
+- **基于形态的具身智能研究：历史回顾与前沿进展**
+
+  - 尽管形态与控制应该联合协同优化, 但二者其实是在不同尺度上的优化. 以生物为例, 形态的变化 (包括结构与参数) 更类似一种进化过程, 即在长期的环境适应过程中通过进化过程来优化自身的结构与参数; 而控制器的设计过程更类似于后天的学习过程, 即在确定形态后在自己的生命期内通过学习努力达到运动能力的边界. 因此不难看出, 一个很自然的想法是利用进化优化方法实现形态结构与参数的寻优, 而利用强化学习策略实现控制结构与参数的优化. 二者嵌套在两个回路中, 其中进化优化方法为外部循环, 而强化学习为内部循环.   
+
+### 2. 研究意义
+
+- 机器人的形态决定其功能。不同的形态又需要不同的控制器。在针对特定任务设计并优化机器人形态时，需要始终评估不同形态的性能。为众多形态分别设计控制器并进行实验是非常费时费力的。希望能够在仿真中构建控制器-形态联合优化的框架，减少优化时长，并提升最终效能。
+- 在现有的关于机器人形态、结构优化研究中，研究对象大多是比较简单的机器人模型。本设计将模型更改为更复杂的Humanoid model。
 
 
 
@@ -100,6 +117,13 @@ $$
 #### 2.2 梯子地形的Reward Function
 
 梯子地形的reward function目前基本的形式与楼梯地形相同：
+
+其中包括：
+
+1. 前进项：沿x位置，沿x速度
+2. 接触项：当agent的手或者脚与梯子接触时，给予高额reward。每个手/脚接触每层梯子的reward仅给一次，防止agent将手放在梯子上不动。越高处的梯子给的reward越高。
+3. 生存惩罚：当agent存活时，给予负的生存奖励，逼迫其进行探索。
+
 $$
 R = w_{forward}r_{foward} + w_{healthy}r_{healthy} + w_{stand}r_{stand} - w_{control}c_{control} - w_{contact}c_{contact}
 $$
@@ -113,9 +137,7 @@ $$
 
 <img src="C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230404152020410.png" alt="image-20230404152020410" style="zoom:50%;" />
 
-为了更好的引导agent爬上梯子，考虑进一步添加离散奖励，奖励agent与梯子接触，来对agent进行阶段性的引导。这样的reward能够帮助agent更好地探索空间，并作为分目标，帮助其训练。
-
-初步考虑为：
+：
 
 - 当agent的手或者脚与梯子接触时，给予高额reward。
 - 每个手/脚接触每层梯子的reward仅给一次，防止agent将手放在梯子上不动。

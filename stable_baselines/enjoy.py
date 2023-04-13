@@ -12,7 +12,7 @@ python stable_baselines/enjoy.py --algo sac --env Humanoid-v3
 
 python stable_baselines/enjoy.py --algo ppo --env Humanoid-v3  --model-name 2e6 
 
-python stable_baselines/enjoy.py --algo sac --env HumanoidCustomEnv-v0   --model-name 2e6 
+python stable_baselines/enjoy.py --algo sac --env HumanoidCustomEnv-v0  --terrain-type ladders  --model-name 2e6_ladder_hand_t4_cpu8
 '''
 # ------- 来自于mujoco150在win+py3.9下的矫情的要求 --------
 # 手动添加mujoco路径
@@ -70,11 +70,18 @@ if __name__ == "__main__":
         default="",
         type=str,
     )
+    parser.add_argument(
+        "--terrain-type",
+        help="Type of the traning terrain",
+        default='default',
+        type=str,
+    )        
     args = parser.parse_args()
 
     env_id = args.env
+    terrain = args.terrain_type
     # Create an env similar to the training env
-    env = gym.make(env_id, terrain_type='steps')
+    env = gym.make(env_id, terrain_type=terrain)
 
     # Enable GUI
     if not args.no_render:
@@ -90,7 +97,7 @@ if __name__ == "__main__":
 
     model_name = args.model_name + "_"
      # 存放在sb3model/文件夹下
-    save_path = f"sb3model/{env_id}/{model_name}{args.algo}_{env_id}/best_model.zip"
+    save_path = f"sb3model/{env_id}/{model_name}{args.algo}_{env_id}.zip"
     
     if not os.path.isfile(save_path) or args.load_best:
         print("Loading best model")

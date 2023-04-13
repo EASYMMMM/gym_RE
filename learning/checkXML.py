@@ -155,7 +155,14 @@ for i in range(timesteps):
     body_y_axis = rotation_matrix.dot(y_dir)
     body_z_axis = rotation_matrix.dot(vertical_direction)
     dot_product = np.dot(body_z_axis, vertical_direction)
-
+    forward_direction = np.array([1, 0, 0])
+    x_dot_product = np.dot(body_x_axis, forward_direction)
+    print('================')
+    print('x:')
+    print(body_x_axis)
+    print('x product:')
+    print(x_dot_product)
+    print('================')
     # 读取mujoco碰撞参数
     ncon = sim.data.ncon
     contact = list(sim.data.contact)  # 读取一个元素为mjContact的结构体数组

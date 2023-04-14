@@ -394,9 +394,6 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             "reward_quadctrl": -ctrl_cost,
             "reward_alive": healthy_reward,
             "reward_impact": -contact_cost,
-            "x_position": xyz_position_after[0],
-            "y_position": xyz_position_after[1],
-            "z_position": xyz_position_after[2],
             "xyz_position": xyz_position_after,
             "distance_from_origin": np.linalg.norm(xyz_position_after, ord=2),
             "x_velocity": x_velocity,
@@ -404,6 +401,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             "forward_reward": forward_reward,
             "is_healthy": self.is_healthy,
             "is_walking": self._is_walking,
+            "contact pairs":self.already_touched
         }
 
         return observation, reward, done, info

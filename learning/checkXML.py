@@ -39,7 +39,7 @@ paramas = { #'torso_width':0.5,
             }
 
 # 生成XML文件
-t = HumanoidXML(terrain_type='steps',gravity=0)
+t = HumanoidXML(terrain_type='ladders',gravity=0)
 t.write_xml(file_path="ee.xml")
 
 

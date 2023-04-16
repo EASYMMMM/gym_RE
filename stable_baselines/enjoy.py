@@ -125,7 +125,7 @@ if __name__ == "__main__":
             episode_length = 0
             while not done:
                 action, _ = model.predict(obs, deterministic=True)
-                obs, reward, done, _info = env.step(action)
+                obs, reward, done, info = env.step(action)
                 episode_reward += reward
 
                 episode_length += 1
@@ -138,6 +138,7 @@ if __name__ == "__main__":
             print(
                 f"Episode {len(episode_rewards)} reward={episode_reward}, length={episode_length}"
             )
+            print("contact pairs",info["contact pairs"])
 
         mean_reward = np.mean(episode_rewards)
         std_reward = np.std(episode_rewards)

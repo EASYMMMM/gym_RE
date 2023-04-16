@@ -123,11 +123,18 @@ if __name__ == "__main__":
             done = False
             episode_reward = 0.0
             episode_length = 0
+            forward_r_total = 0
+            contact_r_total = 0
+            posture_r_total = 0
+            healthy_r_total = 0
             while not done:
                 action, _ = model.predict(obs, deterministic=True)
                 obs, reward, done, info = env.step(action)
                 episode_reward += reward
-
+                forward_r_total += info['forward_reward']
+                contact_r_total += info['contact_reward']
+                posture_r_total += info['posture_reward']
+                healthy_r_total += info['healthy_reward']
                 episode_length += 1
                 if not args.no_render:
                     env.render(mode="human")
@@ -139,6 +146,11 @@ if __name__ == "__main__":
                 f"Episode {len(episode_rewards)} reward={episode_reward}, length={episode_length}"
             )
             print("contact pairs",info["contact pairs"])
+            print('forward R: ', forward_r_total)
+            print('contact R: ', contact_r_total)
+            print('posture R: ', posture_r_total)
+            print('healthy R: ', healthy_r_total)
+            print('************************')
 
         mean_reward = np.mean(episode_rewards)
         std_reward = np.std(episode_rewards)

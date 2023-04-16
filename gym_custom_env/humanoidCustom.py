@@ -467,9 +467,10 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             low=noise_low, high=noise_high, size=self.model.nv
         )
         self.set_state(qpos, qvel)
-
-        observation = self._get_obs()
         self.__init_counter()
+        
+        observation = self._get_obs()
+        
         
         return observation
 

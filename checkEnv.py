@@ -18,5 +18,8 @@ from stable_baselines3 import SAC, TD3, PPO
 
 env = gym.make('HumanoidCustomEnv-v0',terrain_type='ladders')
 
-geomdict = env.get_geom_idname()
-print(geomdict)
+
+print(env.observation_space)
+print('============')
+obs = env.reset()
+print(len(obs))

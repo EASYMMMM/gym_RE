@@ -104,26 +104,37 @@ class HumanoidXML(MujocoXML):
         # 定义梯子
         if terrain_type == "ladders":
             # Define the parameters for the box geometries
-            box_size = ".06 1.2 .01"
+            box_size =  [0.06,1.2,0.01]
             box_rgba = "0 .9 0 1"
+            bottom_rgba = "0.9 0 0 1"
             box_condim = "3"
             box_friction = "1 .1 .1"
 
             # Define the positions using an arithmetic sequence with a common difference of 0.2
             positions = [(round(i * 0.1, 3), 0, round(i * 0.2 * 3 / 2, 3)) for i in range(11)]
-
+            self.ladder_positions = positions
             # Create a geometry for each position
             for i, pos in enumerate(positions):
                 box_attr = {
                     "name": f"ladder{i + 1}",
                     "type": "box",
-                    "size": box_size,
-                    "pos": f"{pos[0]} {pos[1]} {pos[2]}",
+                    "size": f"{box_size[0]} {box_size[1]} {box_size[2]*0.5}" ,
+                    "pos": f"{pos[0]} {pos[1]} {pos[2] + box_size[2]*0.25}",
                     "rgba": box_rgba,
                     "condim": box_condim,
                     "friction": box_friction,
                 }
                 self.elements["worldbody"].child_element(tag, box_attr)
+                bottom_attr = {
+                    "name": f"bottom{i + 1}",
+                    "type": "box",
+                    "size": f"{box_size[0]} {box_size[1]} {box_size[2]*0.5}" ,
+                    "pos": f"{pos[0]} {pos[1]} {pos[2] - box_size[2]*0.25}",
+                    "rgba": bottom_rgba,
+                    "condim": box_condim,
+                    "friction": box_friction,
+                }
+                self.elements["worldbody"].child_element(tag, bottom_attr)                
         
         # 定义楼梯
         if terrain_type == 'steps':     

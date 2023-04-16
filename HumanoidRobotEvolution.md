@@ -168,9 +168,9 @@ SAC是一个off-policy，actor-critic算法。与其他RL算法最为不同的�
 
   同时包括两项cost，接触cost和控制cost。
 
-- 楼梯地形新版（4月）：
+- **楼梯地形新版：**
 
-  - Action space：
+  Action space：
 
   未改动，仍为$19*1$的数组，表示全部电机的输出，限幅$[-0.4,0.4]$。
 
@@ -184,12 +184,12 @@ SAC是一个off-policy，actor-critic算法。与其他RL算法最为不同的�
   $$
   R = w_{forward}r_{foward} + w_{healthy}r_{healthy} + w_{stand}r_{stand} - w_{control}c_{control} - w_{contact}c_{contact}
   $$
-  
+
 
   1. 前进奖励，**包括前进速度，移除了前进距离**：
 
   $$
-  r_{forward} = w_{speed}v_x
+  r_{forward} = v_x
   $$
 
   2. 存活奖励，当机器人被判断为存活时，始终获得该奖励，**但更改为了值很小的负数**。
@@ -209,11 +209,11 @@ SAC是一个off-policy，actor-critic算法。与其他RL算法最为不同的�
   >
   > --强化学习在双足机器人步态控制中的应用  ，张惟宜  
 
-  从本质上来说，楼梯地形和平坦地面没有本质区别，都是在无限延展的地形中稳定的走下去。楼梯地形无非是增加了一些台阶，且这些台阶沿x方向（前进方向）是周期性分布的。因此，在观测空间中添加全局x坐标项，会导致训练变得更复杂：对于agent来说，由于全局x坐标观测量的存在，走上第7个台阶和走上第1个台阶变得不一样了，需要重新学习。而实际上并没有什么不一样。
+  ​     从本质上来说，楼梯地形和平坦地面没有本质区别，都是在无限延展的地形中稳定的走下去。楼梯地形无非是增加了一些台阶，且这些台阶沿x方向（前进方向）是周期性分布的。因此，在观测空间中添加全局x坐标项，会导致训练变得更复杂：对于agent来说，由于全局x坐标观测量的存在，走上第7个台阶和走上第1个台阶变得不一样了，需要重新学习。而实际上并没有什么不一样。
 
-  同样的，在奖励函数中添加关于x的位移项，也可能会引发类似的问题：由于在楼梯高处的奖励函数变得更高，agent不会使用在低处楼梯相同的策略来走上高处楼梯，可能会使用一些简单的策略来获得更高的位移奖励，比如一个鱼跃然后摔倒。这会不可预测地影响训练。
+  ​     同样的，在奖励函数中添加关于x的位移项，也可能会引发类似的问题：由于在楼梯高处的奖励函数变得更高，agent不会使用在低处楼梯相同的策略来走上高处楼梯，可能会使用一些简单的策略来获得更高的位移奖励，比如一个鱼跃然后摔倒。这会不可预测地影响训练。
 
-  走楼梯和平地行走都是在学习一个周期性的、能够保持平衡的步态。原先的观测空间和奖励函数的设定将agent要学习的任务隐式地更改为“尽可能地快速移动到更高的位置”。这也是为什么先前训练得到的结果在楼梯高处表现出的平衡性远远低于在楼梯低处。
+  ​    走楼梯和平地行走都是在学习一个周期性的、能够保持平衡的步态。原先的观测空间和奖励函数的设定将agent要学习的任务隐式地更改为“尽可能地快速移动到更高的位置”。这也是为什么先前训练得到的结果在楼梯高处表现出的平衡性远远低于在楼梯低处。
 
 - 为什么要将生存奖励改为负数？
 
@@ -227,34 +227,125 @@ SAC是一个off-policy，actor-critic算法。与其他RL算法最为不同的�
 
 #### 3.2 梯子地形
 
-梯子地形的reward function目前基本的形式与楼梯地形相同：
+- **原版（3月）梯子地形：**
 
-其中包括：
+  梯子地形的reward function目前基本的形式与楼梯地形相同：
 
-1. 前进项：沿x位置，沿x速度
-2. 接触项：当agent的手或者脚与梯子接触时，给予高额reward。每个手/脚接触每层梯子的reward仅给一次，防止agent将手放在梯子上不动。越高处的梯子给的reward越高。
-3. 生存惩罚：当agent存活时，给予负的生存奖励，逼迫其进行探索。
+  其中包括：
 
-$$
-R = w_{forward}r_{foward} + w_{healthy}r_{healthy} + w_{stand}r_{stand} - w_{control}c_{control} - w_{contact}c_{contact}
-$$
-其中的前进奖励项更改为向上高度的奖励：
-$$
-r_{forward} = w_{speed}v_x + w_{height}z
-$$
-作为调整，调低了前进速度权重$w_{speed}$，调高了高度奖励$w_{height}$，调低了生存奖励$w_{healthy}$，调低了直立奖励$w_{stand}$。目的是进一步鼓励机器人沿着梯子上升。
+  1. 前进项：沿x位置，沿x速度，沿z位置，沿z速度
+  2. 接触项：当agent的手或者脚与梯子接触时，给予高额reward。每个手/脚接触每层梯子的reward仅给一次，防止agent将手放在梯子上不动。越高处的梯子给的reward越高。
+  3. 姿态项：躯干站立越直，奖励越高。
+  4. 生存惩罚：当agent存活时，给予负的生存奖励，逼迫其进行探索。
 
-问题也非常明显。相比于走楼梯，爬梯子是一系列更为复杂的动作，需要全身协调配合。因此，尽管有着向上高度的奖励函数来引导它向上，但是agent并不知道如何向上攀爬。
+  $$
+  R = w_{forward}r_{foward} + w_{healthy}r_{healthy} + w_{stand}r_{stand} - w_{control}c_{control} - w_{contact}c_{contact}
+  $$
 
-<img src="C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230404152020410.png" alt="image-20230404152020410" style="zoom:50%;" />
+  其中的前进奖励项更改为向上高度的奖励：
+  $$
+  r_{forward} = w_{speed}v_x + w_{height}z
+  $$
+  作为调整，调低了前进速度权重$w_{speed}$，调高了高度奖励$w_{height}$，调低了生存奖励$w_{healthy}$，调低了直立奖励$w_{stand}$。目的是进一步鼓励机器人沿着梯子上升。
 
-：
+  问题也非常明显。相比于走楼梯，爬梯子是一系列更为复杂的动作，需要全身协调配合。因此，尽管有着向上高度的奖励函数来引导它向上，但是agent并不知道如何向上攀爬。
 
-- 当agent的手或者脚与梯子接触时，给予高额reward。
-- 每个手/脚接触每层梯子的reward仅给一次，防止agent将手放在梯子上不动。
-- 越高处的梯子给的reward越高。
+  ```python
+      @property
+      def contact_reward(self):
+          '''
+          - 读取contact信息。
+          - 扫描contact数组，寻找其中是否有‘手-梯子’，‘脚-梯子’的碰撞对。注意geom1既可能是梯子		也可能是手。
+          - 如果有，将这一对碰撞对保存下来。若该碰撞对已存在，则跳过，不获得奖励函数。
+          - 根据梯子的阶数，赋予奖励值。梯子越高，奖励值越高
+          '''
+          # 计算接触reward
+          reward = 0
+          if self.terrain_type == 'ladders':
+              contact = list(self.sim.data.contact)  # 读取一个元素为mjContact的结构体				数组
+              ncon = self.sim.data.ncon # 碰撞对的个数
+              for i in range(ncon): # 遍历所有碰撞对
+                  con = contact[i]
+                  # 判断ladder是否参与碰撞
+                  if 'ladder' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
+                      ladder = self.geomdict[con.geom1] if 'ladder' in self.geomdict[con.geom1] else self.geomdict[con.geom2]
+                      # 判断是手还是脚
+                      if 'hand' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
+                          # 区分左右手加分
+                          limb = 'right_hand' if 'right' in self.geomdict[con.geom1]+self.geomdict[con.geom2] else 'left_hand'
+                      elif 'foot' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
+                          limb = 'right_foot' if 'right' in self.geomdict[con.geom1]+self.geomdict[con.geom2] else 'left_foot'
+                      else: # 若非手脚，跳过
+                          continue
+                  else:
+                      continue
+                  cont_pair = (limb,ladder)
+                  if cont_pair in self.already_touched: # 判断是否曾经碰撞过
+                      continue
+                  else:
+                      ladder_num = int(ladder[6:])
+                      # 手部仅可碰撞到6阶以上时有奖励分
+                      if 'hand' in limb and ladder_num < 5:
+                          continue
+                      reward = reward + 50*ladder_num
+                      self.already_touched.append(cont_pair)
+  
+          if self.terrain_type == 'steps':
+              reward = 0
+          contact_reward = reward * self._contact_reward_weight           
+          return contact_reward
+  
+  ```
 
-#### 2.3 离散Reward Function在本任务中的具体实现
+  
+
+<img src="C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230404152020410.png" alt="image-20230404152020410" style="zoom: 33%;" />
+
+- **新版（4月）梯子地形奖励函数：**
+
+  Observation Space：
+
+  添加对梯子的相对位置信息读取：
+
+  确定agent当前触碰到的最低一级梯子（地板和第一级梯子优先级相同），最低一级梯子往上数三个梯子，取agent到这三个梯子中心的x方向距离，z方向距离，总共6个数据。
+
+  Action Space：
+
+  无改动，仍然是 $19\times1$的动作空间。
+
+  Reward：
+
+  共四项：
+  $$
+  R = w_{forward}r_{foward} + w_{healthy}r_{healthy} + w_{stand}r_{stand} + w_{contact}r_{contact} - w_{control}c_{control} - w_{contact}c_{contact}
+  $$
+
+  1. 前进项：只保留x方向速度和z方向速度，其中z方向速度占比更大。
+     $$
+     r_{forward}= v_x + 2v_z
+     $$
+
+  2. 生存项：当agent存活时，给予负的生存奖励，逼迫其进行探索。为-0.2。当触碰到最高处的阶梯时，终止。
+
+  3. 接触项：agent手/脚接触到梯子时
+
+     ​    吸收楼梯环境的经验，消去和全局位置相关的特征，以提升训练稳定性。对于不同的台阶，均给出相同的reward值。这个值不应太大，在先前的试验中，若离散reward给的太高，会严重影响agent的exploration效率，过早收敛。
+
+     ​    根据李宏毅Reward shaping的主要思想，$R(s_t)$函数应具有单一方向的持续上升的梯度，此方向为先验知识指导agent学习的方向。既然难以指导agent学会爬梯子的动作，不如惩罚agent不爬梯子/向下走。
+
+     由此，最终接触项设计如下：
+
+     - 单次接触reward设计为10。
+     - 若某个肢体（左右手、左右脚）碰到了比先前碰到过的最高阶梯要低的阶梯，给予-200的reward。
+     - 重复接触不计算reward。
+
+  4. 姿态项：移除了直立奖励，爬梯子的过程中应该很难保持直立。添加了朝向奖励。
+
+     
+
+- 
+
+#### 3.3 离散Reward Function在本任务中的具体实现
 
 在Mujoco中，每次`step`迭代都会计算一次接触，接触数据以`Mjcontact`数组的形式储存在`Pymjdata`中。
 

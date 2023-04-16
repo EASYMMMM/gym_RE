@@ -39,7 +39,7 @@ paramas = { #'torso_width':0.5,
             }
 
 # 生成XML文件
-t = HumanoidXML(terrain_type='ladders',gravity=0)
+t = HumanoidXML(terrain_type='ladders',gravity=-9)
 t.write_xml(file_path="ee.xml")
 
 
@@ -157,12 +157,12 @@ for i in range(timesteps):
     dot_product = np.dot(body_z_axis, vertical_direction)
     forward_direction = np.array([1, 0, 0])
     x_dot_product = np.dot(body_x_axis, forward_direction)
-    print('================')
+    """     print('================')
     print('x:')
     print(body_x_axis)
     print('x product:')
     print(x_dot_product)
-    print('================')
+    print('================') """
     # 读取mujoco碰撞参数
     ncon = sim.data.ncon
     contact = list(sim.data.contact)  # 读取一个元素为mjContact的结构体数组
@@ -179,7 +179,16 @@ for i in range(timesteps):
             else: # 若非手脚，跳过
                 continue
         else:
-            continue
+            if 'floor' in geomdict[con.geom1]+geomdict[con.geom2]:
+                ladder = geomdict[con.geom1] if 'floor' in geomdict[con.geom1] else geomdict[con.geom2]
+                # 判断是手还是脚
+                if 'hand' in geomdict[con.geom1]+geomdict[con.geom2]:
+                # 区分左右手加分
+                    limb = 'right_hand' if 'right' in geomdict[con.geom1]+geomdict[con.geom2] else 'left_hand'
+                elif 'foot' in geomdict[con.geom1]+geomdict[con.geom2]:
+                    limb = 'right_foot' if 'right' in geomdict[con.geom1]+geomdict[con.geom2] else 'left_foot'
+                else: # 若非手脚，跳过
+                    continue
     print('==================================')
     print('geom number: ', sim.model.ngeom)
     print('number of detected contacts:',sim.data.ncon)
@@ -190,23 +199,7 @@ for i in range(timesteps):
     print('body_z_axis',body_z_axis)
     for i in range(ncon):
         print(f'contact : {geomdict[sim.data.contact[i].geom1]} + {geomdict[sim.data.contact[i].geom2]}')
-    print('*************')
-    for i in range(ncon):
-        con = contact[i]
-        if 'ladder' in geomdict[con.geom1]+geomdict[con.geom2]:
-            ladder = geomdict[con.geom1] if 'ladder' in geomdict[con.geom1] else geomdict[con.geom2]
-            # 判断是手还是脚
-            if 'hand' in geomdict[con.geom1]+geomdict[con.geom2]:
-            # 区分左右手加分
-                limb = 'right_hand' if 'right' in geomdict[con.geom1]+geomdict[con.geom2] else 'left_hand'
-                print('contact score: '+ladder+' + '+ limb)
-            elif 'foot' in geomdict[con.geom1]+geomdict[con.geom2]:
-                limb = 'right_foot' if 'right' in geomdict[con.geom1]+geomdict[con.geom2] else 'left_foot'
-                print('contact score: '+ladder+' + '+ limb)
-            else: # 若非手脚，跳过
-                continue
-        else:
-            continue        
+    print('*************')    
     #print('geom name floor id:' , sim.model.geom_name2id("floor"))
     #print('geom name lwaist id:' , sim.model.geom_name2id("lwaist"))
     #print('geom1 id:',contact[1].geom1,' geom1 name:',sim.model.name_geomadr[contact[1].geom1])

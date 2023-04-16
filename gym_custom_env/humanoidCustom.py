@@ -33,6 +33,20 @@ def mass_center(model, sim):
     xpos = sim.data.xipos
     return (np.sum(mass * xpos, axis=0) / np.sum(mass))[0:3].copy()
 
+def set_ladder_height():
+    return {'flatfloor':1,
+            'ladder1':1,
+            'ladder2':2,
+            'ladder3':3,
+            'ladder4':4,
+            'ladder5':5,
+            'ladder6':6,
+            'ladder7':7,
+            'ladder8':8,
+            'ladder9':9,
+            'ladder10':10,  
+            'ladder11':11,                         
+            }
 
 class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(
@@ -45,7 +59,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         contact_cost_weight=5e-7,
         contact_cost_range=(-np.inf, 10.0),
         healthy_reward= -0.2,                     # 存活奖励
-        stand_reward_weight = 0.8,              # 站立奖励
+        posture_reward_weight = 0.8,              # 站立奖励
         contact_reward_weight = 1.0,            # 梯子/阶梯 接触奖励
         terminate_when_unhealthy=True,
         healthy_z_range=(0.9, 5.0),
@@ -73,10 +87,9 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self._healthy_reward = -0.1 if terrain_type in 'default'+'steps' else -0.2
         self._terminate_when_unhealthy = terminate_when_unhealthy
         self._healthy_z_range = healthy_z_range
-        self._stand_reward_weight = stand_reward_weight
+        self._posture_reward_weight = posture_reward_weight
         self._contact_reward_weight = contact_reward_weight
         self._reset_noise_scale = reset_noise_scale
-        
         self.camera_config = {
             "defalt":DEFAULT_CAMERA_CONFIG,
             "horizontal":HORIZONTAL_CAMERA_CONFIG,
@@ -85,22 +98,32 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self._exclude_current_positions_from_observation = (
             exclude_current_positions_from_observation
         )
-        self.x_velocity = 0                         # 质心沿x速度
-        self.z_velocity = 0                         # 质心沿z速度
-        self._walking_counter = 0                   # 判定正常前进计数器
-        self.already_touched =[]                    # 记录已经碰撞过的geom对
+        self.__init_counter()
 
         print("============ HUMANOID CUSTOM ENV ============")
         print(f"=====terrain type:{self.terrain_type}=====")
         mujoco_env.MujocoEnv.__init__(self, xml_file_path, 5)
         self.geomdict = self.get_geom_idname()      # geom id name字典
 
+    def __init_counter(self):
+        # 初始化/清零需要用到的储存数组
+        self.x_velocity = 0                         # 质心沿x速度
+        self.z_velocity = 0                         # 质心沿z速度
+        self._walking_counter = 0                   # 判定正常前进计数器
+        self.already_touched =[]                    # ladder:记录已经碰撞过的geom对
+        self.limb_position = {'right_hand':0,    # ladder:记录手脚到达过的最高位置
+                              'left_hand':0,
+                              'right_foot':0,
+                              'left_foot':0}
+        self.ladder_height = set_ladder_height()
+        self.ladder_up = True                       # 是否在梯子上保持上升
+        
     @property
     def is_walking(self):
         # 判断机器人是否正常行走，若连续10步速度小于某值，停止
         _is_walking = True
         if self.terrain_type == 'ladders':
-            threshold = 300
+            threshold = 200
         else:
             threshold = 100
         # 对于阶梯地形，未进入阶梯时，直接返回True
@@ -131,21 +154,18 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         # 计算前进奖励 
 
         # 楼梯地形
-        # 前进奖励 = 速度权重*前进速度 + 距离权重*前进距离
-        # 计算前进距离时 +1，因为机器人起始点在x=-1
+        # 前进奖励 = 速度权重*前进速度
         if self.terrain_type == 'steps':
-            #forward_reward = self._forward_speed_reward_weight * self.x_velocity + self._forward_distance_reward_weight * (self.sim.data.qpos[0] + 0.6) # self.sim.data.qpos[0]: x coordinate of torso (centre)
             forward_reward = self._forward_speed_reward_weight * self.x_velocity  # self.sim.data.qpos[0]: x coordinate of torso (centre)
        
         # 梯子地形
-        # 前进奖励 = 速度权重*前进速度 + 5*距离权重*高度
+        # 前进奖励 = 速度权重*前进速度 
         if self.terrain_type == 'ladders':
-            # forward_reward = self._forward_speed_reward_weight * (self.x_velocity + 2*self.z_velocity) + self._forward_distance_reward_weight * (self.sim.data.qpos[2]-1.3) # self.sim.data.qpos[0]: x coordinate of torso (centre)
-            forward_reward = 2 * self._forward_speed_reward_weight * (self.x_velocity + self.z_velocity) 
+            forward_reward = self._forward_speed_reward_weight * (self.x_velocity + 2*self.z_velocity) 
         return forward_reward
 
     @property
-    def stand_reward(self):
+    def posture_reward(self):
         # 姿态奖励 = 直立 + 方向朝前
 
         quatanion = self.sim.data.qpos[3:7]
@@ -162,13 +182,14 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         # 计算x轴方向向量与竖直向上方向向量的点积
         x_dot_product = np.dot(body_x_axis, forward_direction)
         # 将点积映射到[0, 1]范围内的奖励值
-        # TODO: 这里计算出的点积取负。实验证明站立时点积为-1，暂时还不知道是为什么
-        stand_reward = self._stand_reward_weight * ( (( - z_dot_product + 1.0) / 2.0) + (( x_dot_product + 1.0) / 2.0) )/2
-        
-        # 如果是楼梯地形，直接返回reward值。如果是阶梯地形，乘以系数0.5
+        # 楼梯地形同时考虑姿态和朝向
+        if self.terrain_type == "steps" or self.terrain_type == "default":
+            # TODO: 这里计算出的点积取负。实验证明站立时点积为-1，暂时还不知道是为什么
+            reward = self._posture_reward_weight * ( (( - z_dot_product + 1.0) / 2.0) + (( x_dot_product + 1.0) / 2.0) )/2
+        # 阶梯地形只考虑朝向
         if self.terrain_type == "ladders":
-            stand_reward = stand_reward * 0.1
-        return stand_reward
+            reward = self._posture_reward_weight * (( x_dot_product + 1.0) / 2.0)
+        return reward
 
     def control_cost(self, action):
         # 控制花费。所有控制量的开方和。
@@ -185,7 +206,10 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
     @property
     def _not_fallen(self):
-        return True
+        if self.terrain_type == 'ladders':
+            return self.ladder_up
+        else:
+            return True
         # 检测是否摔倒
         contact = list(self.sim.data.contact)  # 读取一个元素为mjContact的结构体数组
         ncon = self.sim.data.ncon # 碰撞对的个数
@@ -208,12 +232,16 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         min_z, max_z = self._healthy_z_range
         z = self.sim.data.qpos[2]
         if self.terrain_type == 'ladders':
-            min_z = 0.5
+            min_z = 0.6
+            if self.limb_position['right_hand'] == 11 or self.limb_position['left_hand'] == 11:
+                is_inthemap = False
+            else:
+                is_inthemap = True    
         if self.terrain_type == 'steps':
             step_pos = self._get_steps_pos()
             z = step_pos[1]
+            is_inthemap = self.sim.data.qpos[0] < 6.6         #  机器人仍然在阶梯范围内  
         is_standing = min_z < z < 10  #  self.sim.data.qpos[2]: z-coordinate of the torso (centre)
-        is_inthemap = self.sim.data.qpos[0] < 6.6         #  机器人仍然在阶梯范围内   
         is_healthy  = is_standing and is_inthemap and self._not_fallen
         return is_healthy
 
@@ -228,7 +256,6 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     @property
     def contact_reward(self):
         '''
-        TODO:
         - 读取contact信息。
         - 扫描contact数组，寻找其中是否有‘手-梯子’，‘脚-梯子’的碰撞对。注意geom1既可能是梯子也可能是手。
         - 如果有，将这一对碰撞对保存下来。若该碰撞对已存在，则跳过，不获得奖励函数。
@@ -241,9 +268,10 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             ncon = self.sim.data.ncon # 碰撞对的个数
             for i in range(ncon): # 遍历所有碰撞对
                 con = contact[i]
-                # 判断ladder是否参与碰撞
-                if 'ladder' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
+                # 判断ladder/floor是否参与碰撞
+                if ('ladder' in self.geomdict[con.geom1]+self.geomdict[con.geom2]) or ( 'floor' in self.geomdict[con.geom1]+self.geomdict[con.geom2] ):
                     ladder = self.geomdict[con.geom1] if 'ladder' in self.geomdict[con.geom1] else self.geomdict[con.geom2]
+                    ladder = self.geomdict[con.geom1] if 'floor' in self.geomdict[con.geom1] else self.geomdict[con.geom2]
                     # 判断是手还是脚
                     if 'hand' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
                         # 区分左右手加分
@@ -254,15 +282,23 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                         continue
                 else:
                     continue
-                cont_pair = (limb,ladder)
+                cont_pair = (limb,ladder) 
+                # 若当前碰到的阶梯高度比先前碰到的要低
+                if self.ladder_height[ladder] < self.limb_position[limb]:
+                    reward += -200
+                    self.ladder_up = False
+                else:
+                    self.limb_position[limb] = self.ladder_height[ladder]
+
                 if cont_pair in self.already_touched: # 判断是否曾经碰撞过
                     continue
-                else:
+                else: # 初次碰撞，计算reward
+                    if ladder == 'flatfloor': continue
                     ladder_num = int(ladder[6:])
                     # 手部仅可碰撞到6阶以上时有奖励分
                     if 'hand' in limb and ladder_num < 5:
                         continue
-                    reward = reward + 50*ladder_num
+                    reward = reward + 10
                     self.already_touched.append(cont_pair)
 
         if self.terrain_type == 'steps':
@@ -285,10 +321,18 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 #            position = position[2:]
 #        if self.terrain_type == 'steps':
 #            position[0], position[2] = self._get_steps_pos()
+        if self.terrain_type == 'default':
+            position = position[2:]
+
         if self.terrain_type == 'steps':
             position = position[2:]
             steps_pos = self._get_steps_pos()
             position = np.append(position,steps_pos)
+
+        if self.terrain_type == 'ladders':
+            position = position[3:]
+            ladders_pos = self._get_ladders_pos()
+            position = np.append(position,ladders_pos)
 
         return np.concatenate(
             (
@@ -306,15 +350,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         for i in range(self.model.ngeom):
             geomdict[i] = self.model.geom_id2name(i)
         return geomdict
-    '''
-    def _get_steps_pos(self):
-        # 读取当前机器人相对于台阶的x,y,z距离: 
-        step_size_x, step_size_y, step_size_z = self.xml_model.step_size
-        x_w = self.sim.data.qpos[0] + step_size_x + 0.0001  # 机器人在全局的x坐标
-        x =  (x_w // step_size_x + 1)*step_size_x - x_w     # 机器人距离下一级台阶的距离
-        z =  self.sim.data.qpos[2] - (x_w // step_size_x)*step_size_z # 机器人当前的距离地面（台阶）的高度
-        return x,z
-    '''
+
     def _get_steps_pos(self):
         # 读取当前机器人相对于台阶的x,y,z距离: 
         step_size_x, step_size_y, step_size_z = self.xml_model.step_size
@@ -325,6 +361,20 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             z_ = self.sim.data.qpos[2] - (x_ // step_size_x)*step_size_z # 机器人当前的距离地面（台阶）的高度
             x_list.append(z_)
         return x_list 
+
+    def _get_ladders_pos(self):
+        # 读取当前机器人相对于阶梯的x,y,z距离: 
+        ladders_pos = self.xml_model.ladder_positions
+        lowest_ladder = self.limb_position['left_foot'] if self.limb_position['left_foot'] < self.limb_position['right_foot'] else self.limb_position['right_foot']
+        x_w = self.sim.data.qpos[0]  # 机器人在全局的x坐标
+        z_w = self.sim.data.qpos[2]  # 机器人在全局的z坐标
+        pos_list=[]
+        for i in range(3):
+            _x = ladders_pos[lowest_ladder+i][0] - x_w
+            _z = ladders_pos[lowest_ladder+i][2] - z_w
+            pos_list.append(_x)
+            pos_list.append(_z)
+        return pos_list 
 
     def print_obs(self):
         # obs空间
@@ -380,10 +430,10 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         # _forward_reward_weight 默认为1.25, 将x轴位移添加到奖励值中，鼓励前进。
         forward_reward = self.forward_reward
         healthy_reward = self.healthy_reward
-        stand_reward   = self.stand_reward
+        posture_reward = self.posture_reward
         contact_reward = self.contact_reward
 
-        rewards = forward_reward + healthy_reward + stand_reward + contact_reward
+        rewards = forward_reward + healthy_reward + posture_reward + contact_reward
         costs = ctrl_cost + contact_cost
 
         observation = self._get_obs()

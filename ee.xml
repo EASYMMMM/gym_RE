@@ -6,7 +6,7 @@
 		<geom conaffinity="1" condim="1" contype="1" margin="0.001" material="geom" rgba="0.8 0.6 .4 1" />
 		<motor ctrllimited="true" ctrlrange="-.4 .4" />
 	</default>
-	<option integrator="RK4" iterations="50" solver="PGS" timestep="0.003" gravity="0 0 0" />
+	<option integrator="RK4" iterations="50" solver="PGS" timestep="0.003" gravity="0 0 -9" />
 	<size nkey="5" nuser_geom="1" />
 	<visual>
 		<map fogend="5" fogstart="3" />
@@ -21,17 +21,28 @@
 	<worldbody>
 		<light cutoff="100" diffuse="1 1 1" dir="-0 0 -1.3" directional="true" exponent="1" pos="0 0 1.3" specular=".1 .1 .1" />
 		<geom condim="3" friction="1 .1 .1" material="MatPlane" name="flatfloor" pos="0 0 0" rgba="0.8 0.9 0.8 1" size="20 20 2" type="plane" />
-		<geom name="ladder1" type="box" size=".06 1.2 .01" pos="0.0 0 0.0" rgba="0 .9 0 1" condim="3" friction="1 .1 .1" />
-		<geom name="ladder2" type="box" size=".06 1.2 .01" pos="0.1 0 0.2" rgba="0 .9 0 1" condim="3" friction="1 .1 .1" />
-		<geom name="ladder3" type="box" size=".06 1.2 .01" pos="0.2 0 0.4" rgba="0 .9 0 1" condim="3" friction="1 .1 .1" />
-		<geom name="ladder4" type="box" size=".06 1.2 .01" pos="0.3 0 0.6" rgba="0 .9 0 1" condim="3" friction="1 .1 .1" />
-		<geom name="ladder5" type="box" size=".06 1.2 .01" pos="0.4 0 0.8" rgba="0 .9 0 1" condim="3" friction="1 .1 .1" />
-		<geom name="ladder6" type="box" size=".06 1.2 .01" pos="0.5 0 1.0" rgba="0 .9 0 1" condim="3" friction="1 .1 .1" />
-		<geom name="ladder7" type="box" size=".06 1.2 .01" pos="0.6 0 1.2" rgba="0 .9 0 1" condim="3" friction="1 .1 .1" />
-		<geom name="ladder8" type="box" size=".06 1.2 .01" pos="0.7 0 1.4" rgba="0 .9 0 1" condim="3" friction="1 .1 .1" />
-		<geom name="ladder9" type="box" size=".06 1.2 .01" pos="0.8 0 1.6" rgba="0 .9 0 1" condim="3" friction="1 .1 .1" />
-		<geom name="ladder10" type="box" size=".06 1.2 .01" pos="0.9 0 1.8" rgba="0 .9 0 1" condim="3" friction="1 .1 .1" />
-		<geom name="ladder11" type="box" size=".06 1.2 .01" pos="1.0 0 2.0" rgba="0 .9 0 1" condim="3" friction="1 .1 .1" />
+		<geom name="ladder1" type="box" size="0.06 1.2 0.005" pos="0.0 0 0.0025" rgba="0 .9 0 1" condim="3" friction="1 .1 .1" />
+		<geom name="bottom1" type="box" size="0.06 1.2 0.005" pos="0.0 0 -0.0025" rgba="0.9 0 0 1" condim="3" friction="1 .1 .1" />
+		<geom name="ladder2" type="box" size="0.06 1.2 0.005" pos="0.1 0 0.3025" rgba="0 .9 0 1" condim="3" friction="1 .1 .1" />
+		<geom name="bottom2" type="box" size="0.06 1.2 0.005" pos="0.1 0 0.2975" rgba="0.9 0 0 1" condim="3" friction="1 .1 .1" />
+		<geom name="ladder3" type="box" size="0.06 1.2 0.005" pos="0.2 0 0.6024999999999999" rgba="0 .9 0 1" condim="3" friction="1 .1 .1" />
+		<geom name="bottom3" type="box" size="0.06 1.2 0.005" pos="0.2 0 0.5975" rgba="0.9 0 0 1" condim="3" friction="1 .1 .1" />
+		<geom name="ladder4" type="box" size="0.06 1.2 0.005" pos="0.3 0 0.9025" rgba="0 .9 0 1" condim="3" friction="1 .1 .1" />
+		<geom name="bottom4" type="box" size="0.06 1.2 0.005" pos="0.3 0 0.8975000000000001" rgba="0.9 0 0 1" condim="3" friction="1 .1 .1" />
+		<geom name="ladder5" type="box" size="0.06 1.2 0.005" pos="0.4 0 1.2025" rgba="0 .9 0 1" condim="3" friction="1 .1 .1" />
+		<geom name="bottom5" type="box" size="0.06 1.2 0.005" pos="0.4 0 1.1975" rgba="0.9 0 0 1" condim="3" friction="1 .1 .1" />
+		<geom name="ladder6" type="box" size="0.06 1.2 0.005" pos="0.5 0 1.5025" rgba="0 .9 0 1" condim="3" friction="1 .1 .1" />
+		<geom name="bottom6" type="box" size="0.06 1.2 0.005" pos="0.5 0 1.4975" rgba="0.9 0 0 1" condim="3" friction="1 .1 .1" />
+		<geom name="ladder7" type="box" size="0.06 1.2 0.005" pos="0.6 0 1.8025" rgba="0 .9 0 1" condim="3" friction="1 .1 .1" />
+		<geom name="bottom7" type="box" size="0.06 1.2 0.005" pos="0.6 0 1.7975" rgba="0.9 0 0 1" condim="3" friction="1 .1 .1" />
+		<geom name="ladder8" type="box" size="0.06 1.2 0.005" pos="0.7 0 2.1025" rgba="0 .9 0 1" condim="3" friction="1 .1 .1" />
+		<geom name="bottom8" type="box" size="0.06 1.2 0.005" pos="0.7 0 2.0975" rgba="0.9 0 0 1" condim="3" friction="1 .1 .1" />
+		<geom name="ladder9" type="box" size="0.06 1.2 0.005" pos="0.8 0 2.4025" rgba="0 .9 0 1" condim="3" friction="1 .1 .1" />
+		<geom name="bottom9" type="box" size="0.06 1.2 0.005" pos="0.8 0 2.3975" rgba="0.9 0 0 1" condim="3" friction="1 .1 .1" />
+		<geom name="ladder10" type="box" size="0.06 1.2 0.005" pos="0.9 0 2.7025" rgba="0 .9 0 1" condim="3" friction="1 .1 .1" />
+		<geom name="bottom10" type="box" size="0.06 1.2 0.005" pos="0.9 0 2.6975000000000002" rgba="0.9 0 0 1" condim="3" friction="1 .1 .1" />
+		<geom name="ladder11" type="box" size="0.06 1.2 0.005" pos="1.0 0 3.0025" rgba="0 .9 0 1" condim="3" friction="1 .1 .1" />
+		<geom name="bottom11" type="box" size="0.06 1.2 0.005" pos="1.0 0 2.9975" rgba="0.9 0 0 1" condim="3" friction="1 .1 .1" />
 		<body name="torso" pos="-0.3 0 1.4">
 			<camera name="track" mode="trackcom" pos="0 -4 0" xyaxes="1 0 0 0 0 1" />
 			<joint name="root" type="free" armature="0" limited="false" pos="0 0 0" stiffness="0" damping="0" />

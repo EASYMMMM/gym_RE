@@ -111,7 +111,7 @@ class HumanoidXML(MujocoXML):
             box_friction = "1 .1 .1"
 
             # Define the positions using an arithmetic sequence with a common difference of 0.2
-            positions = [(round(i * 0.1, 3), 0, round(i * 0.2 * 3 / 2, 3)) for i in range(11)]
+            positions = [(round((i+1) * 0.1, 3), 0, round((i+1) * 0.2 * 3 / 2, 3)) for i in range(11)]
             self.ladder_positions = positions
             # Create a geometry for each position
             for i, pos in enumerate(positions):

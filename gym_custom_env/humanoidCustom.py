@@ -34,7 +34,7 @@ def mass_center(model, sim):
     return (np.sum(mass * xpos, axis=0) / np.sum(mass))[0:3].copy()
 
 def set_ladder_height():
-    return {'flatfloor':1,
+    return {'flatfloor':0,
             'ladder1':1,
             'ladder2':2,
             'ladder3':3,
@@ -59,7 +59,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         contact_cost_weight=5e-7,
         contact_cost_range=(-np.inf, 10.0),
         healthy_reward= -0.2,                     # 存活奖励
-        posture_reward_weight = 0.8,              # 站立奖励
+        posture_reward_weight = 1,              # 站立奖励
         contact_reward_weight = 1.0,            # 梯子/阶梯 接触奖励
         terminate_when_unhealthy=True,
         healthy_z_range=(0.9, 5.0),

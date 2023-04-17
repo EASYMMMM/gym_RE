@@ -39,7 +39,7 @@ paramas = { #'torso_width':0.5,
             }
 
 # 生成XML文件
-t = HumanoidXML(terrain_type='ladders',gravity=-9)
+t = HumanoidXML(terrain_type='ladders',gravity=0)
 t.write_xml(file_path="ee.xml")
 
 
@@ -157,6 +157,7 @@ for i in range(timesteps):
     dot_product = np.dot(body_z_axis, vertical_direction)
     forward_direction = np.array([1, 0, 0])
     x_dot_product = np.dot(body_x_axis, forward_direction)
+    x_pos_r = 0 if (( x_dot_product + 1.0) / 2.0) > 0.8 else -1
     """     print('================')
     print('x:')
     print(body_x_axis)
@@ -194,7 +195,7 @@ for i in range(timesteps):
     print('number of detected contacts:',sim.data.ncon)
     print('quatanion:',quatanion)
     print('Rm',rotation_matrix)
-    print('body_x_axis',body_x_axis)
+    print('body_x_axis',x_pos_r)
     print('body_y_axis',body_y_axis)
     print('body_z_axis',body_z_axis)
     for i in range(ncon):

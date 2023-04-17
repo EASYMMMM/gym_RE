@@ -65,6 +65,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         healthy_z_range=(0.9, 5.0),
         reset_noise_scale=1e-2,
         camera_config = "horizontal",
+        single_contact_reward = 10,
         exclude_current_positions_from_observation=False,  # Flase: 使obs空间包括躯干的x，y坐标; True: 不包括
     ):
         utils.EzPickle.__init__(**locals())
@@ -81,10 +82,11 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         
         self._forward_speed_reward_weight = forward_speed_reward_weight
         self._forward_distance_reward_weight = forward_distance_reward_weight
-        self._ctrl_cost_weight = ctrl_cost_weight
+        self._ctrl_cost_weight = ctrl_cost_weight if terrain_type in 'default'+'steps' else 0.2*ctrl_cost_weight
         self._contact_cost_weight = contact_cost_weight
         self._contact_cost_range = contact_cost_range
         self._healthy_reward = -0.1 if terrain_type in 'default'+'steps' else -0.2
+        self._single_contact_reward = single_contact_reward
         self._terminate_when_unhealthy = terminate_when_unhealthy
         self._healthy_z_range = healthy_z_range
         self._posture_reward_weight = posture_reward_weight
@@ -206,8 +208,28 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
     @property
     def _not_fallen(self):
+        # 检测是否摔倒需要提前终止
+        # 返回False：需要提前终止
+
+        contact = list(self.sim.data.contact)  # 读取一个元素为mjContact的结构体数组
+        ncon = self.sim.data.ncon # 碰撞对的个数
+        not_fallen = True
         if self.terrain_type == 'ladders':
-            return self.ladder_up
+            # 梯子地形中，躯干碰到梯子即为摔倒
+            for i in range(ncon): # 遍历所有碰撞对
+                con = contact[i]
+                # 判断ladder是否参与碰撞
+                if 'ladder' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
+                    if 'torso' in self.geomdict[con.geom1]+self.geomdict[con.geom2]: # 躯干
+                        not_fallen = False
+                    if 'waist' in self.geomdict[con.geom1]+self.geomdict[con.geom2]: # 腰
+                        not_fallen = False
+                    if 'head' in self.geomdict[con.geom1]+self.geomdict[con.geom2]: # 腰
+                        not_fallen = False
+                    if 'pelvis' in self.geomdict[con.geom1]+self.geomdict[con.geom2]: # 腰
+                        not_fallen = False
+            result = self.ladder_up and not_fallen
+            return result
         else:
             return True
         # 检测是否摔倒
@@ -298,7 +320,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                     # 手部仅可碰撞到6阶以上时有奖励分
                     if 'hand' in limb and ladder_num < 5:
                         continue
-                    reward = reward + 10
+                    reward = reward + self._single_contact_reward
                     self.already_touched.append(cont_pair)
 
         if self.terrain_type == 'steps':

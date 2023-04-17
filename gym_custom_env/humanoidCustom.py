@@ -210,7 +210,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def _not_fallen(self):
         # 检测是否摔倒需要提前终止
         # 返回False：需要提前终止
-
+        return True
         contact = list(self.sim.data.contact)  # 读取一个元素为mjContact的结构体数组
         ncon = self.sim.data.ncon # 碰撞对的个数
         not_fallen = True
@@ -224,7 +224,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                         not_fallen = False
                     if 'waist' in self.geomdict[con.geom1]+self.geomdict[con.geom2]: # 腰
                         not_fallen = False
-                    if 'head' in self.geomdict[con.geom1]+self.geomdict[con.geom2]: # 腰
+                    if 'head' in self.geomdict[con.geom1]+self.geomdict[con.geom2]: # 头
                         not_fallen = False
                     if 'pelvis' in self.geomdict[con.geom1]+self.geomdict[con.geom2]: # 腰
                         not_fallen = False

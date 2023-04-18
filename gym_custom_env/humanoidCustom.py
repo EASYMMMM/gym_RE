@@ -85,7 +85,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self._ctrl_cost_weight = ctrl_cost_weight if terrain_type in 'default'+'steps' else 0.2*ctrl_cost_weight
         self._contact_cost_weight = contact_cost_weight
         self._contact_cost_range = contact_cost_range
-        self._healthy_reward = -0.1 if terrain_type in 'default'+'steps' else -0.2
+        self._healthy_reward = -0.1 if terrain_type in 'default'+'steps' else 0
         self._single_contact_reward = single_contact_reward
         self._terminate_when_unhealthy = terminate_when_unhealthy
         self._healthy_z_range = healthy_z_range
@@ -254,7 +254,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         min_z, max_z = self._healthy_z_range
         z = self.sim.data.qpos[2]
         if self.terrain_type == 'ladders':
-            min_z = 0.7
+            min_z = 0.9
             lowest_ladder = self.limb_position['left_foot'] if self.limb_position['left_foot'] < self.limb_position['right_foot'] else self.limb_position['right_foot']
             lowest_ladder_height = lowest_ladder * self.xml_model.ladder_positions[0][2]
             z = self.sim.data.qpos[2] - lowest_ladder_height

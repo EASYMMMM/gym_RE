@@ -163,7 +163,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         # 梯子地形
         # 前进奖励 = 速度权重*前进速度 
         if self.terrain_type == 'ladders':
-            forward_reward = self._forward_speed_reward_weight * (self.x_velocity + 2*self.z_velocity) 
+            forward_reward = self._forward_speed_reward_weight * (2*self.x_velocity + self.z_velocity) 
         return forward_reward
 
     @property
@@ -312,6 +312,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                 if self.ladder_height[ladder] < self.limb_position[limb]:
                     reward += -50
                     self.ladder_up = False
+                    self.limb_position[limb] = self.ladder_height[ladder] # 防止反复扣分
                 else:
                     self.limb_position[limb] = self.ladder_height[ladder]
 

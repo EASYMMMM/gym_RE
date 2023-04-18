@@ -254,7 +254,10 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         min_z, max_z = self._healthy_z_range
         z = self.sim.data.qpos[2]
         if self.terrain_type == 'ladders':
-            min_z = 0.6
+            min_z = 0.7
+            lowest_ladder = self.limb_position['left_foot'] if self.limb_position['left_foot'] < self.limb_position['right_foot'] else self.limb_position['right_foot']
+            lowest_ladder_height = lowest_ladder * self.xml_model.ladder_positions[0][2]
+            z = self.sim.data.qpos[2] - lowest_ladder_height
             if self.limb_position['right_hand'] == 11 or self.limb_position['left_hand'] == 11:
                 is_inthemap = False
             else:
@@ -307,7 +310,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                 cont_pair = (limb,ladder) 
                 # 若当前碰到的阶梯高度比先前碰到的要低
                 if self.ladder_height[ladder] < self.limb_position[limb]:
-                    reward += -200
+                    reward += -50
                     self.ladder_up = False
                 else:
                     self.limb_position[limb] = self.ladder_height[ladder]
@@ -393,7 +396,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         pos_list=[]
         for i in range(3):
             _x = ladders_pos[lowest_ladder+i][0] - x_w
-            _z = ladders_pos[lowest_ladder+i][2] - z_w
+            _z = - ladders_pos[lowest_ladder+i][2] + z_w
             pos_list.append(_x)
             pos_list.append(_z)
         return pos_list 

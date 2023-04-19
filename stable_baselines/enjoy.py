@@ -133,17 +133,18 @@ if __name__ == "__main__":
                 action, _ = model.predict(obs, deterministic=True)
                 obs, reward, done, info = env.step(action)
                 episode_reward += reward
-                forward_r_total += info['forward_reward']
-                contact_r_total += info['contact_reward']
-                posture_r_total += info['posture_reward']
-                healthy_r_total += info['healthy_reward']
-                control_c_total += info['control_cost']
-                contact_c_total += info['contact_cost']
                 episode_length += 1
                 if not args.no_render:
                     env.render(mode="human")
                     dt = 1.0 / 240.0
                     time.sleep(dt)
+            detail = info.get('reward_details')
+            forward_r_total += detail['forward_reward_sum']
+            contact_r_total += detail['contact_reward_sum']
+            posture_r_total += detail['posture_reward_sum']
+            healthy_r_total += detail['healthy_reward_sum']
+            control_c_total += detail['control_cost_sum']
+            contact_c_total += detail['contact_cost_sum']
             episode_rewards.append(episode_reward)
             episode_lengths.append(episode_length)
             print(

@@ -113,6 +113,7 @@ class HumanoidXML(MujocoXML):
             # Define the positions using an arithmetic sequence with a common difference of 0.2
             # TODO:原版梯子间距：单个梯子宽0.12，梯子间距0.10，有重合。梯子高度0.3
             #      4.17修改：梯子间距0.18
+            #      4.19修改：梯子间距0.16
             positions = [(round((i+1) * 0.18, 3), 0, round((i+1) * 0.25, 3)) for i in range(11)]
             self.ladder_positions = positions
             # Create a geometry for each position

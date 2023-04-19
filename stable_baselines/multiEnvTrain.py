@@ -45,7 +45,9 @@ from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.utils import set_random_seed
-
+from stable_baselines3.common.base_class import BaseAlgorithm
+from stable_baselines3.common.off_policy_algorithm import OffPolicyAlgorithm
+from rewardChecker import update_info_buffer,dump_logs
 
 
 def make_env(env_id, rank, seed=0):
@@ -116,7 +118,11 @@ if __name__ == "__main__":
     n_timesteps = args.n_timesteps
     model_name = args.model_name + "_cpu" + str(num_cpu) + "_"
     terrain_type = args.terrain_type
+    if args.algo == 'sac':
+        BaseAlgorithm._update_info_buffer = update_info_buffer
+        OffPolicyAlgorithm._dump_logs = dump_logs
 
+    
     # env kwargs
     env_kwargs = {'terrain_type':terrain_type}
 
@@ -150,6 +156,7 @@ if __name__ == "__main__":
         "ppo": PPO,
     }[args.algo]
 
+
     n_actions = env.action_space.shape[0]
 
     # Tuned hyperparameters from https://github.com/DLR-RM/rl-baselines3-zoo
@@ -159,7 +166,7 @@ if __name__ == "__main__":
             gamma=0.98,
             policy_kwargs=dict(net_arch=[256, 256]),
             learning_starts=10000,
-            buffer_size=int(5e6),
+            buffer_size=int(5e4),
             tau=0.01,
             gradient_steps=4,
         ),

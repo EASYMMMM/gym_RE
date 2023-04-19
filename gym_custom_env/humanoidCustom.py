@@ -119,6 +119,12 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                               'left_foot':0}
         self.ladder_height = set_ladder_height()
         self.ladder_up = True                       # 是否在梯子上保持上升
+        self.contact_reward_sum = 0
+        self.healthy_reward_sum = 0
+        self.forward_reward_sum = 0
+        self.posture_reward_sum = 0
+        self.contact_cost_sum = 0
+        self.control_cost_sum = 0
         
     @property
     def is_walking(self):
@@ -465,13 +471,15 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         observation = self._get_obs()
         reward = rewards - costs
         done = self.done
+        self.reward_accumulate(forward_r=forward_reward,healthy_r=healthy_reward,posture_r=posture_reward,
+                                contact_r=contact_reward,contact_c=contact_cost,control_c=ctrl_cost)
         info = {
-            "forward_reward": forward_reward,
-            "contact_reward": contact_reward,
-            "posture_reward": posture_reward,
-            "control_cost": -ctrl_cost,
-            "healthy_reward": healthy_reward,
-            "contact_cost": -contact_cost,
+            "reward_details":{"forward_reward_sum": self.forward_reward_sum,
+                              "contact_reward_sum": self.contact_reward_sum,
+                              "posture_reward_sum": self.posture_reward_sum,
+                              "healthy_reward_sum": self.healthy_reward_sum,
+                              "control_cost_sum": -self.control_cost_sum,
+                              "contact_cost_sum": -self.control_cost_sum,},
             "xyz_position": xyz_position_after,
             "distance_from_origin": np.linalg.norm(xyz_position_after, ord=2),
             "x_velocity": x_velocity,
@@ -501,6 +509,15 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         
         
         return observation
+    
+    def reward_accumulate(self, forward_r = 0, contact_r = 0, healthy_r = 0, posture_r = 0, control_c = 0, contact_c = 0):
+        self.forward_reward_sum += forward_r
+        self.contact_reward_sum += contact_r
+        self.healthy_reward_sum += healthy_r
+        self.posture_reward_sum += posture_r
+        self.control_cost_sum += control_c
+        self.contact_cost_sum += contact_c
+        return 
 
     def viewer_setup(self):
         for key, value in self.camera_config.items():

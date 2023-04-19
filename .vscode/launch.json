@@ -14,7 +14,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             //"args": ["--algo", "sac", "--env", "HumanoidBulletEnv-v0"],
-            "args": [ "--algo", "ppo", "--env", "HumanoidCustomEnv-v0", "--n-timesteps", "2000000", "--model-name", "2e6"],
+            "args": [ "--algo", "sac", "--env", "HumanoidCustomEnv-v0", "--num-cpu","6","--n-timesteps", "2000000", "--model-name", "test", "--terrain-type","ladders"],
             "justMyCode": false
         }
     ]

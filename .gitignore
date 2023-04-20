@@ -1,6 +1,6 @@
 # 存储训练模型的文件夹
 sb3model/
-
+**/humanoid_exp.xml
 
 ###### git ignore templet for python ###### 
 # Byte-compiled / optimized / DLL files

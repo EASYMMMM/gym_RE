@@ -125,6 +125,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.posture_reward_sum = 0
         self.contact_cost_sum = 0
         self.control_cost_sum = 0
+        self.ladder_task = 0
         
     @property
     def is_walking(self):
@@ -338,6 +339,64 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         contact_reward = reward * self._contact_reward_weight           
         return contact_reward
 
+    @property
+    def ladder_task_reward(self):
+        '''
+        TODO：根据规划的爬梯子离散动作进行奖励函数设计
+        (1) placeHands: place two hands on a (chosen) rung. 
+        (2) placeLFoot: place left foot on the first rung. 
+        (3) placeRFoot: place right foot on the first rung. 
+        (4) moveLHand: lift left hand to the next higher rung. 
+        (5) moveRHand: lift right hand to the next higher rung. 
+        (6) moveLFoot: lift left foot to the next higher rung. 
+        (7) moveRFoot: lift right foot to the next higher rung. 
+        ''' 
+        self._forward_speed_reward_weight = 0.5
+        self._healthy_reward = 0.1
+        contact = list(self.sim.data.contact)  # 读取一个元素为mjContact的结构体数组
+        ncon = self.sim.data.ncon # 碰撞对的个数
+        reward = 0
+        for i in range(ncon): # 遍历所有碰撞对
+            con = contact[i]
+            # 判断ladder/floor是否参与碰撞
+            if ('ladder' in self.geomdict[con.geom1]+self.geomdict[con.geom2]) or ( 'floor' in self.geomdict[con.geom1]+self.geomdict[con.geom2] ):
+                ladder = self.geomdict[con.geom1] if 'ladder' in self.geomdict[con.geom1] else self.geomdict[con.geom2]
+                ladder = self.geomdict[con.geom1] if 'floor' in self.geomdict[con.geom1] else self.geomdict[con.geom2]
+                # 判断是手还是脚
+                if 'hand' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
+                    # 区分左右手加分
+                    limb = 'right_hand' if 'right' in self.geomdict[con.geom1]+self.geomdict[con.geom2] else 'left_hand'
+                elif 'foot' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
+                    limb = 'right_foot' if 'right' in self.geomdict[con.geom1]+self.geomdict[con.geom2] else 'left_foot'
+                else: # 若非手脚，跳过
+                    continue
+            else:
+                continue
+            cont_pair = (limb,ladder)    
+            # 若当前碰到的阶梯高度比先前碰到的要低
+            if self.ladder_height[ladder] < self.limb_position[limb]:
+                reward += -50
+                self.ladder_up = False
+                self.limb_position[limb] = self.ladder_height[ladder] # 防止反复扣分
+            else:
+                self.limb_position[limb] = self.ladder_height[ladder]
+            if cont_pair in self.already_touched: # 判断是否曾经碰撞过
+                continue
+            else: # 初次碰撞，计算reward
+                if ladder == 'flatfloor': continue
+                ladder_num = int(ladder[6:])
+                # 手部仅可碰撞到6阶以上时有奖励分
+                if 'hand' in limb and ladder_num < 5:
+                    continue
+                reward = reward + self._single_contact_reward
+                self.already_touched.append(cont_pair)
+
+        if self.ladder_task == 0: # 0级任务
+            if self.limb_position['right_hand'] == 5 and self.limb_position['left_hand'] == 5 and self.limb_position['right_foot'] == 0 and self.limb_position['left_foot']==0:
+                reward += 10
+    
+
+                    
     def _get_obs(self):
         # obs空间
         position = self.sim.data.qpos.flat.copy()
@@ -479,7 +538,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                               "posture_reward_sum": self.posture_reward_sum,
                               "healthy_reward_sum": self.healthy_reward_sum,
                               "control_cost_sum": -self.control_cost_sum,
-                              "contact_cost_sum": -self.control_cost_sum,},
+                              "contact_cost_sum": -self.contact_cost_sum,},
             "xyz_position": xyz_position_after,
             "distance_from_origin": np.linalg.norm(xyz_position_after, ord=2),
             "x_velocity": x_velocity,

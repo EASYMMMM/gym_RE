@@ -336,7 +336,12 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
         if self.terrain_type == 'steps':
             reward = 0
-        contact_reward = reward * self._contact_reward_weight           
+        contact_reward = reward * self._contact_reward_weight    
+
+        # FIXME : 调试梯子任务分解时，临时更改 
+        if self.terrain_type == 'ladders':
+            return self.ladder_task_reward
+
         return contact_reward
 
     @property
@@ -352,7 +357,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         (7) moveRFoot: lift right foot to the next higher rung. 
         ''' 
         self._forward_speed_reward_weight = 0.5
-        self._healthy_reward = 0.1
+        self._healthy_reward = 0.2
         contact = list(self.sim.data.contact)  # 读取一个元素为mjContact的结构体数组
         ncon = self.sim.data.ncon # 碰撞对的个数
         reward = 0
@@ -393,7 +398,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
         if self.ladder_task == 0: # 0级任务
             if self.limb_position['right_hand'] == 5 and self.limb_position['left_hand'] == 5 and self.limb_position['right_foot'] == 0 and self.limb_position['left_foot']==0:
-                reward += 10
+                reward += 5
+        return
     
 
                     

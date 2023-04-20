@@ -330,9 +330,7 @@ $$
   
   ```
 
-  
-
-<img src="C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230404152020410.png" alt="image-20230404152020410" style="zoom: 33%;" />
+  <img src="C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230404152020410.png" alt="image-20230404152020410" style="zoom: 33%;" />
 
 - **新版（4月）梯子地形奖励函数：**
 

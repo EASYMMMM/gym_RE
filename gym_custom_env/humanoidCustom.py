@@ -399,7 +399,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         if self.ladder_task == 0: # 0级任务
             if self.limb_position['right_hand'] == 5 and self.limb_position['left_hand'] == 5 and self.limb_position['right_foot'] == 0 and self.limb_position['left_foot']==0:
                 reward += 5
-        return
+        return reward
     
 
                     

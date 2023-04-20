@@ -296,6 +296,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         # 计算接触reward
         reward = 0
         if self.terrain_type == 'ladders':
+            # FIXME : 调试梯子任务分解时，临时更改 
+            return self.ladder_task_reward
             contact = list(self.sim.data.contact)  # 读取一个元素为mjContact的结构体数组
             ncon = self.sim.data.ncon # 碰撞对的个数
             for i in range(ncon): # 遍历所有碰撞对
@@ -337,10 +339,6 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         if self.terrain_type == 'steps':
             reward = 0
         contact_reward = reward * self._contact_reward_weight    
-
-        # FIXME : 调试梯子任务分解时，临时更改 
-        if self.terrain_type == 'ladders':
-            return self.ladder_task_reward
 
         return contact_reward
 

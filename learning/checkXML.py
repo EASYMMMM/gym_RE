@@ -101,9 +101,11 @@ for i in range(timesteps):
             #ctrl[13] = -0.050 # right shoulder 1
             #ctrl[14] = -0.050 # right shoulder 2
             #ctrl[15] = -0.050 # right elbow
-            #ctrl[16] = -0.050 # left shoulder 1
-            #ctrl[17] = -0.050 # left shoulder 2
-            #ctrl[18] = -0.050 # left elbow             
+            ctrl[16] = -0.050 # right wrist
+            #ctrl[17] = -0.050 # left shoulder 1
+            #ctrl[18] = -0.050 # left shoulder 2
+            #ctrl[19] = -0.050 # left elbow     
+            ctrl[20] = -0.050 # left wrist          
             sim.data.ctrl[:] = ctrl
             j = 1
         else:
@@ -120,9 +122,11 @@ for i in range(timesteps):
             #ctrl[13] =  0.050 # right shoulder 1
             #ctrl[14] =  0.050 # right shoulder 2
             #ctrl[15] =  0.050 # right elbow 
+            ctrl[16] =  0.050 # right wrist
             #ctrl[16] =  0.050 # left shoulder 1
             #ctrl[17] =  0.050 # left shoulder 2
-            #ctrl[18] =  0.050 # left elbow               
+            #ctrl[18] =  0.050 # left elbow 
+            ctrl[20] =  0.050 # left wrist   
             sim.data.ctrl[:] = ctrl
             j = 0            
 

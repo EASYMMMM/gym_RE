@@ -114,7 +114,8 @@ class HumanoidXML(MujocoXML):
             # TODO:原版梯子间距：单个梯子宽0.12，梯子间距0.10，有重合。梯子高度0.3
             #      4.17修改：梯子间距0.18
             #      4.19修改：梯子间距0.16
-            positions = [(round((i+1) * 0.18, 3), 0, round((i+1) * 0.25, 3)) for i in range(11)]
+            #      4.20修改：梯子间距0.10，高度0.25（按照论文
+            positions = [(round((i+1) * 0.10, 3), 0, round((i+1) * 0.25, 3)) for i in range(11)]
             self.ladder_positions = positions
             # Create a geometry for each position
             for i, pos in enumerate(positions):
@@ -561,21 +562,51 @@ class HumanoidXML(MujocoXML):
                                             parent=left_lower_arm,
                                             geom_type='sphere',
                                             pos=[0,0,self.param_list['lower_arm_lenth']],
-                                            size=self.param_list['lower_arm_size']*1.2)                                               
+                                            size=self.param_list['lower_arm_size']*1.2)     
+            left_wrist_joint = self.add_joint( name='left_wrist',
+                                                parent=left_lower_arm,
+                                                joint_type='hinge',
+                                                armature=0.0028,
+                                                axis=[0,1,0],
+                                                pos=[0,0,0],
+                                                joint_range=[-50,90],
+                                                stiffness=0)                                          
         if self.terrain_type == 'ladders':
             # 如果是阶梯地形，手部用球体表示
+            hand_begin_poiot = self.param_list['lower_arm_lenth']
+            right_hand_attr = {'name':'right_hand', 'pos':f'0 0 {self.param_list["lower_arm_lenth"]}'}   
+            right_hand = right_lower_arm.child_element('body',right_hand_attr)                                                     
             right_hand_geom = self.add_geom(name='right_hand',
-                                            parent=right_lower_arm,
+                                            parent=right_hand,
                                             geom_type='capsule',
-                                            from_point=[0,0,self.param_list['lower_arm_lenth']],
-                                            to_point=[0.1,0,self.param_list['lower_arm_lenth']],
-                                            size=self.param_list['lower_arm_size'])              
+                                            from_point=[0,0,0],
+                                            to_point=[0.15,0,0],
+                                            size=self.param_list['lower_arm_size']) 
+            right_wrist_joint = self.add_joint( name='right_wrist',
+                                                parent=right_hand,
+                                                joint_type='hinge',
+                                                armature=0.0028,
+                                                axis=[0,1,0],
+                                                pos=[0,0,0],
+                                                joint_range=[-80,20],
+                                                stiffness=0)       
+
+            left_hand_attr = {'name':'left_hand', 'pos':f'0 0 {self.param_list["lower_arm_lenth"]}'}   
+            left_hand = left_lower_arm.child_element('body',left_hand_attr)                                                    
             left_hand_geom = self.add_geom(name='left_hand',
-                                            parent=left_lower_arm,
+                                            parent=left_hand,
                                             geom_type='capsule',
-                                            from_point=[0,0,self.param_list['lower_arm_lenth']],
-                                            to_point=[0.1,0,self.param_list['lower_arm_lenth']],
-                                            size=self.param_list['lower_arm_size'])      
+                                            from_point=[0,0,0],
+                                            to_point=[0.15,0,0],
+                                            size=self.param_list['lower_arm_size'])   
+            left_wrist_joint = self.add_joint( name='left_wrist',
+                                                parent=left_hand,
+                                                joint_type='hinge',
+                                                armature=0.0028,
+                                                axis=[0,1,0],
+                                                pos=[0,0,0],
+                                                joint_range=[-80,20],
+                                                stiffness=0)                                               
 
     def _add_actuator(self,):
         '''
@@ -609,9 +640,11 @@ class HumanoidXML(MujocoXML):
         actuator.child_element('motor',{'gear':'25' ,'joint':'right_shoulder1','name':'right_shoulder1'})
         actuator.child_element('motor',{'gear':'25' ,'joint':'right_shoulder2','name':'right_shoulder2'})
         actuator.child_element('motor',{'gear':'25' ,'joint':'right_elbow','name':'right_elbow'})
+        actuator.child_element('motor',{'gear':'25' ,'joint':'right_wrist','name':'right_wrist'})
         actuator.child_element('motor',{'gear':'25' ,'joint':'left_shoulder1','name':'left_shoulder1'})
         actuator.child_element('motor',{'gear':'25' ,'joint':'left_shoulder2','name':'left_shoulder2'})
         actuator.child_element('motor',{'gear':'25' ,'joint':'left_elbow','name':'left_elbow'})
+        actuator.child_element('motor',{'gear':'25' ,'joint':'left_wrist','name':'left_wrist'})
 
     def write_xml(self, file_path = 'humanoid.xml'):
         '''

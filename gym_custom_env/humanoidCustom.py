@@ -410,14 +410,14 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                 # 右手成功触碰
                 reward += 10
                 self.ladder_task_flag[0]['right_hand'] = True
-            else:
+            if limb_sensor_state['right_hand'] != 5 and self.ladder_task_flag[0]['right_hand'] == True:
                 reward -= 10
                 self.ladder_task_flag[0]['right_hand'] = False
             if limb_sensor_state['left_hand'] == 5 and self.ladder_task_flag[0]['left_hand'] == False:
                 # 左手成功触碰
                 reward += 10
                 self.ladder_task_flag[0]['left_hand'] = True
-            else:
+            if limb_sensor_state['left_hand'] != 5 and self.ladder_task_flag[0]['left_hand'] == True:
                 reward -= 10
                 self.ladder_task_flag[0]['left_hand'] = False                
             if limb_sensor_state['right_hand'] == 5 and limb_sensor_state['left_hand'] == 5 :

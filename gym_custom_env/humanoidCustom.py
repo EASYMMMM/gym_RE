@@ -406,6 +406,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             self.limb_position[limb] = self.ladder_height[ladder] 
 
         if self.ladder_task == 0: # 0级任务 先把一只手放上，再放另一只手
+            self._forward_speed_reward_weight = 0.2
+            self._healthy_reward = 0.2
             if limb_sensor_state['right_hand'] == 5 and self.ladder_task_flag[0]['right_hand'] == False:
                 # 右手成功触碰
                 reward += 10

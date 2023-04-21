@@ -295,6 +295,10 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         '''
         # 计算接触reward
         reward = 0
+        limb_sensor_state = {'right_hand':100,    # 当前的肢体末端的有效接触情况，100表示悬空
+                    'left_hand' :100,
+                    'right_foot':100,
+                    'left_foot' :100}
         if self.terrain_type == 'ladders':
             # FIXME : 调试梯子任务分解时，临时更改 
             return self.ladder_task_reward
@@ -314,8 +318,12 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                         limb = 'right_foot' if 'right' in self.geomdict[con.geom1]+self.geomdict[con.geom2] else 'left_foot'
                     else: # 若非手脚，跳过
                         continue
+                if 'sensor' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
+                    # 更新当前的有效接触情况
+                    limb_sensor_state[limb] = self.ladder_height[ladder]                    
                 else:
                     continue
+                
                 cont_pair = (limb,ladder) 
                 # 若当前碰到的阶梯高度比先前碰到的要低
                 if self.ladder_height[ladder] < self.limb_position[limb]:
@@ -394,7 +402,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             self.limb_position[limb] = self.ladder_height[ladder] 
 
         if self.ladder_task == 0: # 0级任务
-            if limb_sensor_state['right_hand'] == 5 and limb_sensor_state['left_hand'] == 5 and limb_sensor_state['right_foot'] == 0 and limb_sensor_state['left_foot']==0:
+            if limb_sensor_state['right_hand'] == 5 and limb_sensor_state['left_hand'] == 5 :
                 reward += 5
         return reward
                     

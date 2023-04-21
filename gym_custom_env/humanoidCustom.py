@@ -125,7 +125,9 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.posture_reward_sum = 0
         self.contact_cost_sum = 0
         self.control_cost_sum = 0
-        self.ladder_task = 0
+        self.ladder_task = 0        # 爬梯子任务分解，当前任务序号 
+        self.ladder_task_flag = { 0:{'right_hand':False, 'left_hand':False} # 分解任务中用到的标志
+                                    }  
         
     @property
     def is_walking(self):
@@ -353,7 +355,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     @property
     def ladder_task_reward(self):
         '''
-        TODO：根据规划的爬梯子离散动作进行奖励函数设计
+        TODO 梯子任务分解
+        根据规划的爬梯子离散动作进行奖励函数设计
         (1) placeHands: place two hands on a (chosen) rung. 
         (2) placeLFoot: place left foot on the first rung. 
         (3) placeRFoot: place right foot on the first rung. 
@@ -396,12 +399,27 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             cont_pair = (limb,ladder)    
             # 若当前碰到的阶梯高度比先前碰到的要低，倒扣分
             if self.ladder_height[ladder] < self.limb_position[limb]:
-                reward += -50
-                self.ladder_up = False
+                if self.ladder_task != 0:
+                    reward += -50
+                    self.ladder_up = False
             # 更新肢体达到的最高位置
             self.limb_position[limb] = self.ladder_height[ladder] 
 
-        if self.ladder_task == 0: # 0级任务
+        if self.ladder_task == 0: # 0级任务 先把一只手放上，再放另一只手
+            if limb_sensor_state['right_hand'] == 5 and self.ladder_task_flag[0]['right_hand'] == False:
+                # 右手成功触碰
+                reward += 10
+                self.ladder_task_flag[0]['right_hand'] = True
+            else:
+                reward -= 10
+                self.ladder_task_flag[0]['right_hand'] = False
+            if limb_sensor_state['left_hand'] == 5 and self.ladder_task_flag[0]['left_hand'] == False:
+                # 左手成功触碰
+                reward += 10
+                self.ladder_task_flag[0]['left_hand'] = True
+            else:
+                reward -= 10
+                self.ladder_task_flag[0]['left_hand'] = False                
             if limb_sensor_state['right_hand'] == 5 and limb_sensor_state['left_hand'] == 5 :
                 reward += 5
         return reward

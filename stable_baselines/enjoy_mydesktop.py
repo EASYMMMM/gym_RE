@@ -1,11 +1,4 @@
-# TODO: 由于我的笔记本显存不够，创建model时会报错，故使用set parameters
-#
-# Code adapted from https://github.com/DLR-RM/rl-baselines3-zoo
-# it requires stable-baselines3 to be installed
-# Colab Notebook: https://colab.research.google.com/github/Stable-Baselines-Team/rl-colab-notebooks/blob/sb3/pybullet.ipynb
-# You can run it using: python -m pybullet_envs.stable_baselines.enjoy --algo td3 --env HalfCheetahBulletEnv-v0
-# Author: Antonin RAFFIN
-# MIT License
+# 由于我的笔记本显存不够，创建model时会报错，故使用set parameters
 
 '''
 python stable_baselines/enjoy_mydesktop.py --algo sac --env HumanoidCustomEnv-v0  --terrain-type steps  --model-name 5e6_steps_ankle_t4_cpu8

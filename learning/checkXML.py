@@ -173,6 +173,8 @@ for i in range(timesteps):
     contact = list(sim.data.contact)  # 读取一个元素为mjContact的结构体数组
     for i in range(ncon):
         con = contact[i]
+        if 'right_foot_geom_3' in geomdict[con.geom1]+geomdict[con.geom2]:
+            print(geomdict[con.geom1] + geomdict[con.geom2])
         if 'ladders' in geomdict[con.geom1]+geomdict[con.geom2]:
             ladder = geomdict[con.geom1] if 'ladders' in geomdict[con.geom1] else geomdict[con.geom2]
             # 判断是手还是脚

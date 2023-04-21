@@ -398,8 +398,6 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             if self.limb_position['right_hand'] == 5 and self.limb_position['left_hand'] == 5 and self.limb_position['right_foot'] == 0 and self.limb_position['left_foot']==0:
                 reward += 5
         return reward
-    
-
                     
     def _get_obs(self):
         # obs空间

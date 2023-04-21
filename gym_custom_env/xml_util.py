@@ -243,7 +243,8 @@ class MujocoXML():
                 pos: Optional[List[Union[float,int]]] = None,
                 from_point: Optional[List[Union[float,int]]] = None, 
                 to_point: Optional[List[Union[float,int]]] = None,
-                user: Optional[List[Union[float,int]]] = None
+                user: Optional[List[Union[float,int]]] = None,
+                rgba: Optional[List[Union[float,int]]] = None,
             ) -> XMLPart:
         '''
         创建geom元素需要的参数字典
@@ -260,6 +261,8 @@ class MujocoXML():
             geom_attr["fromto"] = self.list2str(from_point) + " " + self.list2str(to_point)
         if user:
             geom_attr["user"] = self.list2str(user)
+        if rgba:
+            geom_attr["rgba"] = self.list2str(rgba)
         geom_part = parent.child_element('geom',geom_attr)
         return geom_part
 

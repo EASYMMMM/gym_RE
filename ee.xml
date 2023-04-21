@@ -66,8 +66,9 @@
 							<geom name="right_shin_geom" type="capsule" size="0.05" fromto="0 0 0 0 0 -0.3" />
 							<body name="right_foot" pos="0 0 -0.38">
 								<joint name="right_ankle" type="hinge" armature="0.006" axis="0 1 0" pos="0 0 0" range="-45 25" />
-								<geom name="right_foot_geom_1" type="capsule" size="0.025" fromto="-0.03 0 0 0.14824825237348266 0.02505115817281178 0" />
-								<geom name="right_foot_geom_2" type="capsule" size="0.025" fromto="-0.03 0 0 0.14824825237348266 -0.02505115817281178 0" />
+								<geom name="right_jiao_geom_1" type="capsule" size="0.025" fromto="-0.03 0 0 0.14824825237348266 0.02505115817281178 0" />
+								<geom name="right_jiao_geom_2" type="capsule" size="0.025" fromto="-0.03 0 0 0.14824825237348266 -0.02505115817281178 0" />
+								<geom name="right_foot_geom" type="capsule" size="0.0252" fromto="0.05912412618674133 -0.01252557908640589 0 0.05912412618674133 0.01252557908640589 0" rgba="1 0 0 1" />
 							</body>
 						</body>
 					</body>
@@ -81,8 +82,9 @@
 							<geom name="left_shin_geom" type="capsule" size="0.05" fromto="0 0 0 0 0 -0.3" />
 							<body name="left_foot" pos="0 0 -0.38">
 								<joint name="left_ankle" type="hinge" armature="0.006" axis="0 1 0" pos="0 0 0" range="-45 25" />
-								<geom name="left_foot_geom_1" type="capsule" size="0.025" fromto="-0.03 0 0 0.14824825237348266 0.02505115817281178 0" />
-								<geom name="left_foot_geom_2" type="capsule" size="0.025" fromto="-0.03 0 0 0.14824825237348266 -0.02505115817281178 0" />
+								<geom name="left_jiao_geom_1" type="capsule" size="0.025" fromto="-0.03 0 0 0.14824825237348266 0.02505115817281178 0" />
+								<geom name="left_jiao_geom_2" type="capsule" size="0.025" fromto="-0.03 0 0 0.14824825237348266 -0.02505115817281178 0" />
+								<geom name="left_foot_geom" type="capsule" size="0.0252" fromto="0.05912412618674133 -0.01252557908640589 0 0.05912412618674133 0.01252557908640589 0" rgba="1 0 0 1" />
 							</body>
 						</body>
 					</body>
@@ -96,7 +98,8 @@
 					<joint name="right_elbow" type="hinge" armature="0.0028" axis="0 1 0" pos="0 0 0" range="-50 90" stiffness="0" />
 					<geom name="right_lower_arm_geom" type="capsule" size="0.031" fromto="0 0 0 0 0 0.2944" />
 					<body name="right_hand" pos="0 0 0.2944">
-						<geom name="right_hand" type="capsule" size="0.031" fromto="0 0 0 0.15 0 0" />
+						<geom name="right_shou" type="capsule" size="0.031" fromto="0.02 0 0 0.16999999999999998 0 0" />
+						<geom name="right_hand" type="capsule" size="0.033" fromto="0.075 0 0 0.115 0 0" rgba="1 0 0 1" />
 						<joint name="right_wrist" type="hinge" armature="0.0028" axis="0 1 0" pos="0 0 0" range="-80 20" stiffness="0" />
 					</body>
 				</body>
@@ -109,8 +112,9 @@
 					<joint name="left_elbow" type="hinge" armature="0.0028" axis="0 1 0" pos="0 0 0" range="-50 90" stiffness="0" />
 					<geom name="left_lower_arm_geom" type="capsule" size="0.031" fromto="0 0 0 0 0 0.2944" />
 					<body name="left_hand" pos="0 0 0.2944">
-						<geom name="left_hand" type="capsule" size="0.031" fromto="0 0 0 0.15 0 0" />
+						<geom name="left_shou" type="capsule" size="0.031" fromto="0.02 0 0 0.16999999999999998 0 0" />
 						<joint name="left_wrist" type="hinge" armature="0.0028" axis="0 1 0" pos="0 0 0" range="-80 20" stiffness="0" />
+						<geom name="left_hand" type="capsule" size="0.033" fromto="0.075 0 0 0.115 0 0" rgba="1 0 0 1" />
 					</body>
 				</body>
 			</body>

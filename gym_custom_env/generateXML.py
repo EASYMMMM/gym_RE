@@ -122,7 +122,7 @@ class HumanoidXML(MujocoXML):
                 box_attr = {
                     "name": f"ladder{i + 1}",
                     "type": "box",
-                    "size": f"{box_size[0]} {box_size[1]} {box_size[2]*0.5}" ,
+                    "size": f"{box_size[0]*0.9} {box_size[1]} {box_size[2]*0.5}" ,
                     "pos": f"{pos[0]} {pos[1]} {pos[2] + box_size[2]*0.25}",
                     "rgba": box_rgba,
                     "condim": box_condim,
@@ -364,21 +364,21 @@ class HumanoidXML(MujocoXML):
                                           axis=[0,1,0],
                                           pos=[0,0,0],
                                           joint_range=[-45,25] )        
-        right_foot_geom_1 = self.add_geom(name='right_jiao_geom_1',
+        right_foot_geom_1 = self.add_geom(name='right_foot_geom_1',
                                         parent=right_foot,
                                         geom_type='capsule',
                                         from_point=[-0.03,0,0],
                                         to_point=[-0.03+0.18*cos(8/180*pi),0.18*sin(8/180*pi),0],
                                         size=0.025,
                                         user=0)     
-        right_foot_geom_2 = self.add_geom(name='right_jiao_geom_2',
+        right_foot_geom_2 = self.add_geom(name='right_foot_geom_2',
                                         parent=right_foot,
                                         geom_type='capsule',
                                         from_point=[-0.03,0,0],
                                         to_point=[-0.03+0.18*cos(8/180*pi),-0.18*sin(8/180*pi),0],
                                         size=0.025,
                                         user=0)       
-        right_foot_geom_3 = self.add_geom(name='right_foot_geom',
+        right_foot_geom_3 = self.add_geom(name='right_foot_sensor_geom',
                                         parent=right_foot,
                                         geom_type='capsule',
                                         from_point=[-0.03+0.18*cos(8/180*pi)/2,-0.18*sin(8/180*pi)/2,0],
@@ -453,21 +453,21 @@ class HumanoidXML(MujocoXML):
                                           axis=[0,1,0],
                                           pos=[0,0,0],
                                           joint_range=[-45,25] )  
-        left_foot_geom_1  = self.add_geom(name='left_jiao_geom_1',
+        left_foot_geom_1  = self.add_geom(name='left_foot_geom_1',
                                         parent=left_foot,
                                         geom_type='capsule',
                                         from_point=[-0.03,0,0],
                                         to_point=[-0.03+0.18*cos(8/180*pi),0.18*sin(8/180*pi),0],
                                         size=0.025,
                                         user=0)                  
-        left_foot_geom_2 = self.add_geom(name='left_jiao_geom_2',
+        left_foot_geom_2 = self.add_geom(name='left_foot_geom_2',
                                         parent=left_foot,
                                         geom_type='capsule',
                                         from_point=[-0.03,0,0],
                                         to_point=[-0.03+0.18*cos(8/180*pi),-0.18*sin(8/180*pi),0],
                                         size=0.025,
                                         user=0)   
-        left_foot_geom_3 = self.add_geom(name='left_foot_geom',
+        left_foot_geom_3 = self.add_geom(name='left_foot_sensor_geom',
                                         parent=left_foot,
                                         geom_type='capsule',
                                         from_point=[-0.03+0.18*cos(8/180*pi)/2,-0.18*sin(8/180*pi)/2,0],
@@ -579,30 +579,23 @@ class HumanoidXML(MujocoXML):
                                             geom_type='sphere',
                                             pos=[0,0,self.param_list['lower_arm_lenth']],
                                             size=self.param_list['lower_arm_size']*1.2)     
-            left_wrist_joint = self.add_joint( name='left_wrist',
-                                                parent=left_lower_arm,
-                                                joint_type='hinge',
-                                                armature=0.0028,
-                                                axis=[0,1,0],
-                                                pos=[0,0,0],
-                                                joint_range=[-50,90],
-                                                stiffness=0)                                          
+                                       
         if self.terrain_type == 'ladders':
             # 如果是阶梯地形，手部用球体表示
             hand_begin_poiot = self.param_list['lower_arm_lenth']
             right_hand_attr = {'name':'right_hand', 'pos':f'0 0 {self.param_list["lower_arm_lenth"]}'}   
             right_hand = right_lower_arm.child_element('body',right_hand_attr)                                                     
-            right_hand_geom_1 = self.add_geom(name='right_shou',
+            right_hand_geom_1 = self.add_geom(name='right_hand_geom',
                                             parent=right_hand,
                                             geom_type='capsule',
                                             from_point=[0+0.02,0,0],
                                             to_point=[0.15+0.02,0,0],
                                             size=self.param_list['lower_arm_size']) 
-            right_hand_geom_2 = self.add_geom(name='right_hand',
+            right_hand_geom_2 = self.add_geom(name='right_hand_sensor_geom',
                                             parent=right_hand,
                                             geom_type='capsule',
-                                            from_point=[0.15/2-0.02 +0.02,0,0],
-                                            to_point=[0.15/2+0.02 +0.02,0,0],
+                                            from_point=[0.15/2-0.002 +0.02,0,0],
+                                            to_point=[0.15/2+0.002 +0.02,0,0],
                                             size=self.param_list['lower_arm_size']+0.002,
                                             rgba=[1,0,0,1]) 
             right_wrist_joint = self.add_joint( name='right_wrist',
@@ -616,7 +609,7 @@ class HumanoidXML(MujocoXML):
 
             left_hand_attr = {'name':'left_hand', 'pos':f'0 0 {self.param_list["lower_arm_lenth"]}'}   
             left_hand = left_lower_arm.child_element('body',left_hand_attr)                                                    
-            left_hand_geom_1 = self.add_geom(name='left_shou',
+            left_hand_geom_1 = self.add_geom(name='left_hand_geom',
                                             parent=left_hand,
                                             geom_type='capsule',
                                             from_point=[0 +0.02,0,0],
@@ -630,11 +623,11 @@ class HumanoidXML(MujocoXML):
                                                 pos=[0,0,0],
                                                 joint_range=[-80,20],
                                                 stiffness=0)                                               
-            left_hand_geom_2 = self.add_geom(name='left_hand',
+            left_hand_geom_2 = self.add_geom(name='left_hand_sensor_geom',
                                             parent=left_hand,
                                             geom_type='capsule',
-                                            from_point=[0.15/2-0.02 +0.02,0,0],
-                                            to_point=[0.15/2+0.02 +0.02,0,0],
+                                            from_point=[0.15/2-0.002 +0.02,0,0],
+                                            to_point=[0.15/2+0.002 +0.02,0,0],
                                             size=self.param_list['lower_arm_size']+0.002,
                                             rgba=[1,0,0,1]) 
 

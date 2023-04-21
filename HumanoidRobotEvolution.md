@@ -285,55 +285,8 @@ $$
 
   问题也非常明显。相比于走楼梯，爬梯子是一系列更为复杂的动作，需要全身协调配合。因此，尽管有着向上高度的奖励函数来引导它向上，但是agent并不知道如何向上攀爬。
 
-  ```python
-      @property
-      def contact_reward(self):
-          '''
-          - 读取contact信息。
-          - 扫描contact数组，寻找其中是否有‘手-梯子’，‘脚-梯子’的碰撞对。注意geom1既可能是梯子		也可能是手。
-          - 如果有，将这一对碰撞对保存下来。若该碰撞对已存在，则跳过，不获得奖励函数。
-          - 根据梯子的阶数，赋予奖励值。梯子越高，奖励值越高
-          '''
-          # 计算接触reward
-          reward = 0
-          if self.terrain_type == 'ladders':
-              contact = list(self.sim.data.contact)  # 读取一个元素为mjContact的结构体				数组
-              ncon = self.sim.data.ncon # 碰撞对的个数
-              for i in range(ncon): # 遍历所有碰撞对
-                  con = contact[i]
-                  # 判断ladder是否参与碰撞
-                  if 'ladder' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
-                      ladder = self.geomdict[con.geom1] if 'ladder' in self.geomdict[con.geom1] else self.geomdict[con.geom2]
-                      # 判断是手还是脚
-                      if 'hand' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
-                          # 区分左右手加分
-                          limb = 'right_hand' if 'right' in self.geomdict[con.geom1]+self.geomdict[con.geom2] else 'left_hand'
-                      elif 'foot' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
-                          limb = 'right_foot' if 'right' in self.geomdict[con.geom1]+self.geomdict[con.geom2] else 'left_foot'
-                      else: # 若非手脚，跳过
-                          continue
-                  else:
-                      continue
-                  cont_pair = (limb,ladder)
-                  if cont_pair in self.already_touched: # 判断是否曾经碰撞过
-                      continue
-                  else:
-                      ladder_num = int(ladder[6:])
-                      # 手部仅可碰撞到6阶以上时有奖励分
-                      if 'hand' in limb and ladder_num < 5:
-                          continue
-                      reward = reward + 50*ladder_num
-                      self.already_touched.append(cont_pair)
-  
-          if self.terrain_type == 'steps':
-              reward = 0
-          contact_reward = reward * self._contact_reward_weight           
-          return contact_reward
-  
-  ```
-
   <img src="C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230404152020410.png" alt="image-20230404152020410" style="zoom: 33%;" />
-
+  
 - **新版（4月）梯子地形奖励函数：**
 
   Observation Space：
@@ -373,6 +326,32 @@ $$
      - 重复接触不计算reward。
 
   4. 姿态项：移除了直立奖励，爬梯子的过程中应该很难保持直立。添加了朝向奖励。
+  
+- 任务分解版本：    
+
+  提到了梯子的斜角最好为70°。目前设定的单阶梯子垂直高度为0.25，计算得到单阶梯子水平宽为0.09，暂取0.10。
+
+  ​    任务分解顺序：
+
+  (1) placeHands: place two hands on a (chosen) rung. 
+
+  (2) placeLFoot: place left foot on the first rung. 
+
+  (3) placeRFoot: place right foot on the first rung. 
+
+  (4) moveLHand: lift left hand to the next higher rung. 
+
+  (5) moveRHand: lift right hand to the next higher rung. 
+
+  (6) moveLFoot: lift left foot to the next higher rung. 
+
+  (7) moveRFoot: lift right foot to the next higher rung. 
+
+  ​    每完成一个离散任务，给予一个较高额度的（20）奖励。若手/脚与对应阶梯失去接触，则将此分数扣掉。若倒退回低处的梯子，倒扣70分。
+
+  ​	模型中，**脚和手的碰撞有效体积缩小为脚掌、手掌的中心点**。只有碰撞有效处与梯子发生接触时，才对接触进行奖励。对于geom几何体的命名，脚、手仍命名为`right_foot, right_hand`等；有效接触部位命名为`right_lower_sensor_geom`等（为了便于字符串检测，有效接触部位的命名中不使用hand、foot等字样）。完整的手、脚几何体用于判断手脚是否在梯子上下行，并在下行时倒扣分。有效接触部位
+
+  ​    Observation空间中，添加当前任务标签。关于地形的输入不变。
 
 
 ---
@@ -398,6 +377,8 @@ $$
    <img src="C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230420135607018.png" alt="image-20230420135607018" style="zoom: 20%;" /><img src="C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230420135719561.png" alt="image-20230420135719561" style="zoom:40%;" />
 
 9. 4月20日，准备对手部添加关节。意味着先前全部的模型将被弃用（虽然本来也没有能用的）。
+
+
 
 
 

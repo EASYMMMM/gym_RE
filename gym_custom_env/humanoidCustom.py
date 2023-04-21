@@ -353,12 +353,19 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         (5) moveRHand: lift right hand to the next higher rung. 
         (6) moveLFoot: lift left foot to the next higher rung. 
         (7) moveRFoot: lift right foot to the next higher rung. 
+        将有效碰撞体积限制为手掌、脚掌中心。
         ''' 
         self._forward_speed_reward_weight = 0.5
         self._healthy_reward = 0.2
         contact = list(self.sim.data.contact)  # 读取一个元素为mjContact的结构体数组
         ncon = self.sim.data.ncon # 碰撞对的个数
         reward = 0
+        limb_sensor_state = {'right_hand':100,    # 当前的肢体末端的有效接触情况，100表示悬空
+                            'left_hand' :100,
+                            'right_foot':100,
+                            'left_foot' :100}
+
+        # 更新当前手，脚所处阶梯数
         for i in range(ncon): # 遍历所有碰撞对
             con = contact[i]
             # 判断ladder/floor是否参与碰撞
@@ -373,29 +380,21 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                     limb = 'right_foot' if 'right' in self.geomdict[con.geom1]+self.geomdict[con.geom2] else 'left_foot'
                 else: # 若非手脚，跳过
                     continue
-            else:
+                if 'sensor' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
+                    # 更新当前的有效接触情况
+                    limb_sensor_state[limb] = self.ladder_height[ladder]
+            else: # 若碰撞对中不含阶梯，跳过
                 continue
             cont_pair = (limb,ladder)    
-            # 若当前碰到的阶梯高度比先前碰到的要低
+            # 若当前碰到的阶梯高度比先前碰到的要低，倒扣分
             if self.ladder_height[ladder] < self.limb_position[limb]:
                 reward += -50
                 self.ladder_up = False
-                self.limb_position[limb] = self.ladder_height[ladder] # 防止反复扣分
-            else:
-                self.limb_position[limb] = self.ladder_height[ladder]
-            if cont_pair in self.already_touched: # 判断是否曾经碰撞过
-                continue
-            else: # 初次碰撞，计算reward
-                if ladder == 'flatfloor': continue
-                ladder_num = int(ladder[6:])
-                # 手部仅可碰撞到6阶以上时有奖励分
-                if 'hand' in limb and ladder_num < 5:
-                    continue
-                reward = reward + self._single_contact_reward
-                self.already_touched.append(cont_pair)
+            # 更新肢体达到的最高位置
+            self.limb_position[limb] = self.ladder_height[ladder] 
 
         if self.ladder_task == 0: # 0级任务
-            if self.limb_position['right_hand'] == 5 and self.limb_position['left_hand'] == 5 and self.limb_position['right_foot'] == 0 and self.limb_position['left_foot']==0:
+            if limb_sensor_state['right_hand'] == 5 and limb_sensor_state['left_hand'] == 5 and limb_sensor_state['right_foot'] == 0 and limb_sensor_state['left_foot']==0:
                 reward += 5
         return reward
                     

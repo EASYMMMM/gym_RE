@@ -496,10 +496,13 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             pos_list.append(_x)
             pos_list.append(_z)
         right_hand_target_dis_x = self.sim.data.geom_xpos[41][0] - ladders_pos[4][0]   # right hand sensor position
+        pos_list.append(right_hand_target_dis_x)
         right_hand_target_dis_z = self.sim.data.geom_xpos[41][2] - ladders_pos[4][2]   # right hand sensor position
+        pos_list.append(right_hand_target_dis_z)
         left_hand_target_dis_x = self.sim.data.geom_xpos[45][0] - ladders_pos[4][0]   # right hand sensor position
+        pos_list.append(left_hand_target_dis_x)
         left_hand_target_dis_z = self.sim.data.geom_xpos[45][2] - ladders_pos[4][2]   # right hand sensor position
-
+        pos_list.append(left_hand_target_dis_z)
         return pos_list 
 
     def print_obs(self):

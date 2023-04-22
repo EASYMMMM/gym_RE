@@ -126,7 +126,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.contact_cost_sum = 0
         self.control_cost_sum = 0
         self.ladder_task = 0        # 爬梯子任务分解，当前任务序号 
-        self.ladder_task_flag = { 0:{'right_hand':False, 'left_hand':False} # 分解任务中用到的标志
+        self.ladder_task_flag = { 0:{'right_hand':False, 'left_hand':False, 'last_right_hand_dis_r':0,'last_left_hand_dis_r':0} # 分解任务中用到的标志
                                     }  
         
     @property
@@ -407,8 +407,21 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
         if self.ladder_task == 0: # 0级任务 先把一只手放上，再放另一只手
             self._forward_speed_reward_weight = 0.2
-            self._healthy_reward = 0.2
-            
+            self._healthy_reward = 0.02
+            ladders_pos = self.xml_model.ladder_positions
+            # 鼓励把手从上方接近梯子
+            right_hand_target_dis_x = self.sim.data.geom_xpos[41][0] - ladders_pos[4][0]   # right hand sensor position
+            right_hand_target_dis_z = self.sim.data.geom_xpos[41][2] - ladders_pos[4][2]   # right hand sensor position
+            left_hand_target_dis_x = self.sim.data.geom_xpos[45][0] - ladders_pos[4][0]   # right hand sensor position
+            left_hand_target_dis_z = self.sim.data.geom_xpos[45][2] - ladders_pos[4][2]   # right hand sensor position
+            if right_hand_target_dis_z > 0.02:
+                right_hand_dis_r = np.clip(0.5 - right_hand_target_dis_x,0,0.5) * 4
+            if left_hand_target_dis_z > 0.02:
+                left_hand_dis_r = np.clip(0.5 - left_hand_target_dis_x,0,0.5) * 4      
+            reward = reward - self.ladder_task_flag[0]['last_right_hand_dis_r'] - self.ladder_task_flag[0]['last_left_hand_dis_r'] + right_hand_dis_r + left_hand_dis_r
+            self.ladder_task_flag[0]['last_right_hand_dis_r'] = right_hand_dis_r
+            self.ladder_task_flag[0]['last_left_hand_dis_r'] = left_hand_dis_r
+
             if limb_sensor_state['right_hand'] == 5 and self.ladder_task_flag[0]['right_hand'] == False:
                 # 右手成功触碰
                 reward += 10
@@ -471,6 +484,11 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         for i in range(self.model.ngeom):
             geomdict[i] = self.model.geom_id2name(i)
         return geomdict
+
+    def _ladder_hand_distance(self):
+        # TODO 手部sensor到目标梯子的距离
+        # 如果单纯计算速度作为reward，很难保证绕开梯子抓住
+        pass
 
     def _get_steps_pos(self):
         # 读取当前机器人相对于台阶的x,y,z距离: 
@@ -538,7 +556,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         在父类mujoco_env初始化时，会调用该函数，并根据返回的observation来确定observation space。
         因此更改返回值中的observation，同时可更改该env的observation space。
         '''
-        xyz_position_before = mass_center(self.model, self.sim)
+        xyz_position_before = mass_center(self.model, self.sim)        
         self.do_simulation(action, self.frame_skip)
         xyz_position_after = mass_center(self.model, self.sim)
 

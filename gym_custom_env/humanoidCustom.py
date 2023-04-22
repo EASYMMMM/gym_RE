@@ -410,8 +410,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             self._healthy_reward = 0.02
             ladders_pos = self.xml_model.ladder_positions
             # 鼓励把手从上方接近梯子
-            right_hand_target_dis_x = self.sim.data.geom_xpos[41][0] - ladders_pos[4][0]   # right hand sensor position
-            right_hand_target_dis_z = self.sim.data.geom_xpos[41][2] - ladders_pos[4][2]   # right hand sensor position
+            right_hand_target_dis_x = - self.sim.data.geom_xpos[41][0] + ladders_pos[4][0]   # right hand sensor position
+            right_hand_target_dis_z = - self.sim.data.geom_xpos[41][2] + ladders_pos[4][2]   # right hand sensor position
             left_hand_target_dis_x = self.sim.data.geom_xpos[45][0] - ladders_pos[4][0]   # right hand sensor position
             left_hand_target_dis_z = self.sim.data.geom_xpos[45][2] - ladders_pos[4][2]   # right hand sensor position
             right_hand_dis_r = 0

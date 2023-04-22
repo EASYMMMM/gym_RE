@@ -414,6 +414,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             right_hand_target_dis_z = self.sim.data.geom_xpos[41][2] - ladders_pos[4][2]   # right hand sensor position
             left_hand_target_dis_x = self.sim.data.geom_xpos[45][0] - ladders_pos[4][0]   # right hand sensor position
             left_hand_target_dis_z = self.sim.data.geom_xpos[45][2] - ladders_pos[4][2]   # right hand sensor position
+            right_hand_dis_r = 0
+            left_hand_dis_r  = 0
             if right_hand_target_dis_z > 0.02:
                 right_hand_dis_r = np.clip(0.5 - right_hand_target_dis_x,0,0.5) * 4
             if left_hand_target_dis_z > 0.02:

@@ -18,6 +18,7 @@ import mujoco_py
 import numpy as np
 from mujoco_py.generated import const
 from scipy.spatial.transform import Rotation as R
+from collections import deque
 
 def quaternion_to_rotation_matrix(q):  # x, y ,z ,w
     rot_matrix = np.array(
@@ -80,7 +81,7 @@ geomdict = get_geom_idname(sim)
 
 print(geomdict)
 
-
+right_sensor_pos = deque(maxlen=600)
 # 运行仿真并在每个时间步骤中进行渲染
 for i in range(timesteps):
     sim.step()
@@ -142,16 +143,18 @@ for i in range(timesteps):
     viewer.add_marker(pos=[0,0,0.4], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
     viewer.add_marker(pos=[0.6,0,0.4], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
     viewer.add_marker(pos=[6,0,3], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+    if i % 4 == 0:
+        right_sensor_pos.append(np.array(sim.data.geom_xpos[45]))
+    for com in right_sensor_pos:
+        viewer.add_marker(pos=com, size=np.array([0.01, 0.01, 0.01]), rgba=np.array([1., 0, 0, 1]), type=const.GEOM_SPHERE)
 
     #viewer.add_marker(pos=[-1,0,1.7], size=np.array([0.01, 0.01, 0.01]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
     #viewer.add_marker(pos=[0,0,0.4], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+ 
     quatanion = sim.data.qpos[3:7]
     Rm = R.from_quat(quatanion)  # Rotation matrix
     #rotation_matrix = Rm.as_matrix()
-
-
     rotation_matrix=quaternion_to_rotation_matrix(quatanion)
-
     vertical_direction = np.array([0, 0, 1])
     x_dir = np.array([1,0,0])
     y_dir = np.array([0,1,0])
@@ -206,6 +209,9 @@ for i in range(timesteps):
     print('body_z_axis',body_z_axis)
     for i in range(ncon):
         print(f'contact : {geomdict[sim.data.contact[i].geom1]} + {geomdict[sim.data.contact[i].geom2]}')
+    print('geom_xpos lenth: ',len(sim.data.geom_xpos))
+    print('geom_xpos[1]',sim.data.geom_xpos[1])
+    print(geomdict)
     print('*************')    
     #print('geom name floor id:' , sim.model.geom_name2id("floor"))
     #print('geom name lwaist id:' , sim.model.geom_name2id("lwaist"))

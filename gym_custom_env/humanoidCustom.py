@@ -357,11 +357,11 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         '''
         TODO 梯子任务分解
         根据规划的爬梯子离散动作进行奖励函数设计
-        (1) placeHands: place two hands on a (chosen) rung. 
-        (2) placeLFoot: place left foot on the first rung. 
-        (3) placeRFoot: place right foot on the first rung. 
-        (4) moveLHand: lift left hand to the next higher rung. 
-        (5) moveRHand: lift right hand to the next higher rung. 
+        (0) placeHands: place two hands on a (chosen) rung. 
+        (1) placeLFoot: place left foot on the first rung. 
+        (2) placeRFoot: place right foot on the first rung. 
+        (3) moveLHand: lift left hand to the next higher rung. 
+        (4) moveRHand: lift right hand to the next higher rung. 
         (6) moveLFoot: lift left foot to the next higher rung. 
         (7) moveRFoot: lift right foot to the next higher rung. 
         将有效碰撞体积限制为手掌、脚掌中心。
@@ -408,6 +408,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         if self.ladder_task == 0: # 0级任务 先把一只手放上，再放另一只手
             self._forward_speed_reward_weight = 0.2
             self._healthy_reward = 0.2
+            
             if limb_sensor_state['right_hand'] == 5 and self.ladder_task_flag[0]['right_hand'] == False:
                 # 右手成功触碰
                 reward += 10
@@ -494,6 +495,11 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             _z = - ladders_pos[lowest_ladder+i][2] + z_w
             pos_list.append(_x)
             pos_list.append(_z)
+        right_hand_target_dis_x = self.sim.data.geom_xpos[41][0] - ladders_pos[4][0]   # right hand sensor position
+        right_hand_target_dis_z = self.sim.data.geom_xpos[41][2] - ladders_pos[4][2]   # right hand sensor position
+        left_hand_target_dis_x = self.sim.data.geom_xpos[45][0] - ladders_pos[4][0]   # right hand sensor position
+        left_hand_target_dis_z = self.sim.data.geom_xpos[45][2] - ladders_pos[4][2]   # right hand sensor position
+
         return pos_list 
 
     def print_obs(self):

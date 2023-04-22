@@ -197,9 +197,11 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         if self.terrain_type == "steps" or self.terrain_type == "default":
             # TODO: 这里计算出的点积取负。实验证明站立时点积为-1，暂时还不知道是为什么
             reward = self._posture_reward_weight * ( (( - z_dot_product + 1.0) / 2.0) + (( x_dot_product + 1.0) / 2.0) )/2
-        # 阶梯地形只考虑朝向。为了防止持续获得奖励，朝向偏差太多时扣分，正向不额外给分。
+        # 阶梯地形为了防止持续获得奖励，朝向偏差太多时扣分，正向不额外给分。
         if self.terrain_type == "ladders":
-            reward = 0 if self._posture_reward_weight*(( x_dot_product + 1.0) / 2.0) > 0.8 else -1
+            reward_x = 0 if self._posture_reward_weight*(( x_dot_product + 1.0) / 2.0) > 0.8 else -1
+            reward_z = 0 if self._posture_reward_weight*(( - z_dot_product + 1.0) / 2.0) > 0.8 else -1
+            reward = reward_x + reward_z
         return reward
 
     def control_cost(self, action):
@@ -371,7 +373,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         contact = list(self.sim.data.contact)  # 读取一个元素为mjContact的结构体数组
         ncon = self.sim.data.ncon # 碰撞对的个数
         reward = 0
-        limb_sensor_state = {'right_hand':100,    # 当前的肢体末端的有效接触情况，100表示悬空
+        self.limb_sensor_state = {'right_hand':100,    # 当前的肢体末端的有效接触情况，100表示悬空
                             'left_hand' :100,
                             'right_foot':100,
                             'left_foot' :100}
@@ -393,7 +395,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                     continue
                 if 'sensor' in self.geomdict[con.geom1]+self.geomdict[con.geom2]:
                     # 更新当前的有效接触情况
-                    limb_sensor_state[limb] = self.ladder_height[ladder]
+                    self.limb_sensor_state[limb] = self.ladder_height[ladder]
             else: # 若碰撞对中不含阶梯，跳过
                 continue
             cont_pair = (limb,ladder)    
@@ -411,34 +413,34 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             ladders_pos = self.xml_model.ladder_positions
             # 鼓励把手从上方接近梯子
             right_hand_target_dis_x = - self.sim.data.geom_xpos[41][0] + ladders_pos[4][0]   # right hand sensor position
-            right_hand_target_dis_z = - self.sim.data.geom_xpos[41][2] + ladders_pos[4][2]   # right hand sensor position
-            left_hand_target_dis_x = self.sim.data.geom_xpos[45][0] - ladders_pos[4][0]   # right hand sensor position
+            right_hand_target_dis_z = self.sim.data.geom_xpos[41][2] - ladders_pos[4][2]   # right hand sensor position
+            left_hand_target_dis_x = - self.sim.data.geom_xpos[45][0] + ladders_pos[4][0]   # right hand sensor position
             left_hand_target_dis_z = self.sim.data.geom_xpos[45][2] - ladders_pos[4][2]   # right hand sensor position
             right_hand_dis_r = 0
             left_hand_dis_r  = 0
-            if right_hand_target_dis_z > 0.02:
+            if right_hand_target_dis_z > 0.002:
                 right_hand_dis_r = np.clip(0.5 - right_hand_target_dis_x,0,0.5) * 4
-            if left_hand_target_dis_z > 0.02:
+            if left_hand_target_dis_z > 0.002:
                 left_hand_dis_r = np.clip(0.5 - left_hand_target_dis_x,0,0.5) * 4      
             reward = reward - self.ladder_task_flag[0]['last_right_hand_dis_r'] - self.ladder_task_flag[0]['last_left_hand_dis_r'] + right_hand_dis_r + left_hand_dis_r
             self.ladder_task_flag[0]['last_right_hand_dis_r'] = right_hand_dis_r
             self.ladder_task_flag[0]['last_left_hand_dis_r'] = left_hand_dis_r
 
-            if limb_sensor_state['right_hand'] == 5 and self.ladder_task_flag[0]['right_hand'] == False:
+            if self.limb_sensor_state['right_hand'] == 5 and self.ladder_task_flag[0]['right_hand'] == False:
                 # 右手成功触碰
                 reward += 10
                 self.ladder_task_flag[0]['right_hand'] = True
-            if limb_sensor_state['right_hand'] != 5 and self.ladder_task_flag[0]['right_hand'] == True:
+            if self.limb_sensor_state['right_hand'] != 5 and self.ladder_task_flag[0]['right_hand'] == True:
                 reward -= 10
                 self.ladder_task_flag[0]['right_hand'] = False
-            if limb_sensor_state['left_hand'] == 5 and self.ladder_task_flag[0]['left_hand'] == False:
+            if self.limb_sensor_state['left_hand'] == 5 and self.ladder_task_flag[0]['left_hand'] == False:
                 # 左手成功触碰
                 reward += 10
                 self.ladder_task_flag[0]['left_hand'] = True
-            if limb_sensor_state['left_hand'] != 5 and self.ladder_task_flag[0]['left_hand'] == True:
+            if self.limb_sensor_state['left_hand'] != 5 and self.ladder_task_flag[0]['left_hand'] == True:
                 reward -= 10
                 self.ladder_task_flag[0]['left_hand'] = False                
-            if limb_sensor_state['right_hand'] == 5 and limb_sensor_state['left_hand'] == 5 :
+            if self.limb_sensor_state['right_hand'] == 5 and self.limb_sensor_state['left_hand'] == 5 :
                 reward += 5
         return reward
                     
@@ -523,6 +525,11 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         pos_list.append(left_hand_target_dis_x)
         left_hand_target_dis_z = self.sim.data.geom_xpos[45][2] - ladders_pos[4][2]   # right hand sensor position
         pos_list.append(left_hand_target_dis_z)
+        for i in self.limb_sensor_state.values():
+            if i < 100:
+                pos_list.append(1) # 肢体末端与地面接触
+            else:
+                pos_list.append(0) # 肢体末端与地面接触   
         return pos_list 
 
     def print_obs(self):

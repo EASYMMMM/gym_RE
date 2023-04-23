@@ -663,11 +663,13 @@ class HumanoidXML(MujocoXML):
         actuator.child_element('motor',{'gear':'25' ,'joint':'right_shoulder1','name':'right_shoulder1'})
         actuator.child_element('motor',{'gear':'25' ,'joint':'right_shoulder2','name':'right_shoulder2'})
         actuator.child_element('motor',{'gear':'25' ,'joint':'right_elbow','name':'right_elbow'})
-        actuator.child_element('motor',{'gear':'25' ,'joint':'right_wrist','name':'right_wrist'})
+        if self.terrain_type == 'ladders':
+            actuator.child_element('motor',{'gear':'25' ,'joint':'right_wrist','name':'right_wrist'})
         actuator.child_element('motor',{'gear':'25' ,'joint':'left_shoulder1','name':'left_shoulder1'})
         actuator.child_element('motor',{'gear':'25' ,'joint':'left_shoulder2','name':'left_shoulder2'})
         actuator.child_element('motor',{'gear':'25' ,'joint':'left_elbow','name':'left_elbow'})
-        actuator.child_element('motor',{'gear':'25' ,'joint':'left_wrist','name':'left_wrist'})
+        if self.terrain_type == 'ladders':
+            actuator.child_element('motor',{'gear':'25' ,'joint':'left_wrist','name':'left_wrist'})
 
     def write_xml(self, file_path = 'humanoid.xml'):
         '''

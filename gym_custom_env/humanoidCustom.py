@@ -463,7 +463,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             position = position[2:]
 
         if self.terrain_type == 'steps':
-            position = position[2:]
+            position = position[3:]
             steps_pos = self._get_steps_pos()
             position = np.append(position,steps_pos)
 

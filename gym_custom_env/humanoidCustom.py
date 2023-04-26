@@ -195,7 +195,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         # 将点积映射到[0, 1]范围内的奖励值
         # 楼梯地形同时考虑姿态和朝向
         if self.terrain_type == "steps" or self.terrain_type == "default":
-            # TODO: 这里计算出的点积取负。实验证明站立时点积为-1，暂时还不知道是为什么
+            # FIXME : 这里计算出的点积取负。实验证明站立时点积为-1，暂时还不知道是为什么
             reward = self._posture_reward_weight * ( (( - z_dot_product + 1.0) / 2.0) + (( x_dot_product + 1.0) / 2.0) )/2
         # 阶梯地形为了防止持续获得奖励，朝向偏差太多时扣分，正向不额外给分。
         if self.terrain_type == "ladders":
@@ -615,6 +615,11 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         }
 
         return observation, reward, done, info
+
+    def update_xml_model(self):
+        # TODO 更新XML文档，更新仿真模型并测试
+        pass
+
 
     def reset_model(self):
         noise_low = -self._reset_noise_scale

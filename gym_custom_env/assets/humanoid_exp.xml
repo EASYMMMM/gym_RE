@@ -57,7 +57,6 @@
 								<joint name="right_ankle" type="hinge" armature="0.006" axis="0 1 0" pos="0 0 0" range="-45 25" />
 								<geom name="right_foot_geom_1" type="capsule" size="0.025" fromto="-0.03 0 0 0.14824825237348266 0.02505115817281178 0" />
 								<geom name="right_foot_geom_2" type="capsule" size="0.025" fromto="-0.03 0 0 0.14824825237348266 -0.02505115817281178 0" />
-								<geom name="right_foot_sensor_geom" type="capsule" size="0.0252" fromto="0.05912412618674133 -0.01252557908640589 0 0.05912412618674133 0.01252557908640589 0" rgba="1 0 0 1" />
 							</body>
 						</body>
 					</body>
@@ -73,7 +72,6 @@
 								<joint name="left_ankle" type="hinge" armature="0.006" axis="0 1 0" pos="0 0 0" range="-45 25" />
 								<geom name="left_foot_geom_1" type="capsule" size="0.025" fromto="-0.03 0 0 0.14824825237348266 0.02505115817281178 0" />
 								<geom name="left_foot_geom_2" type="capsule" size="0.025" fromto="-0.03 0 0 0.14824825237348266 -0.02505115817281178 0" />
-								<geom name="left_foot_sensor_geom" type="capsule" size="0.0252" fromto="0.05912412618674133 -0.01252557908640589 0 0.05912412618674133 0.01252557908640589 0" rgba="1 0 0 1" />
 							</body>
 						</body>
 					</body>

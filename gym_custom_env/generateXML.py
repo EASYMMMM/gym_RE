@@ -41,6 +41,7 @@ class HumanoidXML(MujocoXML):
                             'upper_arm_size':0.04,         # 大臂粗 0.04
                             'lower_arm_lenth':0.2944,      # 小臂长 0.2944
                             'lower_arm_size':0.031,        # 小臂粗 0.2944
+                            'foot_lenth':0.18,             # 脚长   0.18
                             }
         self.param_list = self.__default_param_list.copy()
 
@@ -368,24 +369,25 @@ class HumanoidXML(MujocoXML):
                                         parent=right_foot,
                                         geom_type='capsule',
                                         from_point=[-0.03,0,0],
-                                        to_point=[-0.03+0.18*cos(8/180*pi),0.18*sin(8/180*pi),0],
+                                        to_point=[-0.03+self.param_list['foot_lenth']*cos(8/180*pi),self.param_list['foot_lenth']*sin(8/180*pi),0],
                                         size=0.025,
                                         user=0)     
         right_foot_geom_2 = self.add_geom(name='right_foot_geom_2',
                                         parent=right_foot,
                                         geom_type='capsule',
                                         from_point=[-0.03,0,0],
-                                        to_point=[-0.03+0.18*cos(8/180*pi),-0.18*sin(8/180*pi),0],
+                                        to_point=[-0.03+self.param_list['foot_lenth']*cos(8/180*pi),-self.param_list['foot_lenth']*sin(8/180*pi),0],
                                         size=0.025,
                                         user=0)       
-        right_foot_geom_3 = self.add_geom(name='right_foot_sensor_geom',
-                                        parent=right_foot,
-                                        geom_type='capsule',
-                                        from_point=[-0.03+0.18*cos(8/180*pi)/2,-0.18*sin(8/180*pi)/2,0],
-                                        to_point=[-0.03+0.18*cos(8/180*pi)/2,0.18*sin(8/180*pi)/2,0],
-                                        size=0.0252,
-                                        rgba=[1,0,0,1],
-                                        user=0)                                                                                        
+        if self.terrain_type == 'ladders':
+            right_foot_geom_3 = self.add_geom(name='right_foot_sensor_geom',
+                                            parent=right_foot,
+                                            geom_type='capsule',
+                                            from_point=[-0.03+0.18*cos(8/180*pi)/2,-0.18*sin(8/180*pi)/2,0],
+                                            to_point=[-0.03+0.18*cos(8/180*pi)/2,0.18*sin(8/180*pi)/2,0],
+                                            size=0.0252,
+                                            rgba=[1,0,0,1],
+                                            user=0)                                                                                        
 
         # 左腿
         left_thigh_attr = { 'name':'left_thigh',
@@ -457,24 +459,25 @@ class HumanoidXML(MujocoXML):
                                         parent=left_foot,
                                         geom_type='capsule',
                                         from_point=[-0.03,0,0],
-                                        to_point=[-0.03+0.18*cos(8/180*pi),0.18*sin(8/180*pi),0],
+                                        to_point=[-0.03+self.param_list['foot_lenth']*cos(8/180*pi),self.param_list['foot_lenth']*sin(8/180*pi),0],
                                         size=0.025,
                                         user=0)                  
         left_foot_geom_2 = self.add_geom(name='left_foot_geom_2',
                                         parent=left_foot,
                                         geom_type='capsule',
                                         from_point=[-0.03,0,0],
-                                        to_point=[-0.03+0.18*cos(8/180*pi),-0.18*sin(8/180*pi),0],
+                                        to_point=[-0.03+self.param_list['foot_lenth']*cos(8/180*pi),-self.param_list['foot_lenth']*sin(8/180*pi),0],
                                         size=0.025,
                                         user=0)   
-        left_foot_geom_3 = self.add_geom(name='left_foot_sensor_geom',
-                                        parent=left_foot,
-                                        geom_type='capsule',
-                                        from_point=[-0.03+0.18*cos(8/180*pi)/2,-0.18*sin(8/180*pi)/2,0],
-                                        to_point=[-0.03+0.18*cos(8/180*pi)/2,0.18*sin(8/180*pi)/2,0],
-                                        size=0.0252,
-                                        rgba=[1,0,0,1],
-                                        user=0)  
+        if self.terrain_type == 'ladders':
+            left_foot_geom_3 = self.add_geom(name='left_foot_sensor_geom',
+                                            parent=left_foot,
+                                            geom_type='capsule',
+                                            from_point=[-0.03+0.18*cos(8/180*pi)/2,-0.18*sin(8/180*pi)/2,0],
+                                            to_point=[-0.03+0.18*cos(8/180*pi)/2,0.18*sin(8/180*pi)/2,0],
+                                            size=0.0252,
+                                            rgba=[1,0,0,1],
+                                            user=0)  
 
     def _create_arms(self, torso:XMLPart):
         '''

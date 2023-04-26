@@ -28,25 +28,28 @@ def quaternion_to_rotation_matrix(q):  # x, y ,z ,w
         dtype=q.dtype)
     return rot_matrix
 
-# params list
-paramas = { #'torso_width':0.5,
-            'init_position':[0,0,1.5],
-            'pelvis_width':0.2,
-            'upper_arm_lenth':0.11,
-            'lower_arm_lenth':0.4,
-            'shin_lenth':0.5,
-            'thigh_lenth':0.1,
-            #'torso_height':0.6,
+# 自定义参数
+params = { #'torso_width':0.5,
+            'thigh_lenth':0.34,            # 大腿长 0.34
+            'thigh_size':0.08,             # 大腿粗 0.06
+            'shin_lenth':0.5,              # 小腿长 0.3
+            'shin_size':0.06,              # 小腿粗 0.05
+            'upper_arm_lenth':0.20,      # 大臂长 0.2771
+            'upper_arm_size':0.05,         # 大臂粗 0.04
+            'lower_arm_lenth':0.31,      # 小臂长 0.2944
+            'lower_arm_size':0.031,        # 小臂粗 0.2944
+            'foot_lenth':0.14,             # 脚长   0.18
             }
-
+params['init_position'] = [-1,0,0.76+params['shin_lenth']+params['thigh_lenth'] ] 
 # 生成XML文件
-t = HumanoidXML(terrain_type='ladders',gravity=0)
+t_type = 'steps'
+t = HumanoidXML(terrain_type=t_type,gravity=0)
 t.write_xml(file_path="ee.xml")
 
 
 # 更新XML文件
-#t.set_params(paramas)
-#t.update_xml(file_path='ee.xml')
+t.set_params(params)
+t.update_xml(file_path='ee.xml')
 
 # 加载 XML 文件
 # model = mujoco_py.load_model_from_path("gym_custom_env\\assets\\humanoid_custom.xml")
@@ -102,11 +105,11 @@ for i in range(timesteps):
             #ctrl[13] = -0.050 # right shoulder 1
             #ctrl[14] = -0.050 # right shoulder 2
             #ctrl[15] = -0.050 # right elbow
-            ctrl[16] = -0.050 # right wrist
+            #ctrl[16] = -0.050 # right wrist
             #ctrl[17] = -0.050 # left shoulder 1
             #ctrl[18] = -0.050 # left shoulder 2
             #ctrl[19] = -0.050 # left elbow     
-            ctrl[20] = -0.050 # left wrist          
+            #ctrl[20] = -0.050 # left wrist          
             sim.data.ctrl[:] = ctrl
             j = 1
         else:
@@ -123,11 +126,11 @@ for i in range(timesteps):
             #ctrl[13] =  0.050 # right shoulder 1
             #ctrl[14] =  0.050 # right shoulder 2
             #ctrl[15] =  0.050 # right elbow 
-            ctrl[16] =  0.050 # right wrist
+            #ctrl[16] =  0.050 # right wrist
             #ctrl[16] =  0.050 # left shoulder 1
             #ctrl[17] =  0.050 # left shoulder 2
             #ctrl[18] =  0.050 # left elbow 
-            ctrl[20] =  0.050 # left wrist   
+            #ctrl[20] =  0.050 # left wrist   
             sim.data.ctrl[:] = ctrl
             j = 0            
 
@@ -139,11 +142,11 @@ for i in range(timesteps):
     #print(torso_x)
     #viewer.add_marker(pos=[torso_x,1,torso_z], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([1.0, 0, 0.0, 1]), type=const.GEOM_SPHERE)
 
-
+    viewer.add_marker(pos=[-1,0,1.7], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
     viewer.add_marker(pos=[0,0,0.4], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
     viewer.add_marker(pos=[0.6,0,0.4], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
     viewer.add_marker(pos=[6,0,3], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
-    if i % 4 == 0:
+    if i % 4 == 0 and t_type == 'ladders':
         right_sensor_pos.append(np.array(sim.data.geom_xpos[45]))
     for com in right_sensor_pos:
         viewer.add_marker(pos=com, size=np.array([0.01, 0.01, 0.01]), rgba=np.array([1., 0, 0, 1]), type=const.GEOM_SPHERE)

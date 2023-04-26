@@ -63,11 +63,30 @@
 
 - **Jointly learning  to  construct  and  control  agents  using  deep  reinforcement learning**
 
-  - 来自刘华平的评论：将设计参数与控制参数一起用近端策略优化方法（PPO）联合计算. 由于形态搜索空间过大, 且形态与控制的搜索难以解耦, 学习收敛非常困难. 因此作者对形态搜索的空间做了约束, 仅能针对指定的形态优化机器人组件的参数, 而没有优化机器人的结构.   
+  - > Thus, we are interested in finding a design $ω^∗$ and corresponding policy $π^∗_θ(a_t|s_t, ω^∗) $that are jointly optimal. Unfortunately, this search cannot be decoupled. Evaluating the quality of a design $ω$ requires first determining the optimal policy $π^∗_θ$ for that design, which involves running a full round of training. In this respect, the design ω can be thought of
+    > as a “hyper-parameter,” and the standard way of finding ω involves training different policies for different candidate designs. 
+
+  - 来自刘华平的评论：将设计参数与控制参数一起用近端策略优化方法（PPO）联合计算. 由于形态搜索空间过大, 且形态与控制的搜索难以解耦, 学习收敛非常困难. 因此作者对形态搜索的空间做了约束, 仅能针对指定的形态优化机器人组件的参数, 而没有优化机器人的结构. 
+
+  - > Formally, we seek to find design and policy parameters $\phi^∗ $and$ θ^∗$ such that: 
+    >
+    > $ \phi^∗, θ^∗ = \underset{φ,θ}{argmax}\mathbb{E}_{ω∼p_{\phi}}
+    > [\mathbb{E}_{π_θ} [\mathcal{R}_t] $ 
+    >
+    > At each iteration of training, the policy is trained (using PPO) with respect to gradients that maximize the expected return over designs sampled from the current design distribution $p_\phi$. At the same time, the design distribution is updated every iteration to increase the probability density around designs that perform well when using the current learned policy $π_θ$:
+    >
+    > $ \nabla \mathbb{E}_{ω∼p_{\phi}}
+    > [\mathbb{E}_{π_θ} [\mathcal{R}_t] = \mathbb{E}_{ω∼p_{\phi}}[\nabla \log p_\phi(\omega)\mathbb{E}_{\pi_\theta}[\mathcal{R}_t]]  $
 
 - **基于形态的具身智能研究：历史回顾与前沿进展**
 
   - 尽管形态与控制应该联合协同优化, 但二者其实是在不同尺度上的优化. 以生物为例, 形态的变化 (包括结构与参数) 更类似一种进化过程, 即在长期的环境适应过程中通过进化过程来优化自身的结构与参数; 而控制器的设计过程更类似于后天的学习过程, 即在确定形态后在自己的生命期内通过学习努力达到运动能力的边界. 因此不难看出, 一个很自然的想法是利用进化优化方法实现形态结构与参数的寻优, 而利用强化学习策略实现控制结构与参数的优化. 二者嵌套在两个回路中, 其中进化优化方法为外部循环, 而强化学习为内部循环.   
+  
+- **Neural Graph Evolution: Towards Efficient Automatic Robot Design**
+
+  在先前提出的图神经网络控制器基础上, 将机器人的形态设计描述为图的搜索问题, 引入种群的概念, 设计可增加、删除节点的变异算子,对图实现进化搜索. 利用图神经网络作为控制器,可以在控制器之间共享参数, 因而极大地降低了控制器学习的时间。
+
+  > Automatic robot design has been a long studied subject, but the recent progress has been slowed due to the large combinatorial search space and the difficulty in evaluating the found candidates.
 
 #### 1.2 Reward shaping
 
@@ -93,7 +112,7 @@
 
    奖励塑造是强化学习中常用的人为设计附加的奖励来指导智能体训练的方法，但是一些问题中人为设计的奖励函数常常导致智能体学习到非最优的策略。
 
-   文章主要研究保证reward shaping最优策略不变的条件，结论是当附加奖励值可以表示为任意一个状态的势函数（Potential-based function，势函数被定义为状态到实数的映射 $  \phi: S \rightarrow  R $）的差分形式的时候，能保证最优策略不变。
+   文章主要研究保证reward shaping最优策略不变的条件，结论是当附加奖励值可以表示为任意一个状态的势函数（Potential-based function，势函数被定义为状态到实数的映射 $  \phi: S \rightarrow R $）的差分形式的时候，能保证最优策略不变。
 
    文章最后设计了基于距离和基于子目标的启发式奖励函数，并实验证明了其对缩减训练时间有很大作用。两个典型问题：
    （1）自动车从A到B的问题，当智能体向B走就给予正奖励，其余奖励0，可能会导致智能体学到在A附近“兜圈”的策略，原因是智能体远离B没有给予负奖励，当智能体“兜圈”时，凭借靠近B的部分就能持续获得奖励；
@@ -285,7 +304,7 @@ $$
 
   问题也非常明显。相比于走楼梯，爬梯子是一系列更为复杂的动作，需要全身协调配合。因此，尽管有着向上高度的奖励函数来引导它向上，但是agent并不知道如何向上攀爬。
 
-  <img src="C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230404152020410.png" alt="image-20230404152020410" style="zoom: 33%;" />
+  <img src="C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230404152020410.png" alt="image-20230404152020410" style="zoom:50%;" />
   
 - **新版（4月）梯子地形奖励函数：**
 
@@ -395,10 +414,6 @@ $$
    <img src="C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230420135607018.png" alt="image-20230420135607018" style="zoom: 20%;" /><img src="C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230420135719561.png" alt="image-20230420135719561" style="zoom:40%;" />
 
 9. 4月20日，准备对手部添加关节。意味着先前全部的模型将被弃用（虽然本来也没有能用的）。
-
-
-
-
 
 
 
@@ -512,6 +527,70 @@ sim.close()
 奖励函数的输出:
 
 - Reward值
+
+## 三、形态优化
+
+### 1. Method
+
+#### 1.1 零阶优化
+
+> 由于进化算法实质上相当于零阶优化, 导致效率较低. 依托强化学习近年来的快速进展, 也有学者尝试直接利用强化学习方法来统一优化形态与控制.  
+>
+> -- **基于形态的具身智能研究：历史回顾与前沿进展**
+
+​    零阶优化泛指所有不需要梯度信息的优化方法。一般情况下，指给予参数采样和差分思想来估计参数更新方法的优化算法。从形式上来看，它是直接在参数空间中进行随机采样，不依赖于任何形式的梯度，因此理论上能求解的目标是相当广泛的；不过也正因为它直接在参数空间中进行采样，只是相当于一种更加智能的网格搜索，因此面对高维参数空间时（比如深度学习场景），它的优化效率会相当低，因此使用场景会很受限。
+
+#### 1.2 Vanilla Policy Gradient
+
+[标准版的策略梯度算法](https://zhuanlan.zhihu.com/p/106006748)
+
+#### 1.3 GMM 
+
+高斯混合模型
+
+- **高斯分布**
+
+  一维高斯分布的概率密度函数（PDF）：
+  $$
+  p(x) = \phi (x) = \frac{1}{\sqrt{2\pi}}e^{-x^2/2}
+  $$
+  更加一般地，我们可以通过平移和伸缩得到任意中心 $μ∈R$ 和宽度$ σ>0$ 的高斯分布，它的PDF为
+  $$
+  p(x)=\frac{1}{σ}ϕ(\frac{x−μ}{σ})=\frac{1}{\sqrt{2π}σ}exp(−\frac{(x−μ)^2}{2σ^2}).
+  $$
+  通常$μ$称为均值，$σ^2$称为方差。如果一个随机变量$ X $服从这一分布，则记作$X\sim \mathcal{N}{(\mu,\sigma^2)} $。
+
+  更进一步地，一个多元随机变量，假设为$d$维列向量 $x$ ，其均值向量$μ$，协方差均值$Σ$，概率分布可以写为
+  $$
+  p(x|μ,Σ) = \frac{1}{{(2π)}^{d/2}{|Σ|}^{1/2}} exp(−\frac{1}{2}(x−μ)^TΣ^{−1}(x−μ)),
+  $$
+  可以记作$ X∼N(μ,Σ)$。
+
+- TO BE DONE
+
+#### 1.4 Genetic Algorithm
+
+
+
+### 2. Framework
+
+![image-20230425150203113](C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230425150203113.png)
+
+![image-20230425150316169](C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230425150316169.png)    
+
+​    现有研究中常用的联合优化方法流程为：在设计分布中随机选取初始值，并对此初始设计进行控制器训练（可能带有warm-up启动），随后开始控制器-形态设计交叉训练。
+
+​    对于我们的任务而言，训练控制器需要花费大量时间，而且任务相对比较复杂，不能保证随机选取的初始形态具有完成任务的能力。因此，选择合适的初始状态、并对其进行预先训练是非常有必要的。
+
+
+
+
+
+
+
+
+
+
 
 
 

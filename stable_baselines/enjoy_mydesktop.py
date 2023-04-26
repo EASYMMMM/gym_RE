@@ -111,6 +111,7 @@ if __name__ == "__main__":
         # Try to load best model
         save_path = os.path.join(f"{args.algo}_{env_id}", "best_model.zip")
     print('load from:')
+    save_path = 'best_model/5e6_steps_t5_cpu8_sac_HumanoidCustomEnv-v0.zip'
     print(save_path)
 
     model = algo("MlpPolicy", env, verbose=1,  **hyperparams)

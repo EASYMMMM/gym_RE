@@ -616,9 +616,22 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
         return observation, reward, done, info
 
-    def update_xml_model(self):
-        # TODO 更新XML文档，更新仿真模型并测试
-        pass
+    def update_xml_model(self,params):
+        # 更新XML文档，更新仿真模型
+        xml_name = 'humanoid_exp.xml'
+        self.xml_model.set_params(params)
+        self.xml_model.update_xml(file_path=f"gym_custom_env/assets/{xml_name}")
+        dir_path = os.path.dirname(__file__)
+        xml_file_path = f"{dir_path}\\assets\\{xml_name}"
+        mujoco_env.MujocoEnv.__init__(self, xml_file_path, 5)
+
+    def reset_xml_model(self):
+        xml_name = 'humanoid_exp.xml'
+        self.xml_model.reset_params()
+        self.xml_model.update_xml(file_path=f"gym_custom_env/assets/{xml_name}")
+        dir_path = os.path.dirname(__file__)
+        xml_file_path = f"{dir_path}\\assets\\{xml_name}"
+        mujoco_env.MujocoEnv.__init__(self, xml_file_path, 5)        
 
 
     def reset_model(self):

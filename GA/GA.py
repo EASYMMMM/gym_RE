@@ -19,11 +19,11 @@ from stable_baselines3 import SAC, TD3, PPO
 
 class GA_Design_Optim():
     '''
-    外层设计优化 Genetic Algorithm
-    在遗传算法中，个体表示agent各个部位的优化系数。
-    例如：优化系数为1.2，表示agent该部位尺寸为标准尺寸的1.2倍。
-    将所有的优化系数螺旋编码为二进制数，作为一个个体。
-    待优化参数：（4-26）
+    外层设计优化 Genetic Algorithm。  
+    在遗传算法中，个体表示agent各个部位的优化系数。  
+    例如：优化系数为1.2，表示agent该部位尺寸为标准尺寸的1.2倍。  
+    将所有的优化系数螺旋编码为二进制数，作为一个个体。  
+    待优化参数：（4-26） 
     {  'thigh_lenth':0.34,            # 大腿长 0.34
        'shin_lenth':0.5,              # 小腿长 0.3
        'upper_arm_lenth':0.20,        # 大臂长 0.2771
@@ -52,12 +52,12 @@ class GA_Design_Optim():
         self.mutation_rate  = mutation_rate
         self.n_generations  = n_generations                    # 迭代次数
         self.optim_bound    = optim_bound
-        self.design_params  = {  'thigh_lenth':0.34,           # 大腿长 0.34
+        self.__origin_design_params  = {  'thigh_lenth':0.34,           # 大腿长 0.34
                                 'shin_lenth':0.5,              # 小腿长 0.3
                                 'upper_arm_lenth':0.20,        # 大臂长 0.2771
                                 'lower_arm_lenth':0.31,        # 小臂长 0.2944
                                 'foot_lenth':0.14,       }     # 脚长   0.18
-        self.DNA_size       = decode_size * len(self.design_params)
+        self.DNA_size       = decode_size * len(self.__origin_design_params)
         
         self.pop = np.random.randint(2, size=(self.POP_size, self.DNA_size)) # 生成初始种群
         self.init_controller()
@@ -97,13 +97,12 @@ class GA_Design_Optim():
 
     def Fitness(self, pop ):
         thigh_lenth, shin_lenth, upper_arm_lenth, lower_arm_lenth, foot_lenth = self.translateDNA(pop)
-        # 评估个体适应度
-        # TODO ：添加设计参数更改功能
+        # 评估种群中全部个体适应度
         fitness = np.zeros(self.POP_size)
         for i in range(self.POP_size):
             # 更新XML文件
-            self.env.set_params(params)
-            self.env.update_xml(file_path='ee.xml')
+            new_params = self.new_design_params(thigh_lenth[i],shin_lenth[i],upper_arm_lenth[i],lower_arm_lenth[i],foot_lenth[i])
+            self.env.update_xml_model(new_params)
             # 评估每一个个体
             episode_rewards, episode_lengths = [], []
             for _ in range(8):
@@ -120,7 +119,22 @@ class GA_Design_Optim():
             mean_reward = np.mean(episode_rewards)
             fitness[i]  = mean_reward
             print('num:',i)
+        self.best_reward.append(np.max(episode_rewards))
         return fitness
+
+    def new_design_params(self,p_thigh_lenth, p_shin_lenth, p_upper_arm_lenth, p_lower_arm_lenth, p_foot_lenth):
+        # 由个体DNA信息得到新的设计参数
+        self.__origin_design_params  = {  'thigh_lenth':0.34,           # 大腿长 0.34
+                                'shin_lenth':0.5,              # 小腿长 0.3
+                                'upper_arm_lenth':0.20,        # 大臂长 0.2771
+                                'lower_arm_lenth':0.31,        # 小臂长 0.2944
+                                'foot_lenth':0.14,       }     # 脚长   0.18
+        params = {  'thigh_lenth':self.__origin_design_params['thigh_lenth']*p_thigh_lenth,
+                    'shin_lenth':self.__origin_design_params['shin_lenth']*p_shin_lenth,             
+                    'upper_arm_lenth':self.__origin_design_params['upper_arm_lenth']*p_upper_arm_lenth,     
+                    'lower_arm_lenth':self.__origin_design_params['lower_arm_lenth']*p_lower_arm_lenth,        
+                    'foot_lenth':self.__origin_design_params['foot_lenth']*p_foot_lenth       }    
+        return params
 
     def get_fitness(self, pop):
         pred = self.Fitness(pop)
@@ -131,7 +145,7 @@ class GA_Design_Optim():
     def translateDNA(self, pop): 
         # DNA解码：二进制编码转换为设计参数的优化系数
         # pop表示种群矩阵，一行表示一个二进制编码表示的DNA，矩阵的行数为种群数目
-        design_params_size = len(self.design_params)
+        design_params_size = len(self.__origin_design_params)
         thigh_lenth_pop     = pop[:,0::design_params_size]  #奇数列表示X
         shin_lenth_pop      = pop[:,1::design_params_size]  #偶数列表示y
         upper_arm_lenth_pop = pop[:,2::design_params_size]
@@ -176,14 +190,37 @@ class GA_Design_Optim():
                             p=(fitness) / (fitness.sum()))
         return pop[idx]
 
+    def evolve(self):
+        # 进化N代
+        pop = np.random.randint(2, size=(self.POP_size, self.DNA_size)) # 随机初始化种群
+        self.best_individual = list()
+        self.best_reward     = list()
+        for _ in range(self.n_generations):#迭代N代
+            pop = np.array(self.crossover_and_mutation(pop))
+            fitness = self.get_fitness(pop)
+            pop = self.select(pop, fitness) #选择生成新的种群
 
-    def print_info(self, pop):
-        fitness = self.get_fitness(pop)
-        max_fitness_index = np.argmax(fitness)
-        print("max_fitness:", fitness[max_fitness_index])
-        x, y = self.translateDNA(pop)
-        print("最优的基因型：", pop[max_fitness_index])
-        print("(x, y):", (x[max_fitness_index], y[max_fitness_index]))
-        print(F(x[max_fitness_index], y[max_fitness_index]))
+            self.best_individual.append(pop[np.argmax(fitness)])
+
+            
+
+    def save_fig(self, fig_name:str = None):
+        t,s,u,l,f = self.translateDNA(np.array(self.best_individual))
+        plt.figure(1,figsize=(8, 8))
+        plt.subplot(2,1,1)
+        plt.plot(t,color='r')
+        plt.plot(s,color='g')
+        plt.plot(u,color='b')
+        plt.plot(l,color='c')
+        plt.plot(f,color='m')
+        plt.legend(['t','s','u','l','f'])
+        plt.title('design parameters')
+        plt.subplot(2,1,2)
+        plt.plot(self.best_reward,color='b')
+        plt.title('reward')
+        if fig_name == None:
+            fig_name = 'GA_optim_result'
+        plt.savefig('screenshot/'+fig_name+'.png', bbox_inches='tight')
+        plt.show()
 
 

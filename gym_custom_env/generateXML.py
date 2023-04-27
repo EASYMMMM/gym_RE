@@ -699,6 +699,7 @@ class HumanoidXML(MujocoXML):
         设定params list
         '''
         self.param_list.update(params)
+        self.param_list['init_position'] = [-1,0,0.76+params['shin_lenth']+params['thigh_lenth'] ] 
         return
 
     def update_xml(self, file_path='humanoid.xml'):

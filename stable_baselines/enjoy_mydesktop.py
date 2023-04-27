@@ -1,5 +1,5 @@
 # 由于我的笔记本显存不够，创建model时会报错，故使用set parameters
-
+# 手动更改模型路径
 '''
 python stable_baselines/enjoy_mydesktop.py --algo sac --env HumanoidCustomEnv-v0  --terrain-type steps  --model-name 5e6_steps_ankle_t4_cpu8
 '''
@@ -110,6 +110,7 @@ if __name__ == "__main__":
         print("Loading best model")
         # Try to load best model
         save_path = os.path.join(f"{args.algo}_{env_id}", "best_model.zip")
+
     print('load from:')
     save_path = 'best_model/5e6_steps_t5_cpu8_sac_HumanoidCustomEnv-v0.zip'
     print(save_path)
@@ -117,18 +118,24 @@ if __name__ == "__main__":
     model = algo("MlpPolicy", env, verbose=1,  **hyperparams)
     # Load the saved model
     model.set_parameters(save_path)
-
-
     print("==============================")
     print(f"Method: {args.algo}")
     print(f"Time steps: {args.model_name}")
     # print(f"gradient steps:{model.gradient_steps}")
     print("model path:"+save_path)
     print("==============================")
+    # 自定义参数
+    params = { #'torso_width':0.5,
+                'thigh_lenth':0.34,            # 大腿长 0.34
+                'shin_lenth':0.5,              # 小腿长 0.3
+                'upper_arm_lenth':0.20,      # 大臂长 0.2771
+                'lower_arm_lenth':0.31,      # 小臂长 0.2944
+                'foot_lenth':0.14,             # 脚长   0.18
+                }
     try:
         # Use deterministic actions for evaluation
         episode_rewards, episode_lengths = [], []
-        for _ in range(args.n_episodes):
+        for i in range(args.n_episodes):
             obs = env.reset()
             done = False
             episode_reward = 0.0
@@ -168,6 +175,8 @@ if __name__ == "__main__":
             print('control C: ', control_c_total)
             print('contact C: ', contact_c_total)
             print('************************')
+            # env.update_xml_model(params)
+            # params['shin_lenth'] = 0.5 + 0.1*i
 
         mean_reward = np.mean(episode_rewards)
         std_reward = np.std(episode_rewards)

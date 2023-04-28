@@ -53,8 +53,8 @@ t.update_xml(file_path='ee.xml')
 
 # 加载 XML 文件
 # model = mujoco_py.load_model_from_path("gym_custom_env\\assets\\humanoid_custom.xml")
-model = mujoco_py.load_model_from_path("ee.xml")
-# model = mujoco_py.load_model_from_path("humanoid.xml")
+#model = mujoco_py.load_model_from_path("ee.xml")
+model = mujoco_py.load_model_from_path("gym_custom_env/assets/humanoid_exp.xml")
 # 创建仿真环境和渲染器
 sim = mujoco_py.MjSim(model)
 viewer = mujoco_py.MjViewer(sim)

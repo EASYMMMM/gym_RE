@@ -54,7 +54,7 @@ class GA_Design_Optim():
                  POP_size = 80 ,
                  crossover_rate = 0.6,
                  mutation_rate  = 0.01,
-                 n_generations  = 100,
+                 n_generations  = 10,
                  n_envs         = 8,
                  optim_bound   = [0.7, 1.3]
                     ):

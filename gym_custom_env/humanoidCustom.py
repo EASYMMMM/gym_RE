@@ -626,6 +626,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         mujoco_env.MujocoEnv.__init__(self, xml_file_path, 5)
 
     def reset_xml_model(self):
+        print('----- Reset XML Model ----- ')
         xml_name = 'humanoid_exp.xml'
         self.xml_model.reset_params()
         self.xml_model.update_xml(file_path=f"gym_custom_env/assets/{xml_name}")

@@ -15,7 +15,7 @@ import gym
 import torch
 import numpy as np
 from stable_baselines3 import SAC, TD3, PPO
-
+from stable_baselines3.common.env_util import make_vec_env
 
 class GA_Design_Optim():
     '''
@@ -52,11 +52,11 @@ class GA_Design_Optim():
         self.mutation_rate  = mutation_rate
         self.n_generations  = n_generations                    # 迭代次数
         self.optim_bound    = optim_bound
-        self.__origin_design_params  = {  'thigh_lenth':0.34,           # 大腿长 0.34
-                                'shin_lenth':0.5,              # 小腿长 0.3
-                                'upper_arm_lenth':0.20,        # 大臂长 0.2771
-                                'lower_arm_lenth':0.31,        # 小臂长 0.2944
-                                'foot_lenth':0.14,       }     # 脚长   0.18
+        self.__origin_design_params  = {   'thigh_lenth':0.34,           # 大腿长 0.34
+                                           'shin_lenth':0.5,              # 小腿长 0.3
+                                           'upper_arm_lenth':0.20,        # 大臂长 0.2771
+                                           'lower_arm_lenth':0.31,        # 小臂长 0.2944
+                                           'foot_lenth':0.14,       }     # 脚长   0.18
         self.DNA_size       = decode_size * len(self.__origin_design_params)
         
         self.pop = np.random.randint(2, size=(self.POP_size, self.DNA_size)) # 生成初始种群
@@ -121,6 +121,25 @@ class GA_Design_Optim():
             print('num:',i)
         self.best_reward.append(np.max(episode_rewards))
         return fitness
+
+    def Fitness_Paralle(self):
+        n_envs = 8
+        env_model = make_vec_env(env_id = 'HumanoidCustomEnv-v0', n_envs = n_envs, env_kwargs = env_kwargs)
+        obs = env_model.reset()
+        episode = 0
+        episode_rewards = []
+        episode_reward = np.zeros(n_envs)
+        while episode < n_envs:
+            action, _  = model.predict(obs,)
+            obs, rewards, dones, infos = env_model.step(action)
+            episode_reward += rewards
+            for idx,done in enumerate(dones):
+                if done:
+                    print(idx)
+                    episode += 1
+                    episode_rewards.append(episode_reward[idx])
+                    episode_reward[idx] = 0
+        print(np.mean(episode_rewards))
 
     def new_design_params(self,p_thigh_lenth, p_shin_lenth, p_upper_arm_lenth, p_lower_arm_lenth, p_foot_lenth):
         # 由个体DNA信息得到新的设计参数

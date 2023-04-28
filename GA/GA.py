@@ -232,6 +232,7 @@ class GA_Design_Optim():
 
     def evolve(self):
         # 进化N代
+        begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
         env_kwargs = {'terrain_type':'steps'}
         self.envs = make_vec_env(env_id = 'HumanoidCustomEnv-v0', n_envs = self.n_envs, env_kwargs = env_kwargs)
         pop = np.random.randint(2, size=(self.POP_size, self.DNA_size)) # 随机初始化种群
@@ -243,7 +244,11 @@ class GA_Design_Optim():
             pop = self.select(pop, fitness) #选择生成新的种群
 
             self.best_individual.append(pop[np.argmax(fitness)])
-
+        end_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+        print('=====================================')
+        print('Started at: ' + begin_time)
+        print('Ended at: ' + end_time)
+        print('=====================================')
             
 
     def save_fig(self, fig_name:str = None):

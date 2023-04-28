@@ -16,6 +16,17 @@ import torch
 import numpy as np
 from stable_baselines3 import SAC, TD3, PPO
 from stable_baselines3.common.env_util import make_vec_env
+from stable_baselines3.common.vec_env import DummyVecEnv
+
+def update_xml_model(self,params):
+    # VecEnv更新XML模型
+    for env_idx in range(self.num_envs):
+        self.envs[env_idx].update_xml_model(params)
+DummyVecEnv.update_xml_model = update_xml_model
+
+
+
+
 
 class GA_Design_Optim():
     '''
@@ -25,10 +36,10 @@ class GA_Design_Optim():
     将所有的优化系数螺旋编码为二进制数，作为一个个体。  
     待优化参数：（4-26） 
     {  'thigh_lenth':0.34,            # 大腿长 0.34
-       'shin_lenth':0.5,              # 小腿长 0.3
-       'upper_arm_lenth':0.20,        # 大臂长 0.2771
-       'lower_arm_lenth':0.31,        # 小臂长 0.2944
-       'foot_lenth':0.14,             # 脚长   0.18
+       'shin_lenth':0.3,              # 小腿长 0.3
+       'upper_arm_lenth':0.2771,        # 大臂长 0.2771
+       'lower_arm_lenth':0.2944,        # 小臂长 0.2944
+       'foot_lenth':0.18,             # 脚长   0.18
     }
     params:
     decode_size: 单个数据的二进制编码长度
@@ -44,6 +55,7 @@ class GA_Design_Optim():
                  crossover_rate = 0.6,
                  mutation_rate  = 0.01,
                  n_generations  = 100,
+                 n_envs         = 8,
                  optim_bound   = [0.7, 1.3]
                     ):
         self.decode_size    = decode_size                      # 单个数值的编码长度
@@ -53,12 +65,12 @@ class GA_Design_Optim():
         self.n_generations  = n_generations                    # 迭代次数
         self.optim_bound    = optim_bound
         self.__origin_design_params  = {   'thigh_lenth':0.34,           # 大腿长 0.34
-                                           'shin_lenth':0.5,              # 小腿长 0.3
-                                           'upper_arm_lenth':0.20,        # 大臂长 0.2771
-                                           'lower_arm_lenth':0.31,        # 小臂长 0.2944
-                                           'foot_lenth':0.14,       }     # 脚长   0.18
+                                           'shin_lenth':0.3,              # 小腿长 0.3
+                                           'upper_arm_lenth':0.2771,        # 大臂长 0.2771
+                                           'lower_arm_lenth':0.2944,        # 小臂长 0.2944
+                                           'foot_lenth':0.18,       }     # 脚长   0.18
         self.DNA_size       = decode_size * len(self.__origin_design_params)
-        
+        self.n_envs         = n_envs
         self.pop = np.random.randint(2, size=(self.POP_size, self.DNA_size)) # 生成初始种群
         self.init_controller()
 
@@ -95,7 +107,7 @@ class GA_Design_Optim():
         self.model = SAC("MlpPolicy", env, verbose=1,  **hyperparams)
         self.model.set_parameters(save_path)
 
-    def Fitness(self, pop ):
+    def Fitness_single(self, pop ):
         thigh_lenth, shin_lenth, upper_arm_lenth, lower_arm_lenth, foot_lenth = self.translateDNA(pop)
         # 评估种群中全部个体适应度
         fitness = np.zeros(self.POP_size)
@@ -122,24 +134,33 @@ class GA_Design_Optim():
         self.best_reward.append(np.max(episode_rewards))
         return fitness
 
-    def Fitness_Paralle(self):
-        n_envs = 8
-        env_model = make_vec_env(env_id = 'HumanoidCustomEnv-v0', n_envs = n_envs, env_kwargs = env_kwargs)
-        obs = env_model.reset()
-        episode = 0
-        episode_rewards = []
-        episode_reward = np.zeros(n_envs)
-        while episode < n_envs:
-            action, _  = model.predict(obs,)
-            obs, rewards, dones, infos = env_model.step(action)
-            episode_reward += rewards
-            for idx,done in enumerate(dones):
-                if done:
-                    print(idx)
-                    episode += 1
-                    episode_rewards.append(episode_reward[idx])
-                    episode_reward[idx] = 0
-        print(np.mean(episode_rewards))
+    def Fitness(self, pop):
+        # 使用向量环境评估适应度
+        thigh_lenth, shin_lenth, upper_arm_lenth, lower_arm_lenth, foot_lenth = self.translateDNA(pop)
+        # 评估种群中全部个体适应度
+        fitness = np.zeros(self.POP_size)
+        for i in range(self.POP_size):
+            new_params = self.new_design_params(thigh_lenth[i],shin_lenth[i],upper_arm_lenth[i],lower_arm_lenth[i],foot_lenth[i])
+            self.envs.update_xml_model(new_params)
+            obs = self.envs.reset()
+            episode = 0
+            episode_rewards = []
+            episode_reward = np.zeros(self.n_envs)
+            while episode < self.n_envs:
+                action, _  = self.model.predict(obs,)
+                obs, rewards, dones, infos = self.envs.step(action)
+                episode_reward += rewards
+                for idx,done in enumerate(dones):
+                    if done:
+                        print(idx)
+                        episode += 1
+                        episode_rewards.append(episode_reward[idx])
+                        episode_reward[idx] = 0
+            mean_reward = np.mean(episode_rewards)
+            fitness[i]  = mean_reward
+            print('num:',i)
+        self.best_reward.append(np.max(episode_rewards))
+        return fitness
 
     def new_design_params(self,p_thigh_lenth, p_shin_lenth, p_upper_arm_lenth, p_lower_arm_lenth, p_foot_lenth):
         # 由个体DNA信息得到新的设计参数
@@ -211,6 +232,8 @@ class GA_Design_Optim():
 
     def evolve(self):
         # 进化N代
+        env_kwargs = {'terrain_type':'steps'}
+        self.envs = make_vec_env(env_id = 'HumanoidCustomEnv-v0', n_envs = self.n_envs, env_kwargs = env_kwargs)
         pop = np.random.randint(2, size=(self.POP_size, self.DNA_size)) # 随机初始化种群
         self.best_individual = list()
         self.best_reward     = list()

@@ -159,7 +159,7 @@ class GA_Design_Optim():
             mean_reward = np.mean(episode_rewards)
             fitness[i]  = mean_reward
             print('num:',i)
-        self.best_reward.append(np.max(episode_rewards))
+        self.best_reward.append(np.max(fitness))
         return fitness
 
     def new_design_params(self,p_thigh_lenth, p_shin_lenth, p_upper_arm_lenth, p_lower_arm_lenth, p_foot_lenth):
@@ -232,6 +232,10 @@ class GA_Design_Optim():
 
     def evolve(self):
         # 进化N代
+
+        self.pop_data = list() # 存储全部数据
+        self.fitness_data = list()
+
         begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
         env_kwargs = {'terrain_type':'steps'}
         self.envs = make_vec_env(env_id = 'HumanoidCustomEnv-v0', n_envs = self.n_envs, env_kwargs = env_kwargs)
@@ -242,6 +246,9 @@ class GA_Design_Optim():
             pop = np.array(self.crossover_and_mutation(pop))
             fitness = self.get_fitness(pop)
             pop = self.select(pop, fitness) #选择生成新的种群
+
+            self.pop_data.append(pop)
+            self.fitness_data.append(fitness)
 
             self.best_individual.append(pop[np.argmax(fitness)])
         end_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())

@@ -23,7 +23,7 @@ from stable_baselines3.common import base_class  # pytype: disable=pyi-error
 from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3.common.vec_env import DummyVecEnv, VecEnv, sync_envs_normalization
 from stable_baselines3.common.callbacks import EventCallback, EvalCallback , BaseCallback
-from stable_baselines3.common.logger import HParam
+
 from GA import GA_Design_Optim
 from gym_custom_env import HumanoidXML
 
@@ -121,35 +121,7 @@ class EvolutionCallback(EventCallback):
             self.callback_on_new_best.init_callback(self.model)
 
     def _on_training_start(self) -> None:
-        algo = self.model.__class__.__name__
-
-        hparam_dict = {
-        "SAC": dict(
-            batch_size=self.model.batch_size,
-            learning_rate = self.model.learning_rate,
-            tau = self.model.tau,
-            gamma=self.model.gamma,
-            learning_starts=self.model.learning_starts,
-            buffer_size=self.model.buffer_size,
-            gradient_steps=self.model.gradient_steps,
-        ),
-        "PPO": dict(
-            batch_size=512,
-            learning_rate=2.5e-4,
-            policy_kwargss=dict(net_arch=({'pi':[128,128]},{'vf':[128,128]})),
-            gamma=0.99
-        )    }[algo]
-        # define the metrics that will appear in the `HPARAMS` Tensorboard tab by referencing their tag
-        # Tensorbaord will find & display metrics from the `SCALARS` tab
-        metric_dict = {
-            "rollout/ep_len_mean": 0,
-            "train/value_loss": 0.0,
-        }
-        self.logger.record(
-            "hparams",
-            HParam(hparam_dict, metric_dict),
-            exclude=("stdout", "log", "json", "csv"),
-        )
+        pass
 
     def _log_success_callback(self, locals_: Dict[str, Any], globals_: Dict[str, Any]) -> None:
         """

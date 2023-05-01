@@ -30,16 +30,22 @@ def quaternion_to_rotation_matrix(q):  # x, y ,z ,w
 
 # 自定义参数
 params = { #'torso_width':0.5,
-            'thigh_lenth':0.34,            # 大腿长 0.34
-            'thigh_size':0.08,             # 大腿粗 0.06
-            'shin_lenth':0.5,              # 小腿长 0.3
-            'shin_size':0.06,              # 小腿粗 0.05
-            'upper_arm_lenth':0.20,      # 大臂长 0.2771
-            'upper_arm_size':0.05,         # 大臂粗 0.04
-            'lower_arm_lenth':0.31,      # 小臂长 0.2944
-            'lower_arm_size':0.031,        # 小臂粗 0.2944
-            'foot_lenth':0.14,             # 脚长   0.18
+            'thigh_lenth':0.34 * 1.05,            # 大腿长 0.34
+            'thigh_size':0.06,             # 大腿粗 0.06
+            'shin_lenth':0.3 * 0.7,              # 小腿长 0.3
+            'shin_size':0.05,              # 小腿粗 0.05
+            'upper_arm_lenth':0.2771 * 1.22,      # 大臂长 0.2771
+            'upper_arm_size':0.04,         # 大臂粗 0.04
+            'lower_arm_lenth':0.2944 * 0.98,      # 小臂长 0.2944
+            'lower_arm_size':0.031,        # 小臂粗 0.031
+            'foot_lenth':0.18 * 1.21,             # 脚长   0.18
             }
+params.update({  'thigh_lenth':0.34 * 1.05,            # 大腿长 0.34
+                'shin_lenth':0.5 * 0.7,              # 小腿长 0.3
+                'upper_arm_lenth':0.20 * 1.22,      # 大臂长 0.2771
+                'lower_arm_lenth':0.31 * 0.98,      # 小臂长 0.2944
+                'foot_lenth':0.14 * 1.21,             # 脚长   0.18
+                })
 params['init_position'] = [-1,0,0.76+params['shin_lenth']+params['thigh_lenth'] ] 
 # 生成XML文件
 t_type = 'steps'
@@ -48,13 +54,13 @@ t.write_xml(file_path="ee.xml")
 
 
 # 更新XML文件
-t.set_params(params)
-t.update_xml(file_path='ee.xml')
+#t.set_params(params)
+#t.update_xml(file_path='ee.xml')
 
 # 加载 XML 文件
 # model = mujoco_py.load_model_from_path("gym_custom_env\\assets\\humanoid_custom.xml")
-#model = mujoco_py.load_model_from_path("ee.xml")
-model = mujoco_py.load_model_from_path("gym_custom_env/assets/humanoid_exp.xml")
+model = mujoco_py.load_model_from_path("ee.xml")
+#model = mujoco_py.load_model_from_path("gym_custom_env/assets/humanoid_exp.xml")
 # 创建仿真环境和渲染器
 sim = mujoco_py.MjSim(model)
 viewer = mujoco_py.MjViewer(sim)

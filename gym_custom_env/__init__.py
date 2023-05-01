@@ -1,6 +1,6 @@
 import gym
 from gym.envs.registration import registry, make, spec
-
+from gym_custom_env.generateXML import HumanoidXML
 def register(id, *args, **kvargs):
   if id in registry.env_specs:
     return

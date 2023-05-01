@@ -22,11 +22,8 @@ def update_xml_model(self,params):
     # VecEnv更新XML模型
     for env_idx in range(self.num_envs):
         self.envs[env_idx].update_xml_model(params)
+
 DummyVecEnv.update_xml_model = update_xml_model
-
-
-
-
 
 class GA_Design_Optim():
     '''
@@ -50,6 +47,7 @@ class GA_Design_Optim():
     optim_bound：个体的数值边界。
     '''
     def __init__(self,
+                 model,                  # 强化学习模型
                  decode_size = 24,
                  POP_size = 80 ,
                  crossover_rate = 0.6,
@@ -71,7 +69,9 @@ class GA_Design_Optim():
                                            'foot_lenth':0.18,       }     # 脚长   0.18
         self.DNA_size       = decode_size * len(self.__origin_design_params)
         self.n_envs         = n_envs
-        self.pop = np.random.randint(2, size=(self.POP_size, self.DNA_size)) # 生成初始种群
+        self.model = model
+        self.last_best_design = np.zeros(self.DNA_size,dtype=int)
+        self.last_best_design[0:len(self.__origin_design_params)] = 1
         self.init_controller()
 
 
@@ -99,13 +99,14 @@ class GA_Design_Optim():
                 gamma=0.99
             )
         }[algo]
-        print('load from:')
-        save_path = 'best_model/5e6_steps_t5_cpu8_sac_HumanoidCustomEnv-v0.zip'
-        print(save_path)        
-        env = gym.make('HumanoidCustomEnv-v0', terrain_type='steps')
-        self.env = env
-        self.model = SAC("MlpPolicy", env, verbose=1,  **hyperparams)
-        self.model.set_parameters(save_path)
+     
+        #env = gym.make('HumanoidCustomEnv-v0', terrain_type='steps')
+        #self.env = env
+        #print('load from:')
+        #save_path = 'best_model/5e6_steps_t5_cpu8_sac_HumanoidCustomEnv-v0.zip'
+        #print(save_path)   
+        #self.model = SAC("MlpPolicy", env, verbose=1,  **hyperparams)
+        #self.model.set_parameters(save_path)
 
     def Fitness_single(self, pop ):
         thigh_lenth, shin_lenth, upper_arm_lenth, lower_arm_lenth, foot_lenth = self.translateDNA(pop)
@@ -164,11 +165,6 @@ class GA_Design_Optim():
 
     def new_design_params(self,p_thigh_lenth, p_shin_lenth, p_upper_arm_lenth, p_lower_arm_lenth, p_foot_lenth):
         # 由个体DNA信息得到新的设计参数
-        self.__origin_design_params  = {  'thigh_lenth':0.34,           # 大腿长 0.34
-                                'shin_lenth':0.5,              # 小腿长 0.3
-                                'upper_arm_lenth':0.20,        # 大臂长 0.2771
-                                'lower_arm_lenth':0.31,        # 小臂长 0.2944
-                                'foot_lenth':0.14,       }     # 脚长   0.18
         params = {  'thigh_lenth':self.__origin_design_params['thigh_lenth']*p_thigh_lenth,
                     'shin_lenth':self.__origin_design_params['shin_lenth']*p_shin_lenth,             
                     'upper_arm_lenth':self.__origin_design_params['upper_arm_lenth']*p_upper_arm_lenth,     
@@ -236,10 +232,11 @@ class GA_Design_Optim():
         self.pop_data = list() # 存储全部数据
         self.fitness_data = list()
 
-        begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+        #begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
         env_kwargs = {'terrain_type':'steps'}
         self.envs = make_vec_env(env_id = 'HumanoidCustomEnv-v0', n_envs = self.n_envs, env_kwargs = env_kwargs)
         pop = np.random.randint(2, size=(self.POP_size, self.DNA_size)) # 随机初始化种群
+        pop[0,:] = self.last_best_design   # 向种群中添加一个曾经的最优设计
         self.best_individual = list()
         self.best_reward     = list()
         for _ in range(self.n_generations):#迭代N代
@@ -251,11 +248,11 @@ class GA_Design_Optim():
             self.fitness_data.append(fitness)
 
             self.best_individual.append(pop[np.argmax(fitness)])
-        end_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-        print('=====================================')
-        print('Started at: ' + begin_time)
-        print('Ended at: ' + end_time)
-        print('=====================================')
+
+        self.last_best_design = pop[np.argmax(fitness)]
+        thigh_lenth, shin_lenth, upper_arm_lenth, lower_arm_lenth, foot_lenth = self.translateDNA(self.last_best_design)
+        new_design_params = self.new_design_params(thigh_lenth, shin_lenth, upper_arm_lenth, lower_arm_lenth, foot_lenth)
+        return new_design_params
             
 
     def save_fig(self, fig_name:str = None):

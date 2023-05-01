@@ -98,8 +98,7 @@ class EvolutionCallback(EventCallback):
         # For computing success rate
         self._is_success_buffer = []
         self.evaluations_successes = []
-        # GA 优化器
-        self.GA_design_optimizer = GA_Design_Optim(self.model,decode_size = 20,POP_size = 50, n_generations = 7)
+
         self.warm_up_steps = warm_up_steps
         self.design_update_steps = design_update_steps
         self.last_time_trigger = warm_up_steps - design_update_steps
@@ -121,7 +120,8 @@ class EvolutionCallback(EventCallback):
             self.callback_on_new_best.init_callback(self.model)
 
     def _on_training_start(self) -> None:
-        pass
+        # GA 优化器
+        self.GA_design_optimizer = GA_Design_Optim(self.model,decode_size = 20,POP_size = 50, n_generations = 7)
 
     def _log_success_callback(self, locals_: Dict[str, Any], globals_: Dict[str, Any]) -> None:
         """

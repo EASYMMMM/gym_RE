@@ -99,7 +99,8 @@ class GA_Design_Optim():
                 gamma=0.99
             )
         }[algo]
-     
+        env_kwargs = {'terrain_type':'steps'}
+        self.envs = make_vec_env(env_id = 'HumanoidCustomEnv-v0', n_envs = self.n_envs, env_kwargs = env_kwargs)
         #env = gym.make('HumanoidCustomEnv-v0', terrain_type='steps')
         #self.env = env
         #print('load from:')
@@ -233,8 +234,7 @@ class GA_Design_Optim():
         self.fitness_data = list()
 
         #begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-        env_kwargs = {'terrain_type':'steps'}
-        self.envs = make_vec_env(env_id = 'HumanoidCustomEnv-v0', n_envs = self.n_envs, env_kwargs = env_kwargs)
+        
         pop = np.random.randint(2, size=(self.POP_size, self.DNA_size)) # 随机初始化种群
         pop[0,:] = self.last_best_design   # 向种群中添加一个曾经的最优设计
         self.best_individual = list()

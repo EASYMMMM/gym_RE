@@ -617,6 +617,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
     def update_xml_model(self,params):
         # 更新XML文档，更新仿真模型
+        print('----- Update XML Model ----- ')
         xml_name = 'humanoid_exp.xml'
         self.xml_model.set_params(params)
         self.xml_model.update_xml(file_path=f"gym_custom_env/assets/{xml_name}")

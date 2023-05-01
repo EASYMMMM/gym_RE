@@ -126,12 +126,13 @@ if __name__ == "__main__":
     print("==============================")
     # 自定义参数
     params = { #'torso_width':0.5,
-                'thigh_lenth':0.34,            # 大腿长 0.34
-                'shin_lenth':0.5,              # 小腿长 0.3
-                'upper_arm_lenth':0.20,      # 大臂长 0.2771
-                'lower_arm_lenth':0.31,      # 小臂长 0.2944
-                'foot_lenth':0.14,             # 脚长   0.18
+                'thigh_lenth':0.34 * 1.05,            # 大腿长 0.34
+                'shin_lenth':0.5 * 0.7,              # 小腿长 0.3
+                'upper_arm_lenth':0.20 * 1.22,      # 大臂长 0.2771
+                'lower_arm_lenth':0.31 * 0.98,      # 小臂长 0.2944
+                'foot_lenth':0.14 * 1.21,             # 脚长   0.18
                 }
+    env.update_xml_model(params)
     try:
         # Use deterministic actions for evaluation
         episode_rewards, episode_lengths = [], []

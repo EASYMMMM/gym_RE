@@ -40,7 +40,7 @@ class HumanoidXML(MujocoXML):
                             'upper_arm_lenth':0.2771,      # 大臂长 0.2771
                             'upper_arm_size':0.04,         # 大臂粗 0.04
                             'lower_arm_lenth':0.2944,      # 小臂长 0.2944
-                            'lower_arm_size':0.031,        # 小臂粗 0.2944
+                            'lower_arm_size':0.031,        # 小臂粗 0.031
                             'foot_lenth':0.18,             # 脚长   0.18
                             }
         self.param_list = self.__default_param_list.copy()

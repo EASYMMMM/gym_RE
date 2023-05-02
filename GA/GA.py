@@ -196,6 +196,23 @@ class GA_Design_Optim():
         foot_lenth      = self.decode(foot_lenth_pop)
         return thigh_lenth, shin_lenth, upper_arm_lenth, lower_arm_lenth, foot_lenth
 
+    def translateSingleDNA(self, pop): 
+        # 上面的函数不能处理单行数据 TAT 懒得优化代码了，干脆再写一个新的好了
+        # pop表示种群矩阵，一行表示一个二进制编码表示的DNA，矩阵的行数为种群数目
+        design_params_size = len(self.__origin_design_params)
+        thigh_lenth_pop     = pop[0::design_params_size]  #奇数列表示X
+        shin_lenth_pop      = pop[1::design_params_size]  #偶数列表示y
+        upper_arm_lenth_pop = pop[2::design_params_size]
+        lower_arm_lenth_pop = pop[3::design_params_size]
+        foot_lenth_pop      = pop[4::design_params_size]
+        #pop:(POP_SIZE,DNA_SIZE)*(DNA_SIZE,1) --> (POP_SIZE,1)
+        thigh_lenth     = self.decode(thigh_lenth_pop)
+        shin_lenth      = self.decode(shin_lenth_pop)
+        upper_arm_lenth = self.decode(upper_arm_lenth_pop)
+        lower_arm_lenth = self.decode(lower_arm_lenth_pop)
+        foot_lenth      = self.decode(foot_lenth_pop)
+        return thigh_lenth, shin_lenth, upper_arm_lenth, lower_arm_lenth, foot_lenth
+
     def decode(self, code):
         # 二进制转十进制解码
         # 输出结果在self.optim_bound之间
@@ -250,7 +267,7 @@ class GA_Design_Optim():
             self.best_individual.append(pop[np.argmax(fitness)])
 
         self.last_best_design = pop[np.argmax(fitness)]
-        thigh_lenth, shin_lenth, upper_arm_lenth, lower_arm_lenth, foot_lenth = self.translateDNA(self.last_best_design)
+        thigh_lenth, shin_lenth, upper_arm_lenth, lower_arm_lenth, foot_lenth = self.translateSingleDNA(self.last_best_design)
         new_design_params = self.new_design_params(thigh_lenth, shin_lenth, upper_arm_lenth, lower_arm_lenth, foot_lenth)
         return new_design_params
             

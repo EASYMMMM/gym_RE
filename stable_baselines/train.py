@@ -148,7 +148,7 @@ if __name__ == "__main__":
     print('=====================================')
     print(f"Saving to {save_path}.zip")
     model.save(save_path)
-    end_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    end_time = time.strftime('%Y_%m_%d_%H_%M_%S', time.localtime())
     print('Started at: ' + begin_time)
     print('Ended at: ' + end_time)
     print('=====================================')

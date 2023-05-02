@@ -259,6 +259,10 @@ class GA_Design_Optim():
         for _ in range(self.n_generations):#迭代N代
             pop = np.array(self.crossover_and_mutation(pop))
             fitness = self.get_fitness(pop)
+            # 保存最优个体
+            self.last_best_design = pop[np.argmax(fitness)]
+            self.best_individual.append(self.last_best_design)
+
             pop = self.select(pop, fitness) #选择生成新的种群
 
             self.pop_data.append(pop)
@@ -266,7 +270,7 @@ class GA_Design_Optim():
 
             self.best_individual.append(pop[np.argmax(fitness)])
 
-        self.last_best_design = pop[np.argmax(fitness)]
+
         thigh_lenth, shin_lenth, upper_arm_lenth, lower_arm_lenth, foot_lenth = self.translateSingleDNA(self.last_best_design)
         new_design_params = self.new_design_params(thigh_lenth, shin_lenth, upper_arm_lenth, lower_arm_lenth, foot_lenth)
         return new_design_params

@@ -166,7 +166,7 @@ class EvolutionCallback(EventCallback):
     def _on_training_end(self) -> None:
         xml_model = HumanoidXML(terrain_type='steps')
         xml_model.set_params(self.last_params)
-        end_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+        end_time = time.strftime('%Y_%m_%d_%H_%M_%S', time.localtime())
         xml_model.update_xml(file_path="gym_custom_env/assets/"+end_time+"humanoid_optim_result")
 
 

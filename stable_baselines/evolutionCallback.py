@@ -53,7 +53,7 @@ class EvolutionCallback(EventCallback):
     def __init__(
         self,
         eval_env: Union[gym.Env, VecEnv],
-        total_timesteps: int ,
+        total_steps: int ,
         callback_on_new_best: Optional[BaseCallback] = None,
         callback_after_eval: Optional[BaseCallback] = None,
         n_eval_episodes: int = 5,
@@ -65,7 +65,7 @@ class EvolutionCallback(EventCallback):
         verbose: int = 1,
         warn: bool = True,
         warm_up_steps: int = 1000000,
-        design_update_steps: int = 250000,
+        design_update_steps: int = 200000,
     ):
         super().__init__(callback_after_eval, verbose=verbose)
 
@@ -81,6 +81,7 @@ class EvolutionCallback(EventCallback):
         self.deterministic = deterministic
         self.render = render
         self.warn = warn
+        self.total_steps = total_steps
 
         # Convert to VecEnv for consistency
         if not isinstance(eval_env, VecEnv):
@@ -121,7 +122,7 @@ class EvolutionCallback(EventCallback):
 
     def _on_training_start(self) -> None:
         # GA 优化器
-        self.GA_design_optimizer = GA_Design_Optim(self.model,decode_size = 20,POP_size = 50, n_generations = 7)
+        self.GA_design_optimizer = GA_Design_Optim(self.model,decode_size = 20,POP_size = 50, n_generations = 5)
 
     def _log_success_callback(self, locals_: Dict[str, Any], globals_: Dict[str, Any]) -> None:
         """
@@ -147,6 +148,9 @@ class EvolutionCallback(EventCallback):
             # warm up中，不进行设计更新
             return continue_training
         if (self.num_timesteps - self.last_time_trigger) >= self.design_update_steps:
+            if self.total_steps - self.num_timesteps < self.warm_up_steps :
+                # 在结束时，进行收尾训练
+                return continue_training
             # 每隔一定步数，进行设计参数更新
             self.last_time_trigger = self.num_timesteps
             new_design_params = self.GA_design_optimizer.evolve()

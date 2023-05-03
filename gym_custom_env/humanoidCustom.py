@@ -82,7 +82,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             xml_file_path = f"{dir_path}\\assets\\{xml_name}"
         else:
             dir_path = os.path.dirname(__file__)
-            xml_file_path = f"{dir_path}\\assets\\{xml_name}"
+            xml_file_path = f"{dir_path}\\assets\\{xml_file}"
         self._forward_speed_reward_weight = forward_speed_reward_weight
         self._forward_distance_reward_weight = forward_distance_reward_weight
         self._ctrl_cost_weight = ctrl_cost_weight if terrain_type in 'default'+'steps' else 0.2*ctrl_cost_weight

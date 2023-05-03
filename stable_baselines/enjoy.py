@@ -13,6 +13,8 @@ python stable_baselines/enjoy.py --algo sac --env Humanoid-v3
 python stable_baselines/enjoy.py --algo ppo --env Humanoid-v3  --model-name 2e6 
 
 python stable_baselines/enjoy.py --algo sac --env HumanoidCustomEnv-v0  --terrain-type ladders  --model-name 2e6_ladder_hand_t4_cpu8
+
+
 '''
 # ------- 来自于mujoco150在win+py3.9下的矫情的要求 --------
 # 手动添加mujoco路径
@@ -81,7 +83,7 @@ if __name__ == "__main__":
     env_id = args.env
     terrain = args.terrain_type
     # Create an env similar to the training env
-    env = gym.make(env_id, terrain_type=terrain)
+    env = gym.make(env_id, terrain_type=terrain, xml_file ="gym_custom_env/assets/2023_05_03_12_40_08humanoid_optim_result.xml" )
 
     # Enable GUI
     if not args.no_render:

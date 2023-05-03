@@ -51,7 +51,7 @@ def set_ladder_height():
 class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(
         self,
-        xml_file:str =None,
+        xml_file:str =None, # assets文件夹下的xml文件
         terrain_type="steps",
         forward_speed_reward_weight=1.5,
         forward_distance_reward_weight=1.5,
@@ -81,7 +81,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             dir_path = os.path.dirname(__file__)
             xml_file_path = f"{dir_path}\\assets\\{xml_name}"
         else:
-            xml_file_path = xml_file
+            dir_path = os.path.dirname(__file__)
+            xml_file_path = f"{dir_path}\\assets\\{xml_name}"
         self._forward_speed_reward_weight = forward_speed_reward_weight
         self._forward_distance_reward_weight = forward_distance_reward_weight
         self._ctrl_cost_weight = ctrl_cost_weight if terrain_type in 'default'+'steps' else 0.2*ctrl_cost_weight

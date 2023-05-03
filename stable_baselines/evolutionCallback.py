@@ -161,6 +161,7 @@ class EvolutionCallback(EventCallback):
             self.logger.record('design/lower_arm_lenth',new_design_params['lower_arm_lenth'])
             self.logger.record('design/foot_lenth',new_design_params['foot_lenth'])
             self.last_params = new_design_params
+            self.model.replay_buffer.reset()  # 清空sac模型的buffer
         return continue_training
 
     def _on_training_end(self) -> None:

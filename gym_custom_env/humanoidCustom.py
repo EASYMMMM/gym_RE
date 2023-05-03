@@ -62,7 +62,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         posture_reward_weight = 1,              # 站立奖励
         contact_reward_weight = 1.0,            # 梯子/阶梯 接触奖励
         terminate_when_unhealthy=True,
-        healthy_z_range=(0.9, 5.0),
+        healthy_z_range=(0.8, 5.0),
         reset_noise_scale=1e-2,
         camera_config = "horizontal",
         single_contact_reward = 10,
@@ -186,19 +186,25 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         body_z_axis = rotation_matrix.dot(vertical_direction)
         # 计算z轴方向向量与竖直向上方向向量的点积
         z_dot_product = np.dot(body_z_axis, vertical_direction)
+
+        # 航向角计算
         # 提取躯干的x轴方向向量
         forward_direction = np.array([1, 0, 0])
         body_x_axis = rotation_matrix.dot(forward_direction)
         # 计算x轴方向向量与竖直向上方向向量的点积
-        x_dot_product = np.dot(body_x_axis, forward_direction)
+        yaw = np.dot(body_x_axis, forward_direction)
+        # 5-3更新 航向角reward使用y坐标表示
+        y = self.sim.data.qpos[1]
+        yaw = - 1.5 * y*y + 0.5
+
         # 将点积映射到[0, 1]范围内的奖励值
         # 楼梯地形同时考虑姿态和朝向
         if self.terrain_type == "steps" or self.terrain_type == "default":
-            # FIXME : 这里计算出的点积取负。实验证明站立时点积为-1，暂时还不知道是为什么
-            reward = self._posture_reward_weight * ( (( - z_dot_product + 1.0) / 2.0) + (( x_dot_product + 1.0) / 2.0) )/2
+            # 这里计算出的点积取负。实验证明站立时点积为-1，暂时还不知道是为什么
+            reward = self._posture_reward_weight * ( (( - z_dot_product + 1.0) / 2.0) + ( yaw ) )/2
         # 阶梯地形为了防止持续获得奖励，朝向偏差太多时扣分，正向不额外给分。
         if self.terrain_type == "ladders":
-            reward_x = 0 if self._posture_reward_weight*(( x_dot_product + 1.0) / 2.0) > 0.8 else -1
+            reward_x = 0 if self._posture_reward_weight*(( yaw + 1.0) / 2.0) > 0.8 else -1
             reward_z = 0 if self._posture_reward_weight*(( - z_dot_product + 1.0) / 2.0) > 0.8 else -1
             reward = reward_x + reward_z
         return reward
@@ -219,6 +225,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     @property
     def _not_fallen(self):
         # 检测是否摔倒需要提前终止
+        # 对于steps，始终为True
         # 返回False：需要提前终止
 
         contact = list(self.sim.data.contact)  # 读取一个元素为mjContact的结构体数组

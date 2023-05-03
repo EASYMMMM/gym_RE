@@ -130,6 +130,8 @@ class GA_Design_Optim():
                     episode_reward += reward
                     episode_length += 1
                 episode_rewards.append(episode_reward)
+            episode_rewards.remove(max(episode_rewards)) # 随机性较大，删掉一个最大值一个最小值
+            episode_rewards.remove(min(episode_rewards))
             mean_reward = np.mean(episode_rewards)
             fitness[i]  = mean_reward
             print('num:',i)

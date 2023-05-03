@@ -66,11 +66,24 @@ if __name__ == "__main__":
         type=str,
     )        
     args = parser.parse_args()
-
+    ################################################################################
+    ################################################################################
+    # save_path = 'best_model/5e6_steps_t5_cpu8_sac_HumanoidCustomEnv-v0.zip'
+    save_path = 'best_model/5e6_evo_steps_t1_cpu8_sac_HumanoidCustomEnv-v0.zip'
+    # 更新参数
+    params = {   'thigh_lenth':0.4186,           # 大腿长 0.34
+            'shin_lenth':0.229,              # 小腿长 0.3
+            'upper_arm_lenth':0.2608,        # 大臂长 0.2771
+            'lower_arm_lenth':0.3597,        # 小臂长 0.2944
+            'foot_lenth':0.1436,       }     # 脚长   0.18
+    ################################################################################
+    ################################################################################
     env_id = args.env
     terrain = args.terrain_type
     # Create an env similar to the training env
     env = gym.make(env_id, terrain_type=terrain)
+
+    env.update_xml_model(params)
 
     # Enable GUI
     if not args.no_render:
@@ -102,17 +115,10 @@ if __name__ == "__main__":
     }[args.algo]
     # We assume that the saved model is in the same folder
 
-    model_name = args.model_name + "_"
-     # 存放在sb3model/文件夹下
-    save_path = f"sb3model/{env_id}/{model_name}{args.algo}_{env_id}.zip"
-    
-    if not os.path.isfile(save_path) or args.load_best:
-        print("Loading best model")
-        # Try to load best model
-        save_path = os.path.join(f"{args.algo}_{env_id}", "best_model.zip")
+
+
 
     print('load from:')
-    save_path = 'best_model/5e6_steps_t5_cpu8_sac_HumanoidCustomEnv-v0.zip'
     print(save_path)
 
     model = algo("MlpPolicy", env, verbose=1,  **hyperparams)
@@ -124,19 +130,11 @@ if __name__ == "__main__":
     # print(f"gradient steps:{model.gradient_steps}")
     print("model path:"+save_path)
     print("==============================")
-    # 自定义参数
-    params = { #'torso_width':0.5,
-                'thigh_lenth':0.34 * 1.05,            # 大腿长 0.34
-                'shin_lenth':0.5 * 0.7,              # 小腿长 0.3
-                'upper_arm_lenth':0.20 * 1.22,      # 大臂长 0.2771
-                'lower_arm_lenth':0.31 * 0.98,      # 小臂长 0.2944
-                'foot_lenth':0.14 * 1.21,             # 脚长   0.18
-                }
-    env.update_xml_model(params)
+
     try:
         # Use deterministic actions for evaluation
         episode_rewards, episode_lengths = [], []
-        for i in range(args.n_episodes):
+        for i in range(7):
             obs = env.reset()
             done = False
             episode_reward = 0.0
@@ -175,6 +173,8 @@ if __name__ == "__main__":
             print('healthy R: ', healthy_r_total)
             print('control C: ', control_c_total)
             print('contact C: ', contact_c_total)
+            print('is healthy' ,info["is_healthy"])
+            print('is walking' ,info["is_walking"])
             print('************************')
             # env.update_xml_model(params)
             # params['shin_lenth'] = 0.5 + 0.1*i

@@ -83,8 +83,13 @@ if __name__ == "__main__":
     env_id = args.env
     terrain = args.terrain_type
     # Create an env similar to the training env
-    env = gym.make(env_id, terrain_type=terrain, xml_file ="gym_custom_env/assets/2023_05_03_12_40_08humanoid_optim_result.xml" )
-
+    env = gym.make(env_id, terrain_type=terrain)
+    params = {   'thigh_lenth':0.4186,           # 大腿长 0.34
+                'shin_lenth':0.229,              # 小腿长 0.3
+                'upper_arm_lenth':0.2608,        # 大臂长 0.2771
+                'lower_arm_lenth':0.3597,        # 小臂长 0.2944
+                'foot_lenth':0.1436,       }     # 脚长   0.18
+    env.update_xml_model()
     # Enable GUI
     if not args.no_render:
         env.render(mode="human")

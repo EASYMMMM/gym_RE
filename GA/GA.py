@@ -101,6 +101,7 @@ class GA_Design_Optim():
         }[algo]
         env_kwargs = {'terrain_type':'steps'}
         self.envs = make_vec_env(env_id = 'HumanoidCustomEnv-v0', n_envs = self.n_envs, env_kwargs = env_kwargs)
+        self.last_best_params = self.__origin_design_params
         #env = gym.make('HumanoidCustomEnv-v0', terrain_type='steps')
         #self.env = env
         #print('load from:')
@@ -161,6 +162,9 @@ class GA_Design_Optim():
                         episode_rewards.append(episode_reward[idx])
                         episode_reward[idx] = 0
             mean_reward = np.mean(episode_rewards)
+            if self.out_of_range(new_params, clip_range = 0.1):
+                # 如果参数更新幅度过大，惩罚20fitness
+                mean_reward -= 20
             fitness[i]  = mean_reward
             print('num:',i)
         self.best_reward.append(np.max(fitness))
@@ -246,6 +250,17 @@ class GA_Design_Optim():
                             p=(fitness) / (fitness.sum()))
         return pop[idx]
 
+    @property
+    def out_of_range(self, new_p:dict, clip_range = 0.1):
+        # 更新限幅
+        result = False
+        for key in new_p.keys():
+            r = (new_p[key] - self.last_best_params[key]) / self.last_best_params[key]
+            if r > clip_range or r < -clip_range:
+                result = True
+        return result
+
+
     def evolve(self):
         # 进化N代
 
@@ -275,6 +290,7 @@ class GA_Design_Optim():
 
         thigh_lenth, shin_lenth, upper_arm_lenth, lower_arm_lenth, foot_lenth = self.translateSingleDNA(self.last_best_design)
         new_design_params = self.new_design_params(thigh_lenth, shin_lenth, upper_arm_lenth, lower_arm_lenth, foot_lenth)
+        self.last_best_params = new_design_params
         return new_design_params
             
 

@@ -165,7 +165,7 @@ if __name__ == "__main__":
             gamma=0.98,
             policy_kwargs=dict(net_arch=[256, 256]),
             learning_starts=10000,
-            buffer_size=int(5e4),
+            buffer_size=int(20000),
             tau=0.01,
             gradient_steps=4,
         ),
@@ -192,9 +192,16 @@ if __name__ == "__main__":
 
 
     begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-    model = algo("MlpPolicy", env, verbose=1, tensorboard_log = tensorboard_log_path, **hyperparams)
+    #model = algo("MlpPolicy", env, verbose=1, tensorboard_log = tensorboard_log_path, **hyperparams)
+    # 加载预训练模型
+    model = SAC.load('best_model/2e6_steps_pretrain_cpu8_sac_HumanoidCustomEnv-v0.zip',
+                    env = env,
+                    tensorboard_log = 'tensorboard_log/HumanoidCustomEnv-v0/2e6_steps_pretrain_cpu8_sac_HumanoidCustomEnv-v0'
+                     )
+
+
     try:
-        model.learn(n_timesteps, callback=callbacks , tb_log_name = tensorboard_log_name )
+        model.learn(n_timesteps, callback=callbacks ,reset_num_timesteps = False, tb_log_name = tensorboard_log_name )
     except KeyboardInterrupt:
         pass
     print('=====================================')

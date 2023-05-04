@@ -102,7 +102,7 @@ class EvolutionCallback(EventCallback):
 
         self.warm_up_steps = warm_up_steps
         self.design_update_steps = design_update_steps
-        self.last_time_trigger = warm_up_steps - design_update_steps
+        self.last_time_trigger =  - design_update_steps
 
 
     def _init_callback(self) -> None:
@@ -144,11 +144,9 @@ class EvolutionCallback(EventCallback):
         # 每隔一定训练步长，进行形态优化
 
         continue_training = True
-        if (self.num_timesteps < self.warm_up_steps): 
-            # warm up中，不进行设计更新
-            return continue_training
+
         if (self.num_timesteps - self.last_time_trigger) >= self.design_update_steps:
-            if self.total_steps - self.num_timesteps < self.warm_up_steps :
+            if self.model._total_timesteps - self.num_timesteps < self.warm_up_steps :
                 # 在结束时，进行收尾训练
                 return continue_training
             # 每隔一定步数，进行设计参数更新
@@ -161,7 +159,7 @@ class EvolutionCallback(EventCallback):
             self.logger.record('design/lower_arm_lenth',new_design_params['lower_arm_lenth'])
             self.logger.record('design/foot_lenth',new_design_params['foot_lenth'])
             self.last_params = new_design_params
-            self.model.replay_buffer.reset()  # 清空sac模型的buffer
+
         return continue_training
 
     def _on_training_end(self) -> None:

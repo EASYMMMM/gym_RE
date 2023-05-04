@@ -89,7 +89,7 @@ if __name__ == "__main__":
                 'upper_arm_lenth':0.2608,        # 大臂长 0.2771
                 'lower_arm_lenth':0.3597,        # 小臂长 0.2944
                 'foot_lenth':0.1436,       }     # 脚长   0.18
-    env.update_xml_model(params)
+    # env.update_xml_model(params)
     # Enable GUI
     if not args.no_render:
         env.render(mode="human")

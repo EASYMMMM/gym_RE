@@ -250,7 +250,6 @@ class GA_Design_Optim():
                             p=(fitness) / (fitness.sum()))
         return pop[idx]
 
-    @property
     def out_of_range(self, new_p:dict, clip_range = 0.1):
         # 更新限幅
         result = False

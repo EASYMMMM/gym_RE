@@ -214,6 +214,7 @@ for i in range(timesteps):
     print('geom number: ', sim.model.ngeom)
     print('number of detected contacts:',sim.data.ncon)
     print('quatanion:',quatanion)
+    print('torso z:',torso_z)
     print('Rm',rotation_matrix)
     print('body_x_axis',x_pos_r)
     print('body_y_axis',body_y_axis)

@@ -69,13 +69,13 @@ if __name__ == "__main__":
     ################################################################################
     ################################################################################
     # save_path = 'best_model/5e6_steps_t5_cpu8_sac_HumanoidCustomEnv-v0.zip'
-    save_path = 'best_model/5e6_evo_steps_t1_cpu8_sac_HumanoidCustomEnv-v0.zip'
+    save_path = 'best_model/5e6_evo_steps_t3_cpu8_sac_HumanoidCustomEnv-v0.zip'
     # 更新参数
-    params = {   'thigh_lenth':0.4186,           # 大腿长 0.34
-            'shin_lenth':0.229,              # 小腿长 0.3
-            'upper_arm_lenth':0.2608,        # 大臂长 0.2771
-            'lower_arm_lenth':0.3597,        # 小臂长 0.2944
-            'foot_lenth':0.1436,       }     # 脚长   0.18
+    params = {   'thigh_lenth':0.3512,           # 大腿长 0.34
+            'shin_lenth':0.2572,              # 小腿长 0.2572
+            'upper_arm_lenth':0.2343,        # 大臂长 0.2771
+            'lower_arm_lenth':0.3282,        # 小臂长 0.2944
+            'foot_lenth':0.2105,       }     # 脚长   0.18
     ################################################################################
     ################################################################################
     env_id = args.env

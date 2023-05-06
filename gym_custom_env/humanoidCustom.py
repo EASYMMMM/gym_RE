@@ -630,7 +630,12 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.xml_model.update_xml(file_path=f"gym_custom_env/assets/{xml_name}")
         dir_path = os.path.dirname(__file__)
         xml_file_path = f"{dir_path}\\assets\\{xml_name}"
+        if params['thigh_lenth']+params['shin_lenth']<0.5:
+            self._healthy_z_range = (0.6,5.0)
+        else:
+            self._healthy_z_range = (0.8,5.0)
         mujoco_env.MujocoEnv.__init__(self, xml_file_path, 5)
+
 
     def reset_xml_model(self):
         print('----- Reset XML Model ----- ')

@@ -100,7 +100,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             exclude_current_positions_from_observation
         )
         self.__init_counter()
-
+        xml_file_path = f"{dir_path}\\assets\\humanoid_origin.xml"
         print("============ HUMANOID CUSTOM ENV ============")
         print(f"=====terrain type:{self.terrain_type}=====")
         mujoco_env.MujocoEnv.__init__(self, xml_file_path, 5)
@@ -488,7 +488,6 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         print(f'com_inertia:{len(com_inertia)}')
         print(f'com_velocity:{len(com_velocity)}')
         print(f'actuator_forces:{len(actuator_forces)}')
-
         return np.concatenate(
             (
                 position,

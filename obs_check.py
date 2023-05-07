@@ -17,4 +17,5 @@ import pybullet_envs
 
 from stable_baselines3 import SAC, TD3, PPO
 
-env = gym.make('HumanoidCustomEnv-v0',terrain_type = 'default')
+env = gym.make('HumanoidCustomEnv-v0',terrain_type = 'steps')
+print(env.observation_space)

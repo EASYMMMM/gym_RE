@@ -242,3 +242,22 @@ $$
 \omega_1^- \leftarrow \tau\omega_1 + (1-\tau)\omega_1^- , \quad \omega_2^- \leftarrow \tau\omega_2 + (1-\tau)\omega_2^- 
 $$
 
+$ [-\infin,+\infin]$
+
+
+$$
+R = w_{forward}r_{foward} + w_{healthy}r_{healthy} + w_{stand}r_{stand} - w_{control}c_{control} - w_{contact}c_{contact}
+$$
+
+$$
+c_{con} = \sum_{i=1}^{N}{F_{ext}}^2
+$$
+
+$$
+c_{ctrl} = \sum_{i=1}^{N}{\tau_{input}}^2
+$$
+
+$$
+r_{p} = (\vec{z}_{world}\cdot\vec{z_{agent}} + 1)/2 + (0.5-{y_{center}}^2)
+$$
+

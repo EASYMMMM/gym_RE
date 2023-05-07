@@ -63,6 +63,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         contact_reward_weight = 1.0,            # 梯子/阶梯 接触奖励
         terminate_when_unhealthy=True,
         healthy_z_range=(0.8, 5.0),
+        terrain_info=True,
         reset_noise_scale=1e-2,
         camera_config = "horizontal",
         single_contact_reward = 10,
@@ -90,6 +91,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self._healthy_z_range = healthy_z_range
         self._posture_reward_weight = posture_reward_weight
         self._contact_reward_weight = contact_reward_weight
+        self._terrain_info = terrain_info
         self._reset_noise_scale = reset_noise_scale
         self.camera_config = {
             "defalt":DEFAULT_CAMERA_CONFIG,
@@ -473,10 +475,13 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         if self.terrain_type == 'default':
             position = position[2:]
 
-        if self.terrain_type == 'steps':
-            position = position[3:]
-            steps_pos = self._get_steps_pos()
-            position = np.append(position,steps_pos)
+        if self.terrain_type == 'steps' :
+            if  self._terrain_info:
+                position = position[3:]
+                steps_pos = self._get_steps_pos()
+                position = np.append(position,steps_pos)
+            else:
+                position = position[2:]
 
         if self.terrain_type == 'ladders':
             position = position[3:]

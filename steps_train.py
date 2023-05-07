@@ -47,7 +47,7 @@ from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.utils import set_random_seed
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.off_policy_algorithm import OffPolicyAlgorithm
-from rewardChecker import update_info_buffer,dump_logs
+from stable_baselines.rewardChecker import update_info_buffer,dump_logs
 
 
 def make_env(env_id, rank, seed=0):

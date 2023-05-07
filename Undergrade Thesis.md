@@ -139,8 +139,106 @@ Gupta et al. developed an environment called "evolutionary playground" and a com
 
 ## 2. Controller
 
-为了使机器人能够稳定、鲁棒的运动并完成目标任务，我们需要一个well-designed的控制器。在本设计中，我们所用到的机器人模型是一个人形机器人。人形机器人系统是一个复杂的非线性、强耦合的系统。在传统控制方法中，需要得到机器人的物理参数，如质量、密度、尺寸、转动惯量等，进而得到机器人的动力学方程，再通过各种算法实现对机器人的控制。
+In order to enable the robot to move stably and robustly and complete the target task, we need a well-designed controller.  As mentioned above, the controller is the key point in the robot evolution process. The effect of the controller and the cost of iteration determine the upper limit of the joint optimization algorithm. In this chapter, we will discuss controller design methods for humanoid robots.
 
-对于双足机器人和人形
+### 2.1 仿真环境
 
-2.1 
+We need a simulation environment where humanoid robots can be used and various terrain can be added. The choice of simulation environment is very important. It can provide an effective method to evaluate and improve the performance and behavior of robot systems. Through the simulation environment, various robot application scenarios can be simulated, so as to better predict the performance of the robot in the actual environment, and optimize the performance of the robot system.
+
+When selecting the simulation environment, the reliability and accuracy of the simulation environment should be taken into account. The behavior and performance of the robot system must be accurately simulated to ensure the reliability and accuracy of the research results. At the same time, considering the flexibility and extensibility of the simulation environment, it should be able to support different robot systems and scenarios. Most importantly, the development cost of the simulation environment should not be too high. If the simulation environment is too professional and difficult to develop, it is not suitable for us.
+
+All things considered, we chose Mujoco as the simulation environment.
+
+Mujoco is a high-quality multi-rigid body simulation engine that can be used to simulate various types of physical systems. Most importantly, it is open source software that supports C++, Python, and other programming languages, and it is mature. Mujoco uses an event-driven modeling approach to define the motion and interaction behavior of the model. It supports a variety of physical models, including rigid body motion, fluid dynamics, electromagnetic fields, etc., and can be easily integrated with other simulation software and libraries. Mujoco also provides a wealth of visual tools to help users observe and debug simulation systems. Features such as motion capture, virtual reality, graphics rendering and animation are included to make it easy to create and display simulation results.
+
+
+
+### 2.2 RL
+
+We usually model reinforcement learning as a Markov decision process (MDP). The MDP consist of a tuple $\langle \mathcal{S}, \mathcal{A},P,\mathcal{R},\mathcal{\gamma} \rangle$, among the tuple:
+
+- $\mathcal{S}$  : The state space, or the observation space.代表状态空间
+- $\mathcal{A}$ : The action space. 
+- $P$  : $P(s′|s,a) $ is the state transition function, represents the probability that the state changes to $s' $ after the action $a$  is taken in the $s$ state. 
+- $R$ : The reward function.
+- $\gamma$: The discount factor, which is a constant, $\gamma \in [0,1] $.
+
+$ R_t = \sum^{T}_{t'=t}{\gamma^{t'-t}r_{t'}}$
+
+智能体的**策略**（Policy）通常用字母$表示。策略是一个函数，表示在输入状态情况下采取动作的概率。当一个策略是**确定性策略**（deterministic policy）时，它在每个状态时只输出一个确定性的动作，即只有该动作的概率为 1，其他动作的概率为 0；当一个策略是**随机性策略**（stochastic policy）时，它在每个状态时输出的是关于动作的概率分布，然后根据该分布进行采样就可以得到一个动作。在 MDP 中，由于马尔可夫性质的存在，策略只需要与当前状态有关，不需要考虑历史状态。回顾一下在 MRP 中的价值函数，在 MDP 中也同样可以定义类似的价值函数。但此时的价值函数与策略有关，这意为着对于两个不同的策略来说，它们在同一个状态下的价值也很可能是不同的。这很好理解，因为不同的策略会采取不同的动作，从而之后会遇到不同的状态，以及获得不同的奖励，所以它们的累积奖励的期望也就不同，即状态价值不同
+
+
+
+Another important element is policy. Policy is a kind of mapping, write for $\pi: S \rightarrow Δ(A)$, where $Δ (A) $ represents the action space on probability distribution. In this case, we denote $P (a_t = a | s_t = s) $  as $\pi(a|s) $, which represent the probability of take an action $a$ under the state $s$.
+
+If the strategy is deterministic, then we can write the strategy as $π:S→A$. In this case, we can write the action resulting from executing the strategy $π$ in the state $s$ as $π(s)$. Strictly speaking, the above definition is only for the definition of "stability strategy" , that is the distribution of action or action produced by the policy is not affected by time.
+
+
+
+$V^{\pi}(s)$ is used to represent the state value function of following the policy $\pi$ in MDP, which is defined as the expected return that can be obtained from following the policy $\pi$ from the state $s$. The mathematical expression is as follows:
+$$
+V^\pi(s) = \mathbb{E}_\pi[G_t|S_t=s]
+$$
+In MDP, an additional action value function is defined because of the existence of the action. Use $Q^\pi (s,a)$ to represent the expected return that can be obtained by taking action $a$ under the current state $s$ when following the policy$\pi$. The mathematical expression is as follows:
+$$
+Q^\pi(s,a) = \mathbb{E}_\pi[G_t|S_t=s,A_t=a]
+$$
+Thus, the relation between the state value function and the action value function can be obtained: when following the policy $\pi$, the value of the state $s$ is equal to the result of multiplying the probability of all the actions that can be taken based on the policy$\pi$ in this state by the action value.
+$$
+V^\pi(s) = \sum_{a \in A}{\pi{(a|s)}Q^\pi(s,a)}
+$$
+When following the policy $\pi$, the value of the action $a$ taken under the current state $s$ is equal to the immediate return plus the decay of all possible state transition probabilities of the next state multiplied by the corresponding value:
+$$
+Q^\pi(s,a) = r(s,a)+ \gamma \sum_{s' \in S}{P(s'|s,a)V^\pi(s')}
+$$
+
+$$
+J(\theta) =  \mathbb{E}_{s_0}[V^{\pi_\theta}(s_0)]
+$$
+
+$$
+\nabla_\theta J(\theta) =  \mathbb{E}_{\pi_\theta}[Q^{\pi_\theta}(s,a)\nabla_\theta\log\pi_\theta(a|s)]
+$$
+
+$$
+\nabla_\theta J(\theta) =  \mathbb{E}_{\pi_\theta}[\sum_{t=0}^T\psi_t\nabla_\theta\log\pi_\theta(a_t|s_t)]
+$$
+
+$$
+\mathcal{L}(\omega) = \frac{1}{2}(r+\gamma V_\omega(s_{t+1})- V_\omega(s_t))^2
+$$
+
+$$
+\nabla_\omega\mathcal{L}(\omega) = -(r+\gamma V_\omega(s_{t+1})- V_\omega(s_t))\nabla_\omega V_\omega(s_t)
+$$
+
+$$
+\pi^* = \mathop{\arg\min}\limits_{\pi}\mathbb{E}_\pi [\sum_tr(s_t,a_t)+\alpha H(\pi(\cdot|s_t))]
+$$
+
+$$
+L_Q(\omega)= \mathbb{E}_{(s_t,a_t,r_t,s_{t+1})\sim R,a_{t+1}\sim\pi_\theta(\cdot|s_{t+1})}[\frac{1}{2}\Big(Q_\omega(s_t,a_t) \\
+-\big(r_t+\gamma(\mathop{\min}\limits_{j=1,2}Q_{\omega_j^-}(s_{t+1},a_{t+1})-\alpha\log\pi(a_{t+1}|s_{t+1}))\big)\Big)^2]
+$$
+
+
+
+The loss function of the policy is given by the KL divergence. For the environment of continuous action space, the strategy of SAC algorithm outputs the mean and standard deviation of the Gaussian distribution, but the process of sampling the action according to the Gaussian distribution is not derivable. Therefore, we need to use the reparameterization trick. The loss function of policy $\pi$ can be expressed as:
+$$
+L_\pi(\theta)=\mathbb{E}_{s_t\sim R,\epsilon_t\sim \mathcal{N}}\Big[\alpha\log\big(\pi_\theta(f_\theta(\epsilon_t;s_t)|s_t)\big)- \mathop{\min}\limits_{j=1,2}Q_{\omega_j}(s_t,f_\theta(\epsilon_t;s_t))\Big]
+$$
+$\omega_1^- \leftarrow \omega_1$, $\omega_2^- \leftarrow \omega_2$    $Q_{\omega_1^-}$
+
+$y_i = r_i + \gamma \min_{j=1,2}Q_{\omega_j^-}(s_{i+1},a_{i+1})-\alpha\log\pi_\theta(a_{i+1}|s_{i+1})$
+$$
+L_Q = \frac{1}{N}\sum_{i=1}^{N}(y_i-Q_{\omega_j}(s_i,a_i)^2) \quad \quad \quad j=1,2
+$$
+$\widetilde{a}_i$
+$$
+L_\pi(\theta)=\frac{1}{N}\sum^{N}_{i=1}\big(\alpha \log \pi_\theta(\widetilde{a}_i|s) - \mathop{\min}\limits_{j=1,2} Q_{\omega_j}(s_i,\widetilde{a}_i) \big)
+$$
+
+$$
+\omega_1^- \leftarrow \tau\omega_1 + (1-\tau)\omega_1^- , \quad \omega_2^- \leftarrow \tau\omega_2 + (1-\tau)\omega_2^- 
+$$
+

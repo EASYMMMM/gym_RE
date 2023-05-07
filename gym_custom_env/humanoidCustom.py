@@ -165,7 +165,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
         # 楼梯地形
         # 前进奖励 = 速度权重*前进速度
-        if self.terrain_type == 'steps':
+        if self.terrain_type == 'steps' or self.terrain_type == 'default':
             forward_reward = self._forward_speed_reward_weight * self.x_velocity  # self.sim.data.qpos[0]: x coordinate of torso (centre)
        
         # 梯子地形
@@ -270,6 +270,9 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         # 机器人状态是否正常，通过qpos[2]的z轴位置判断（是否跌倒）
         min_z, max_z = self._healthy_z_range
         z = self.sim.data.qpos[2]
+        if self.terrain_type == 'default':
+            is_inthemap = True
+            
         if self.terrain_type == 'ladders':
             min_z = 0.9
             lowest_ladder = self.limb_position['left_foot'] if self.limb_position['left_foot'] < self.limb_position['right_foot'] else self.limb_position['right_foot']

@@ -59,7 +59,7 @@ t.write_xml(file_path="ee.xml")
 
 # 加载 XML 文件
 # model = mujoco_py.load_model_from_path("gym_custom_env\\assets\\humanoid_custom.xml")
-model = mujoco_py.load_model_from_path("ee.xml")
+model = mujoco_py.load_model_from_path("e.xml")
 #model = mujoco_py.load_model_from_path("gym_custom_env/assets/humanoid_exp.xml")
 # 创建仿真环境和渲染器
 sim = mujoco_py.MjSim(model)
@@ -148,11 +148,11 @@ for i in range(timesteps):
     #print(torso_x)
     #viewer.add_marker(pos=[torso_x,1,torso_z], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([1.0, 0, 0.0, 1]), type=const.GEOM_SPHERE)
 
-    viewer.add_marker(pos=[-1,0,1.7], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
-    viewer.add_marker(pos=[0,0,0.4], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
-    viewer.add_marker(pos=[0.6,0,0.4], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
-    viewer.add_marker(pos=[6,0,3], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
-    viewer.add_marker(pos=[0,1.2,0.5], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+    #viewer.add_marker(pos=[-1,0,1.7], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+    #viewer.add_marker(pos=[0,0,0.4], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+    #viewer.add_marker(pos=[0.6,0,0.4], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+    #viewer.add_marker(pos=[6,0,3], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+    #viewer.add_marker(pos=[0,1.2,0.5], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
 
     if i % 4 == 0 and t_type == 'ladders':
         right_sensor_pos.append(np.array(sim.data.geom_xpos[45]))

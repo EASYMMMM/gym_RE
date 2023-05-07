@@ -70,6 +70,8 @@ if __name__ == "__main__":
     ################################################################################
     # save_path = 'best_model/5e6_steps_t5_cpu8_sac_HumanoidCustomEnv-v0.zip'
     save_path = 'best_model/5e6_evo_steps_t3_cpu8_sac_HumanoidCustomEnv-v0.zip'
+    #save_path = 'best_model/2e6_steps_pretrain_cpu8_sac_HumanoidCustomEnv-v0.zip'
+    
     # 更新参数
     params = {   'thigh_lenth':0.3512,           # 大腿长 0.34
             'shin_lenth':0.2572,              # 小腿长 0.2572

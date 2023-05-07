@@ -483,11 +483,11 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             ladders_pos = self._get_ladders_pos()
             position = np.append(position,ladders_pos)
 
-        print(f'position:{len(position)}')
-        print(f'velocity:{len(velocity)}')
-        print(f'com_inertia:{len(com_inertia)}')
-        print(f'com_velocity:{len(com_velocity)}')
-        print(f'actuator_forces:{len(actuator_forces)}')
+        #print(f'position:{len(position)}')
+        #print(f'velocity:{len(velocity)}')
+        #print(f'com_inertia:{len(com_inertia)}')
+        #print(f'com_velocity:{len(com_velocity)}')
+        #print(f'actuator_forces:{len(actuator_forces)}')
         return np.concatenate(
             (
                 position,

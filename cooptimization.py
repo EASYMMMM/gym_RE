@@ -139,8 +139,8 @@ if __name__ == "__main__":
     # Create the evaluation environment and callbacks
     eval_env = Monitor(gym.make(env_id,terrain_type = terrain_type))
 
-    #callbacks = [EvalCallback(eval_env, best_model_save_path=save_path)]
-    callbacks  = [EvolutionCallback(eval_env,n_timesteps)]
+    callbacks = [EvalCallback(eval_env, best_model_save_path=save_path)]
+    #callbacks  = [EvolutionCallback(eval_env,n_timesteps)]
     # Save a checkpoint every n steps
     if args.save_freq > 0:
         callbacks.append(

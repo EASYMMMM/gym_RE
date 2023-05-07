@@ -17,7 +17,7 @@ python stable_baselines/multiEnvTrain.py --algo ppo --env HumanoidCustomEnv-v0 -
 
 python stable_baselines/multiEnvTrain.py --algo sac --env HumanoidCustomEnv-v0 --num-cpu 1 --n-timesteps 2000000 --model-name 2e6_t4 
 
-python stable_baselines/multiEnvTrain.py --algo sac --env HumanoidCustomEnv-v0 --num-cpu 6 --n-timesteps 2000000 --model-name 2e6_ladder_t1 --terrain-type ladders 
+python stable_baselines/multiEnvTrain.py --algo sac --env HumanoidCustomEnv-v0 --num-cpu 8 --n-timesteps 2000000 --model-name 2e6_ladder_t1 --terrain-type ladders 
 
 '''
 import argparse

@@ -79,7 +79,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.xml_model.write_xml(file_path=f"gym_custom_env/assets/{xml_name}")
         dir_path = os.path.dirname(__file__)
         xml_file_path = f"{dir_path}\\assets\\{xml_name}"
-        self._forward_speed_reward_weight = forward_speed_reward_weight
+        self._forward_speed_reward_weight = 1 if terrain_type == 'default' else forward_speed_reward_weight
         self._forward_distance_reward_weight = forward_distance_reward_weight
         self._ctrl_cost_weight = ctrl_cost_weight if terrain_type in 'default'+'steps' else 0.2*ctrl_cost_weight
         self._contact_cost_weight = contact_cost_weight
@@ -177,7 +177,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     @property
     def posture_reward(self):
         # 姿态奖励 = 直立 + 方向朝前
-
+        reward = 0
         quatanion = self.sim.data.qpos[3:7]
         Rm = R.from_quat(quatanion)  # Rotation matrix
         rotation_matrix = Rm.as_matrix()
@@ -199,7 +199,9 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
         # 将点积映射到[0, 1]范围内的奖励值
         # 楼梯地形同时考虑姿态和朝向
-        if self.terrain_type == "steps" or self.terrain_type == "default":
+        if self.terrain_type == 'default':
+            reward = 0
+        if self.terrain_type == "steps" :
             # 这里计算出的点积取负。实验证明站立时点积为-1，暂时还不知道是为什么
             reward = self._posture_reward_weight * ( (( - z_dot_product + 1.0) / 2.0) + ( yaw ) )/2
         # 阶梯地形为了防止持续获得奖励，朝向偏差太多时扣分，正向不额外给分。
@@ -272,7 +274,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         z = self.sim.data.qpos[2]
         if self.terrain_type == 'default':
             is_inthemap = True
-            
+
         if self.terrain_type == 'ladders':
             min_z = 0.9
             lowest_ladder = self.limb_position['left_foot'] if self.limb_position['left_foot'] < self.limb_position['right_foot'] else self.limb_position['right_foot']
@@ -480,6 +482,12 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             position = position[3:]
             ladders_pos = self._get_ladders_pos()
             position = np.append(position,ladders_pos)
+
+        print(f'position:{len(position)}')
+        print(f'velocity:{len(velocity)}')
+        print(f'com_inertia:{len(com_inertia)}')
+        print(f'com_velocity:{len(com_velocity)}')
+        print(f'actuator_forces:{len(actuator_forces)}')
 
         return np.concatenate(
             (

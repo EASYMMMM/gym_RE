@@ -67,6 +67,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         reset_noise_scale=1e-2,
         camera_config = "horizontal",
         single_contact_reward = 10,
+        use_origin_model = False, #使用原版模型
         exclude_current_positions_from_observation=False,  # Flase: 使obs空间包括躯干的x，y坐标; True: 不包括
     ):
         utils.EzPickle.__init__(**locals())
@@ -93,6 +94,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self._contact_reward_weight = contact_reward_weight
         self._terrain_info = terrain_info
         self._reset_noise_scale = reset_noise_scale
+        self._use_origin_model = use_origin_model
         self.camera_config = {
             "defalt":DEFAULT_CAMERA_CONFIG,
             "horizontal":HORIZONTAL_CAMERA_CONFIG,
@@ -102,7 +104,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             exclude_current_positions_from_observation
         )
         self.__init_counter()
-        xml_file_path = f"{dir_path}\\assets\\humanoid_origin.xml"
+        if self._use_origin_model:
+            xml_file_path = f"{dir_path}\\assets\\humanoid_origin.xml"
         print("============ HUMANOID CUSTOM ENV ============")
         print(f"=====terrain type:{self.terrain_type}=====")
         mujoco_env.MujocoEnv.__init__(self, xml_file_path, 5)

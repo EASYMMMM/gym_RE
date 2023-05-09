@@ -110,6 +110,7 @@ class EvolutionCallback(EventCallback):
         self.overchange_punish = overchange_punish
         self.terrain_type = terrain_type
         self.pop_size = pop_size
+        self.last_time_trigger = pretrain_num 
 
     def _init_callback(self) -> None:
         # Does not work in some corner cases, where the wrapper is not the same
@@ -131,7 +132,7 @@ class EvolutionCallback(EventCallback):
         self.GA_design_optimizer = GA_Design_Optim(self.model,decode_size = 20,
                                                      POP_size = self.pop_size, n_generations = 5, overchange_punish= self.overchange_punish,
                                                      terrain_type= self.terrain_type  )
-        self.last_time_trigger = self.num_timesteps
+
     def _log_success_callback(self, locals_: Dict[str, Any], globals_: Dict[str, Any]) -> None:
         """
         Callback passed to the  ``evaluate_policy`` function

@@ -142,7 +142,8 @@ if __name__ == "__main__":
                                     warm_up_steps=400000,
                                     design_update_steps=100000,
                                     pop_size = 40,
-                                    terrain_type = 'default')]
+                                    terrain_type = 'default',
+                                    pretrain_num=1000000)]
 
     n_actions = env.action_space.shape[0]
 

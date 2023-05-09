@@ -69,6 +69,7 @@ class EvolutionCallback(EventCallback):
         overchange_punish: int = 0,
         terrain_type = 'steps',
         pop_size:int = 50, #种群大小
+        pretrain_num:int = 1000000 #预训练大小
     ):
         super().__init__(callback_after_eval, verbose=verbose)
 

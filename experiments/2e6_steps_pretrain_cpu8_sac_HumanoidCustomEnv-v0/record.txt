@@ -1,0 +1,26 @@
+
+GA 改动过大时，-0   
+5e6_evo_steps_t2_cpu8_sac_HumanoidCustomEnv-v0
+params = {   'thigh_lenth':0.3808,           # 大腿长 0.34
+            'shin_lenth':0.2680,              # 小腿长 0.3
+            'upper_arm_lenth':0.2514,        # 大臂长 0.2771
+            'lower_arm_lenth':0.2236,        # 小臂长 0.2944
+            'foot_lenth':0.2187,       }     # 脚长   0.18
+
+        
+5e6_evo_steps_t3_cpu8_sac_HumanoidCustomEnv-v0
+params = {   'thigh_lenth':0.3512,           # 大腿长 0.34
+            'shin_lenth':0.2572,              # 小腿长 0.2572
+            'upper_arm_lenth':0.2343,        # 大臂长 0.2771
+            'lower_arm_lenth':0.3282,        # 小臂长 0.2944
+            'foot_lenth':0.2105,       }     # 脚长   0.18
+
+GA 改动过大时，-20          
+5e6_evo_steps_t4_cpu8_sac_HumanoidCustomEnv-v0
+params = {   'thigh_lenth':0.3512,           # 大腿长 0.3605
+            'shin_lenth':0.2572,              # 小腿长 0.2821
+            'upper_arm_lenth':0.2343,        # 大臂长 0.2664
+            'lower_arm_lenth':0.2325,        # 小臂长 0.2944
+            'foot_lenth':0.164,       }     # 脚长   0.18
+
+5e6_evo_steps_t5_no_evo_cpu8_sac_HumanoidCustomEnv-v0

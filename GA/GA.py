@@ -273,7 +273,7 @@ class GA_Design_Optim():
         #begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
         
         pop = np.random.randint(2, size=(self.POP_size, self.DNA_size)) # 随机初始化种群
-        pop[0,:] = self.last_best_design   # 向种群中添加一个曾经的最优设计
+        #pop[0,:] = self.last_best_design   # 向种群中添加一个曾经的最优设计
         self.best_individual = list()
         self.best_reward     = list()
         for _ in range(self.n_generations):#迭代N代
@@ -288,7 +288,7 @@ class GA_Design_Optim():
             self.pop_data.append(pop)
             self.fitness_data.append(fitness)
 
-            self.best_individual.append(pop[np.argmax(fitness)])
+            #self.best_individual.append(pop[np.argmax(fitness)])
 
 
         thigh_lenth, shin_lenth, upper_arm_lenth, lower_arm_lenth, foot_lenth = self.translateSingleDNA(self.last_best_design)

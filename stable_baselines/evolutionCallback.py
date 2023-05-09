@@ -67,6 +67,7 @@ class EvolutionCallback(EventCallback):
         warm_up_steps: int = 1000000,
         design_update_steps: int = 200000,
         overchange_punish: int = 0,
+        terrain_type = 'steps'
     ):
         super().__init__(callback_after_eval, verbose=verbose)
 
@@ -106,6 +107,7 @@ class EvolutionCallback(EventCallback):
         self.last_time_trigger =  - design_update_steps
 
         self.overchange_punish = overchange_punish
+        self.terrain_type = terrain_type
 
     def _init_callback(self) -> None:
         # Does not work in some corner cases, where the wrapper is not the same
@@ -124,7 +126,9 @@ class EvolutionCallback(EventCallback):
 
     def _on_training_start(self) -> None:
         # GA 优化器
-        self.GA_design_optimizer = GA_Design_Optim(self.model,decode_size = 20,POP_size = 50, n_generations = 5, overchange_punish= self.overchange_punish )
+        self.GA_design_optimizer = GA_Design_Optim(self.model,decode_size = 20,
+                                                     POP_size = 50, n_generations = 5, overchange_punish= self.overchange_punish,
+                                                     terrain_type= self.terrain_type  )
 
     def _log_success_callback(self, locals_: Dict[str, Any], globals_: Dict[str, Any]) -> None:
         """
@@ -166,7 +170,7 @@ class EvolutionCallback(EventCallback):
         return continue_training
 
     def _on_training_end(self) -> None:
-        xml_model = HumanoidXML(terrain_type='steps')
+        xml_model = HumanoidXML(terrain_type=self.terrain_type)
         xml_model.set_params(self.last_params)
         end_time = time.strftime('%Y_%m_%d_%H_%M_%S', time.localtime())
         xml_model.update_xml(file_path="gym_custom_env/assets/"+end_time+"humanoid_optim_result")

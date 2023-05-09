@@ -174,7 +174,7 @@ if __name__ == "__main__":
     # 加载预训练模型
     model = SAC.load(pretrained_model,
                     env = env,
-                    tensorboard_log = 'experiments\\flat_floor_evo'
+                    tensorboard_log = tensorboard_log_path
                      )
     # 加载buffer
     model.load_replay_buffer(buffer_model)
@@ -222,7 +222,7 @@ if __name__ == "__main__":
     # 加载预训练模型
     model = SAC.load(pretrained_model,
                     env = env,
-                    tensorboard_log = 'experiments\\flat_floor_evo'
+                    tensorboard_log = tensorboard_log_path
                      )
     # 加载buffer
     model.load_replay_buffer(buffer_model)
@@ -270,7 +270,7 @@ if __name__ == "__main__":
     # 加载预训练模型
     model = SAC.load(pretrained_model,
                     env = env,
-                    tensorboard_log = 'experiments\\flat_floor_evo'
+                    tensorboard_log = tensorboard_log_path
                      )
     # 加载buffer
     model.load_replay_buffer(buffer_model)

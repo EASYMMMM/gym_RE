@@ -72,11 +72,12 @@ if __name__ == "__main__":
     BaseAlgorithm._update_info_buffer = update_info_buffer
     OffPolicyAlgorithm._dump_logs = dump_logs
 
+    turn = 't2'
 
     env_id = 'HumanoidCustomEnv-v0'
     num_cpu = 10
-    n_timesteps = 500000
-    model_name = "flatfloor_pretrain_5e5"
+    n_timesteps = 1000000
+    model_name = "flatfloor_pretrain_1e6_"+turn
     
     terrain_type = 'default'
     env_kwargs = {'terrain_type':terrain_type}
@@ -86,7 +87,7 @@ if __name__ == "__main__":
 
     # tensorboard log 路径
     tensorboard_log_path = 'experiments\\flat_floor_evo_v1'
-    tensorboard_log_name = 'experiments\\model_name'
+    tensorboard_log_name = model_name
 
     # Instantiate and wrap the environment
     env = make_vec_env(env_id = env_id, n_envs = num_cpu, env_kwargs = env_kwargs)
@@ -110,7 +111,7 @@ if __name__ == "__main__":
             gamma=0.98,
             policy_kwargs=dict(net_arch=[256, 256]),
             learning_starts=10000,
-            buffer_size=int(5000),
+            buffer_size=int(10000),
             tau=0.01,
             gradient_steps=4,
         )

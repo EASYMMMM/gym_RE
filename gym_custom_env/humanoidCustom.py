@@ -99,7 +99,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             "defalt":DEFAULT_CAMERA_CONFIG,
             "horizontal":HORIZONTAL_CAMERA_CONFIG,
         }[camera_config]
-
+        self.first_call = True
         self._exclude_current_positions_from_observation = (
             exclude_current_positions_from_observation
         )
@@ -295,6 +295,11 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             is_inthemap = self.sim.data.qpos[0] < 6.6         #  机器人仍然在阶梯范围内  
         is_standing = min_z < z < 10  #  self.sim.data.qpos[2]: z-coordinate of the torso (centre)
         is_healthy  = is_standing and is_inthemap and self._not_fallen
+
+        if self.first_call :  # 更新了参数后，有时会出现初始化失败的现象。暴力解决。
+            is_healthy = True
+            self.first_call = False
+        
         return is_healthy
 
 
@@ -648,10 +653,10 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.xml_model.update_xml(file_path=f"gym_custom_env/assets/{xml_name}")
         dir_path = os.path.dirname(__file__)
         xml_file_path = f"{dir_path}\\assets\\{xml_name}"
-        if params['thigh_lenth']+params['shin_lenth']<0.5:
-            self._healthy_z_range = (0.6,5.0)
-        else:
-            self._healthy_z_range = (0.8,5.0)
+        #if params['thigh_lenth']+params['shin_lenth']<0.5:
+        #    self._healthy_z_range = (0.5,5.0)
+        #else:
+        #    self._healthy_z_range = (0.8,5.0)
         mujoco_env.MujocoEnv.__init__(self, xml_file_path, 5)
 
 

@@ -19,5 +19,7 @@ from stable_baselines3 import SAC, TD3, PPO
 
 env = gym.make('HumanoidCustomEnv-v0',terrain_type = 'steps')
 print(env.observation_space)
-del env
-print(env)
+
+params =  {'thigh_lenth':0.2,           # 大腿长 0.34
+           'shin_lenth':0.2,    }          # 小腿长 0.3
+env.update_xml_model(params)

@@ -114,7 +114,7 @@ if __name__ == "__main__":
 
     env_id = 'HumanoidCustomEnv-v0'
     num_cpu = 10
-    n_timesteps = 150000
+    n_timesteps = 1500000
     model_name = "Evolution_flatfloor_v1"
     terrain_type = 'default'
 
@@ -139,8 +139,9 @@ if __name__ == "__main__":
 
     # callbacks = [EvalCallback(eval_env, best_model_save_path=save_path)]
     callbacks  = [EvolutionCallback(eval_env,n_timesteps,
-                                    warm_up_steps=40000,
-                                    design_update_steps=10000,
+                                    warm_up_steps=400000,
+                                    design_update_steps=100000,
+                                    pop_size = 40,
                                     terrain_type = 'default')]
 
     n_actions = env.action_space.shape[0]

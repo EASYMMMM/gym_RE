@@ -75,14 +75,79 @@ if __name__ == "__main__":
     terrain_type = 'default'
     pretrained_model = 'sb3model/default_evo_exp/flatfloor_pretrain_1e6_t2.zip'
     buffer_model = 'sb3model/default_evo_exp/flatfloor_pretrain_1e6_t2replay_buffer.pkl'
-    tensorboard_log_path = 'experiments\\flat_floor_evo_v1\\flatfloor_pretrain_1e6_t2_1'
+    tensorboard_log_path = 'experiments\\flat_floor_evo_t3'
     # 添加日志中的reward分析功能
     BaseAlgorithm._update_info_buffer = update_info_buffer
     OffPolicyAlgorithm._dump_logs = dump_logs
     # env kwargs
     env_kwargs = {'terrain_type':terrain_type}
 
+    ####################################################################################
+    ## PRE TRAIN
 
+    turn = 't3'
+    env_id = 'HumanoidCustomEnv-v0'
+    num_cpu = 10
+    n_timesteps = 1000000
+    model_name = "flatfloor_pretrain_1e6_"+turn
+
+    # 存放在sb3model/文件夹下
+    save_path = f"sb3model/default_evo_exp/"+model_name
+
+    # tensorboard log 路径
+    tensorboard_log_name = model_name
+
+    # Instantiate and wrap the environment
+    env = make_vec_env(env_id = env_id, n_envs = num_cpu, env_kwargs = env_kwargs)
+
+    # Create the evaluation environment and callbacks
+    eval_env = Monitor(gym.make(env_id,terrain_type = terrain_type))
+
+    callbacks = [EvalCallback(eval_env, best_model_save_path=save_path)]
+    '''callbacks  = [EvolutionCallback(eval_env,n_timesteps,
+                                    warm_up_steps=400000,
+                                    design_update_steps=100000,
+                                    pop_size = 40,
+                                    terrain_type = 'default',
+                                    pretrain_num=1000000)]'''
+
+    n_actions = env.action_space.shape[0]
+
+
+    hyperparams =dict(
+            batch_size=256,
+            gamma=0.98,
+            policy_kwargs=dict(net_arch=[256, 256]),
+            learning_starts=10000,
+            buffer_size=int(50000),
+            tau=0.01,
+            gradient_steps=4,
+        )
+
+
+    begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    
+
+    model = SAC("MlpPolicy", env, verbose=1, tensorboard_log = tensorboard_log_path, **hyperparams)
+
+    try:
+        model.learn(n_timesteps, callback=callbacks , tb_log_name = tensorboard_log_name )
+    except KeyboardInterrupt:
+        pass
+    print('=====================================')
+    print(f"Saving to {save_path}.zip")
+    model.save(save_path)
+    model.save_replay_buffer(save_path+'replay_buffer')
+    end_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    print('Started at: ' + begin_time)
+    print('Ended at: ' + end_time)
+    print('=====================================')
+    del env
+    del model
+    del callbacks
+
+    pretrained_model = save_path +'.zip'
+    buffer_model = save_path+'replay_buffer.pkl'
     ####################################################################################
     ## 无惩罚 EVO
 

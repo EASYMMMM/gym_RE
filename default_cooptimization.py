@@ -138,7 +138,10 @@ if __name__ == "__main__":
     eval_env = Monitor(gym.make(env_id,terrain_type = terrain_type))
 
     # callbacks = [EvalCallback(eval_env, best_model_save_path=save_path)]
-    callbacks  = [EvolutionCallback(eval_env,n_timesteps,warm_up_steps=40000,design_update_steps=10000)]
+    callbacks  = [EvolutionCallback(eval_env,n_timesteps,
+                                    warm_up_steps=40000,
+                                    design_update_steps=10000,
+                                    terrain_type = 'default')]
 
     n_actions = env.action_space.shape[0]
 

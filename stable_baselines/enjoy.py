@@ -83,7 +83,7 @@ if __name__ == "__main__":
     env_id = args.env
     terrain = args.terrain_type
     # Create an env similar to the training env
-    env = gym.make(env_id, terrain_type=terrain)
+    env = gym.make(env_id, terrain_type=terrain,terrain_info = False)
     params = {   'thigh_lenth':0.3808,           # 大腿长 0.34
                 'shin_lenth':0.2680,              # 小腿长 0.3
                 'upper_arm_lenth':0.2608,        # 大臂长 0.2771
@@ -111,6 +111,7 @@ if __name__ == "__main__":
         # Try to load best model
         save_path = os.path.join(f"{args.algo}_{env_id}", "best_model.zip")
     print('load from:')
+    save_path ='sb3model\\steps_exp_v0\\steps_no_terrain_info.zip'
     print(save_path)
     # Load the saved model
     model = algo.load(save_path, env=env)

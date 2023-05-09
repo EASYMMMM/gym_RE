@@ -151,7 +151,7 @@ if __name__ == "__main__":
     ####################################################################################
     ## 无惩罚 EVO
 
-    model_name = "flatfloor_evo"
+    model_name = "flatfloor_evo_"+turn
     # 模型存放路径
     save_path = f"sb3model/default_evo_exp/{model_name}"
     # tensorboard log 文件名称
@@ -198,7 +198,7 @@ if __name__ == "__main__":
     ####################################################################################
     ## 有惩罚30 EVO
 
-    model_name = "flatfloor_evo_30punish"
+    model_name = "flatfloor_evo_30punish_"+turn
     # 模型存放路径
     save_path = f"sb3model/default_evo_exp/{model_name}"
     # tensorboard log 文件名称
@@ -246,7 +246,7 @@ if __name__ == "__main__":
     ####################################################################################
     ## 原模型继续训练
 
-    model_name = "flatfloor_noevo"
+    model_name = "flatfloor_noevo_"+turn
     # 模型存放路径
     save_path = f"sb3model/default_evo_exp/{model_name}"
     # tensorboard log 文件名称

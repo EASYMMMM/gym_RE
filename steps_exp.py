@@ -72,7 +72,7 @@ if __name__ == "__main__":
 
     algo = 'sac'
     env_id = 'HumanoidCustomEnv-v0'
-    num_cpu = 10
+    num_cpu = 12
     n_timesteps = 2500000
     terrain_type = 'steps'
     if algo == 'sac':

@@ -6,16 +6,7 @@
 # MIT License
 
 '''
-开启多个环境同时训练
-python stable_baselines/multiEnvTrain.py --algo td3 --env HalfCheetah-v2
-
-python stable_baselines/multiEnvTrain.py --algo sac --env Humanoid-v3  --model-name 2e6
-
-python stable_baselines/multiEnvTrain.py --algo ppo --env Humanoid-v3  --n-timesteps 2000000 --model-name 2e6
-
-python stable_baselines/multiEnvTrain.py --algo ppo --env HumanoidCustomEnv-v0 --num-cpu 2 --n-timesteps 2000000 --model-name 2e6_t4 
-
-python stable_baselines/multiEnvTrain.py --algo sac --env HumanoidCustomEnv-v0 --num-cpu 1 --n-timesteps 2000000 --model-name 2e6_t4 
+楼梯环境的实验，不带形态优化
 
 python stable_baselines/multiEnvTrain.py --algo sac --env HumanoidCustomEnv-v0 --num-cpu 8 --n-timesteps 2000000 --model-name 2e6_ladder_t1 --terrain-type ladders 
 

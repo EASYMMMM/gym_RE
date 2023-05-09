@@ -66,6 +66,7 @@ class EvolutionCallback(EventCallback):
         warn: bool = True,
         warm_up_steps: int = 1000000,
         design_update_steps: int = 200000,
+        overchange_punish: int = 0,
     ):
         super().__init__(callback_after_eval, verbose=verbose)
 
@@ -104,6 +105,7 @@ class EvolutionCallback(EventCallback):
         self.design_update_steps = design_update_steps
         self.last_time_trigger =  - design_update_steps
 
+        self.overchange_punish = overchange_punish
 
     def _init_callback(self) -> None:
         # Does not work in some corner cases, where the wrapper is not the same
@@ -122,7 +124,7 @@ class EvolutionCallback(EventCallback):
 
     def _on_training_start(self) -> None:
         # GA 优化器
-        self.GA_design_optimizer = GA_Design_Optim(self.model,decode_size = 20,POP_size = 50, n_generations = 5)
+        self.GA_design_optimizer = GA_Design_Optim(self.model,decode_size = 20,POP_size = 50, n_generations = 5, overchange_punish= self.overchange_punish )
 
     def _log_success_callback(self, locals_: Dict[str, Any], globals_: Dict[str, Any]) -> None:
         """
@@ -158,6 +160,7 @@ class EvolutionCallback(EventCallback):
             self.logger.record('design/upper_arm_lenth',new_design_params['upper_arm_lenth'])
             self.logger.record('design/lower_arm_lenth',new_design_params['lower_arm_lenth'])
             self.logger.record('design/foot_lenth',new_design_params['foot_lenth'])
+            self.logger.record('parameter/overchange_punish',self.overchange_punish)
             self.last_params = new_design_params
 
         return continue_training

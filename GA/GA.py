@@ -54,7 +54,8 @@ class GA_Design_Optim():
                  mutation_rate  = 0.01,
                  n_generations  = 10,
                  n_envs         = 8,
-                 optim_bound   = [0.7, 1.3]
+                 optim_bound   = [0.7, 1.3],
+                 overchange_punish = 0,  # 更新幅度过大的惩罚项
                     ):
         self.decode_size    = decode_size                      # 单个数值的编码长度
         self.POP_size       = POP_size                         # 种群大小
@@ -62,6 +63,7 @@ class GA_Design_Optim():
         self.mutation_rate  = mutation_rate
         self.n_generations  = n_generations                    # 迭代次数
         self.optim_bound    = optim_bound
+        self.overchange_punish = overchange_punish
         self.__origin_design_params  = {   'thigh_lenth':0.34,           # 大腿长 0.34
                                            'shin_lenth':0.3,              # 小腿长 0.3
                                            'upper_arm_lenth':0.2771,        # 大臂长 0.2771
@@ -164,7 +166,7 @@ class GA_Design_Optim():
             mean_reward = np.mean(episode_rewards)
             if self.out_of_range(new_params, clip_range = 0.1):
                 # 如果参数更新幅度过大，惩罚20fitness
-                mean_reward -= 20
+                mean_reward -= self.overchange_punish
             fitness[i]  = mean_reward
             print('num:',i)
         self.best_reward.append(np.max(fitness))

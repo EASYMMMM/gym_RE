@@ -19,7 +19,7 @@ import gym_custom_env       # 注册自定义环境
 import gym
 import numpy as np
 import pybullet_envs
-
+import mujoco_py
 from stable_baselines3 import SAC, TD3, PPO
 
 
@@ -68,9 +68,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
     ################################################################################
     ################################################################################
-    # save_path = 'best_model/5e6_steps_t5_cpu8_sac_HumanoidCustomEnv-v0.zip'
-    save_path = 'best_model/5e6_evo_steps_t3_cpu8_sac_HumanoidCustomEnv-v0.zip'
+    save_path = 'best_model/5e6_steps_t5_cpu8_sac_HumanoidCustomEnv-v0.zip'
+    #save_path = 'best_model/5e6_evo_steps_t3_cpu8_sac_HumanoidCustomEnv-v0.zip'
     #save_path = 'best_model/2e6_steps_pretrain_cpu8_sac_HumanoidCustomEnv-v0.zip'
+
+    # 平地行走
+    #save_path = 'best_model\\1e6_default_t2_cpu10_sac_HumanoidCustomEnv-v0.zip'
     
     # 更新参数
     params = {   'thigh_lenth':0.3512,           # 大腿长 0.34
@@ -85,7 +88,7 @@ if __name__ == "__main__":
     # Create an env similar to the training env
     env = gym.make(env_id, terrain_type=terrain)
 
-    env.update_xml_model(params)
+    #env.update_xml_model(params)
 
     # Enable GUI
     if not args.no_render:
@@ -132,7 +135,7 @@ if __name__ == "__main__":
     # print(f"gradient steps:{model.gradient_steps}")
     print("model path:"+save_path)
     print("==============================")
-
+    #viewer2 = mujoco_py.MjRenderContextOffscreen(env.sim, 0)
     try:
         # Use deterministic actions for evaluation
         episode_rewards, episode_lengths = [], []
@@ -156,6 +159,9 @@ if __name__ == "__main__":
                     env.render(mode="human")
                     dt = 1.0 / 240.0
                     time.sleep(dt)
+                if episode_length == 140:
+                    input()
+
             detail = info.get('reward_details')
             forward_r_total += detail['forward_reward_sum']
             contact_r_total += detail['contact_reward_sum']

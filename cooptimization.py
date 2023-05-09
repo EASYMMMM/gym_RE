@@ -6,7 +6,8 @@
 # MIT License
 
 '''
-开启多个环境同时训练
+联合优化
+
 python cooptimization.py --algo td3 --env HalfCheetah-v2
 
 python stable_baselines/multiEnvTrain.py --algo sac --env Humanoid-v3  --model-name 2e6

@@ -261,3 +261,23 @@ $$
 r_{p} = (\vec{z}_{world}\cdot\vec{z_{agent}} + 1)/2 + (0.5-{y_{center}}^2)
 $$
 
+
+
+
+
+## 3. GA
+
+$$
+f_i= F_i - \min F + 0.001
+$$
+
+$$
+p_i = \frac{f_i}{\sum_{i=0}^{N}{f_i}}
+$$
+
+$$
+x_i = \frac{b_i}{2^L}(x_{max}-x_{min}) + x_{min}
+$$
+
+
+

@@ -67,7 +67,8 @@ class EvolutionCallback(EventCallback):
         warm_up_steps: int = 1000000,
         design_update_steps: int = 200000,
         overchange_punish: int = 0,
-        terrain_type = 'steps'
+        terrain_type = 'steps',
+        pop_size:int = 50, #种群大小
     ):
         super().__init__(callback_after_eval, verbose=verbose)
 
@@ -108,6 +109,7 @@ class EvolutionCallback(EventCallback):
 
         self.overchange_punish = overchange_punish
         self.terrain_type = terrain_type
+        self.pop_size = pop_size
 
     def _init_callback(self) -> None:
         # Does not work in some corner cases, where the wrapper is not the same
@@ -127,7 +129,7 @@ class EvolutionCallback(EventCallback):
     def _on_training_start(self) -> None:
         # GA 优化器
         self.GA_design_optimizer = GA_Design_Optim(self.model,decode_size = 20,
-                                                     POP_size = 50, n_generations = 5, overchange_punish= self.overchange_punish,
+                                                     POP_size = self.pop_size, n_generations = 5, overchange_punish= self.overchange_punish,
                                                      terrain_type= self.terrain_type  )
 
     def _log_success_callback(self, locals_: Dict[str, Any], globals_: Dict[str, Any]) -> None:

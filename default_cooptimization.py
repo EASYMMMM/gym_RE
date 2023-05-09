@@ -67,76 +67,35 @@ def make_env(env_id, rank, seed=0):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser("Train an RL agent using Stable Baselines3")
-    parser.add_argument(
-        "--algo",
-        help="RL Algorithm (Soft Actor-Critic by default)",
-        default="sac",
-        type=str,
-        required=False,
-        choices=["sac", "td3", "ppo"],
-    )
-    parser.add_argument(
-        "--env", type=str, default="HalfCheetahBulletEnv-v0", help="environment ID"
-    )
-    parser.add_argument(
-        "-n",
-        "--n-timesteps",
-        help="Number of training timesteps",
-        default=int(1e6),
-        type=int,
-    )
-    parser.add_argument(
-        "--save-freq",
-        help="Save the model every n steps (if negative, no checkpoint)",
-        default=-1,
-        type=int,
-    )
-    parser.add_argument(
-        "--model-name",
-        help="Name of the model's save path",
-        default="",
-        type=str,
-    )
-    parser.add_argument(
-        "--num-cpu",
-        help="Number of processes to use",
-        default=1,
-        type=int,
-    )
-    parser.add_argument(
-        "--terrain-type",
-        help="Type of the traning terrain",
-        default='steps',
-        type=str,
-    )    
-    args = parser.parse_args()
+
 
     env_id = 'HumanoidCustomEnv-v0'
     num_cpu = 10
     n_timesteps = 1500000
-    model_name = "Evolution_flatfloor_v1"
     terrain_type = 'default'
-
+    pretrained_model = 'sb3model/default_evo_exp/flatfloor_pretrain_1e6_t2.zip'
+    buffer_model = 'sb3model/default_evo_exp/flatfloor_pretrain_1e6_t2replay_buffer.pkl'
+    tensorboard_log_path = 'experiments\\flat_floor_evo_v1\\flatfloor_pretrain_1e6_t2_1'
     # 添加日志中的reward分析功能
     BaseAlgorithm._update_info_buffer = update_info_buffer
     OffPolicyAlgorithm._dump_logs = dump_logs
-
     # env kwargs
     env_kwargs = {'terrain_type':terrain_type}
 
-    # 存放在sb3model/文件夹下
-    save_path = f"sb3model/default_evo/{model_name}{args.algo}_{env_id}"
 
-    # tensorboard log 路径
+    ####################################################################################
+    ## 无惩罚 EVO
+
+    model_name = "flatfloor_evo"
+    # 模型存放路径
+    save_path = f"sb3model/default_evo_exp/{model_name}"
+    # tensorboard log 文件名称
     tensorboard_log_name = model_name
-
     # Instantiate and wrap the environment
     env = make_vec_env(env_id = env_id, n_envs = num_cpu, env_kwargs = env_kwargs)
 
     # Create the evaluation environment and callbacks
     eval_env = Monitor(gym.make(env_id,terrain_type = terrain_type))
-
     # callbacks = [EvalCallback(eval_env, best_model_save_path=save_path)]
     callbacks  = [EvolutionCallback(eval_env,n_timesteps,
                                     warm_up_steps=400000,
@@ -145,28 +104,15 @@ if __name__ == "__main__":
                                     terrain_type = 'default',
                                     pretrain_num=1000000)]
 
-    n_actions = env.action_space.shape[0]
-
-    # Tuned hyperparameters from https://github.com/DLR-RM/rl-baselines3-zoo
-    hyperparams =dict(
-            batch_size=256,
-            gamma=0.98,
-            policy_kwargs=dict(net_arch=[256, 256]),
-            learning_starts=10000,
-            buffer_size=int(5000),
-            tau=0.01,
-            gradient_steps=4,
-        )
-
-
     begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     
     # 加载预训练模型
-    model = SAC.load('best_model\\1e6_default_t2_cpu10_sac_HumanoidCustomEnv-v0.zip',
+    model = SAC.load(pretrained_model,
                     env = env,
                     tensorboard_log = 'experiments\\flat_floor_evo'
                      )
-
+    # 加载buffer
+    model.load_replay_buffer(buffer_model)
 
     try:
         model.learn(n_timesteps, callback=callbacks ,reset_num_timesteps = False, tb_log_name = tensorboard_log_name )
@@ -179,3 +125,103 @@ if __name__ == "__main__":
     print('Started at: ' + begin_time)
     print('Ended at: ' + end_time)
     print('=====================================')
+
+    del env
+    del model
+    del callbacks
+
+    ####################################################################################
+    ## 有惩罚30 EVO
+
+    model_name = "flatfloor_evo_30punish"
+    # 模型存放路径
+    save_path = f"sb3model/default_evo_exp/{model_name}"
+    # tensorboard log 文件名称
+    tensorboard_log_name = model_name
+    # Instantiate and wrap the environment
+    env = make_vec_env(env_id = env_id, n_envs = num_cpu, env_kwargs = env_kwargs)
+
+    # Create the evaluation environment and callbacks
+    eval_env = Monitor(gym.make(env_id,terrain_type = terrain_type))
+    # callbacks = [EvalCallback(eval_env, best_model_save_path=save_path)]
+    callbacks  = [EvolutionCallback(eval_env,n_timesteps,
+                                    warm_up_steps=400000,
+                                    design_update_steps=100000,
+                                    pop_size = 40,
+                                    terrain_type = 'default',
+                                    pretrain_num=1000000,
+                                    overchange_punish=30)]
+
+    begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    
+    # 加载预训练模型
+    model = SAC.load(pretrained_model,
+                    env = env,
+                    tensorboard_log = 'experiments\\flat_floor_evo'
+                     )
+    # 加载buffer
+    model.load_replay_buffer(buffer_model)
+
+    try:
+        model.learn(n_timesteps, callback=callbacks ,reset_num_timesteps = False, tb_log_name = tensorboard_log_name )
+    except KeyboardInterrupt:
+        pass
+    print('=====================================')
+    print(f"Saving to {save_path}.zip")
+    model.save(save_path)
+    end_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    print('Started at: ' + begin_time)
+    print('Ended at: ' + end_time)
+    print('=====================================')
+
+    del env
+    del model
+    del callbacks
+
+    ####################################################################################
+    ## 原模型继续训练
+
+    model_name = "flatfloor_noevo"
+    # 模型存放路径
+    save_path = f"sb3model/default_evo_exp/{model_name}"
+    # tensorboard log 文件名称
+    tensorboard_log_name = model_name
+    # Instantiate and wrap the environment
+    env = make_vec_env(env_id = env_id, n_envs = num_cpu, env_kwargs = env_kwargs)
+
+    # Create the evaluation environment and callbacks
+    eval_env = Monitor(gym.make(env_id,terrain_type = terrain_type))
+    # callbacks = [EvalCallback(eval_env, best_model_save_path=save_path)]
+    callbacks  = [EvolutionCallback(eval_env,n_timesteps,
+                                    warm_up_steps=400000,
+                                    design_update_steps=100000,
+                                    pop_size = 40,
+                                    terrain_type = 'default',
+                                    pretrain_num=1000000,
+                                    overchange_punish=30)]
+
+    begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    
+    # 加载预训练模型
+    model = SAC.load(pretrained_model,
+                    env = env,
+                    tensorboard_log = 'experiments\\flat_floor_evo'
+                     )
+    # 加载buffer
+    model.load_replay_buffer(buffer_model)
+
+    try:
+        model.learn(n_timesteps, callback=callbacks ,reset_num_timesteps = False, tb_log_name = tensorboard_log_name )
+    except KeyboardInterrupt:
+        pass
+    print('=====================================')
+    print(f"Saving to {save_path}.zip")
+    model.save(save_path)
+    end_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    print('Started at: ' + begin_time)
+    print('Ended at: ' + end_time)
+    print('=====================================')
+
+    del env
+    del model
+    del callbacks

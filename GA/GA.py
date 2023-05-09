@@ -140,7 +140,7 @@ class GA_Design_Optim():
             mean_reward = np.mean(episode_rewards)
             fitness[i]  = mean_reward
             print('num:',i)
-        self.best_reward.append(np.max(episode_rewards))
+
         return fitness
 
     def Fitness(self, pop):
@@ -172,6 +172,7 @@ class GA_Design_Optim():
             fitness[i]  = mean_reward
             print('num:',i)
         self.best_reward.append(np.max(fitness))
+        self.fitness_data.append(fitness)
         return fitness
 
     def new_design_params(self,p_thigh_lenth, p_shin_lenth, p_upper_arm_lenth, p_lower_arm_lenth, p_foot_lenth):
@@ -273,20 +274,21 @@ class GA_Design_Optim():
         #begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
         
         pop = np.random.randint(2, size=(self.POP_size, self.DNA_size)) # 随机初始化种群
-        #pop[0,:] = self.last_best_design   # 向种群中添加一个曾经的最优设计
+        pop[0,:] = self.last_best_design   # 向种群中添加一个曾经的最优设计
         self.best_individual = list()
         self.best_reward     = list()
-        for _ in range(self.n_generations):#迭代N代
+        for i in range(self.n_generations):#迭代N代
             pop = np.array(self.crossover_and_mutation(pop))
             fitness = self.get_fitness(pop)
             # 保存最优个体
             self.last_best_design = pop[np.argmax(fitness)]
             self.best_individual.append(self.last_best_design)
 
+
             pop = self.select(pop, fitness) #选择生成新的种群
 
             self.pop_data.append(pop)
-            self.fitness_data.append(fitness)
+            
 
             #self.best_individual.append(pop[np.argmax(fitness)])
 

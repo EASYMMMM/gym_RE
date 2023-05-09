@@ -56,6 +56,7 @@ class GA_Design_Optim():
                  n_envs         = 8,
                  optim_bound   = [0.7, 1.3],
                  overchange_punish = 0,  # 更新幅度过大的惩罚项
+                 terrain_type = 'steps'
                     ):
         self.decode_size    = decode_size                      # 单个数值的编码长度
         self.POP_size       = POP_size                         # 种群大小
@@ -74,6 +75,7 @@ class GA_Design_Optim():
         self.model = model
         self.last_best_design = np.zeros(self.DNA_size,dtype=int)
         self.last_best_design[0:len(self.__origin_design_params)] = 1
+        self.terrain_type = terrain_type
         self.init_controller()
 
 
@@ -101,7 +103,7 @@ class GA_Design_Optim():
                 gamma=0.99
             )
         }[algo]
-        env_kwargs = {'terrain_type':'steps'}
+        env_kwargs = {'terrain_type':self.terrain_type}
         self.envs = make_vec_env(env_id = 'HumanoidCustomEnv-v0', n_envs = self.n_envs, env_kwargs = env_kwargs)
         self.last_best_params = self.__origin_design_params
         #env = gym.make('HumanoidCustomEnv-v0', terrain_type='steps')

@@ -113,6 +113,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
     def __init_counter(self):
         # 初始化/清零需要用到的储存数组
+        self._success   = False
         self.x_velocity = 0                         # 质心沿x速度
         self.y_velocity = 0                         # 质心沿y速度
         self.z_velocity = 0                         # 质心沿z速度
@@ -284,7 +285,9 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         min_z, max_z = self._healthy_z_range
         z = self.sim.data.qpos[2]
         if self.terrain_type == 'default':
-            is_inthemap = self.sim.data.qpos[0] < 15 # 别走出地图。    
+            is_inthemap = self.sim.data.qpos[0] < 10 # 别走出地图。 
+            if self.sim.data.qpos[0] >= 10:
+                self._success = True
             is_inthemap = self.sim.data.qpos[1]<1 and self.sim.data.qpos[1]>-1 # 沿y轴也做出限制 
         if self.terrain_type == 'ladders':
             min_z = 0.9
@@ -299,6 +302,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             step_pos = self._get_steps_pos()
             z = step_pos[1]
             is_inthemap = self.sim.data.qpos[0] < 6.6         #  机器人仍然在阶梯范围内  
+            if self.sim.data.qpos[0] >= 6.6:
+                self._success = True
         is_standing = min_z < z < 10  #  self.sim.data.qpos[2]: z-coordinate of the torso (centre)
         is_healthy  = is_standing and is_inthemap and self._not_fallen
 
@@ -639,7 +644,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                               "posture_reward_sum": self.posture_reward_sum,
                               "healthy_reward_sum": self.healthy_reward_sum,
                               "control_cost_sum": -self.control_cost_sum,
-                              "contact_cost_sum": -self.contact_cost_sum,},
+                              "contact_cost_sum": -self.contact_cost_sum,
+                              "final_x":xyz_position_after[0]},
             "xyz_position": xyz_position_after,
             "distance_from_origin": np.linalg.norm(xyz_position_after, ord=2),
             "x_velocity": x_velocity,
@@ -647,7 +653,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             "forward_reward": forward_reward,
             "is_healthy": self.is_healthy,
             "is_walking": self._is_walking,
-            "contact pairs":self.already_touched
+            "contact pairs":self.already_touched,
+            "is_success":self._success
         }
 
         return observation, reward, done, info

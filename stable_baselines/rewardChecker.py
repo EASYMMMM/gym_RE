@@ -53,6 +53,7 @@ def dump_logs(self) -> None:
         self.logger.record("details/ep_contact_cost_mean", safe_mean([ep_info["contact_cost_sum"] for ep_info in self.ep_info_buffer]), exclude=("stdout", "log"))
         self.logger.record("details/ep_control_cost_mean", safe_mean([ep_info["control_cost_sum"] for ep_info in self.ep_info_buffer]), exclude=("stdout", "log"))
         self.logger.record("details/final_x", safe_mean([ep_info["final_x"] for ep_info in self.ep_info_buffer]), exclude=("stdout", "log"))
+        self.logger.record("details/average_v", safe_mean([ep_info["ave_velocity"] for ep_info in self.ep_info_buffer]), exclude=("stdout", "log"))
     self.logger.record("time/fps", fps)
     self.logger.record("time/time_elapsed", int(time_elapsed), exclude="tensorboard")
     self.logger.record("time/total_timesteps", self.num_timesteps, exclude="tensorboard")

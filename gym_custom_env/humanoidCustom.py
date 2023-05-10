@@ -642,9 +642,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         done = self.done
         self.reward_accumulate(forward_r=forward_reward,healthy_r=healthy_reward,posture_r=posture_reward,
                                 contact_r=contact_reward,contact_c=contact_cost,control_c=ctrl_cost)
-        v_ave = 0
-        if done:
-            v_ave = sum(self.v_list)/len(self.v_list)
+
+        v_ave = sum(self.v_list)/len(self.v_list)
         
         info = {
             "reward_details":{"forward_reward_sum": self.forward_reward_sum,
@@ -653,7 +652,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                               "healthy_reward_sum": self.healthy_reward_sum,
                               "control_cost_sum": -self.control_cost_sum,
                               "contact_cost_sum": -self.contact_cost_sum,
-                              "final_x":xyz_position_after[0]},
+                              "final_x":xyz_position_after[0],
+                              "ave_velocity":v_ave},
             "xyz_position": xyz_position_after,
             "distance_from_origin": np.linalg.norm(xyz_position_after, ord=2),
             "x_velocity": x_velocity,

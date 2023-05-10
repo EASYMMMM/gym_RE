@@ -111,7 +111,7 @@ if __name__ == "__main__":
         # Try to load best model
         save_path = os.path.join(f"{args.algo}_{env_id}", "best_model.zip")
     print('load from:')
-    save_path ='sb3model/default_evo_exp/flatfloor_pretrain_1e6_s1.zip'
+    save_path ='sb3model/default_evo_exp/flatfloor_pretrain_1e6_s2.zip'
     #save_path = 'best_model\\1e6_default_t2_cpu10_sac_HumanoidCustomEnv-v0.zip'
     print(save_path)
     # Load the saved model
@@ -178,7 +178,6 @@ if __name__ == "__main__":
         print(f"Episode_reward={mean_reward:.2f} +/- {std_reward:.2f}")
         print(f"Episode_length={mean_len:.2f} +/- {std_len:.2f}")
         print("==============================")
-        print(env.observation_space)
     except KeyboardInterrupt:
         pass
 

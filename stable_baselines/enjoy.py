@@ -111,7 +111,7 @@ if __name__ == "__main__":
         # Try to load best model
         save_path = os.path.join(f"{args.algo}_{env_id}", "best_model.zip")
     print('load from:')
-    save_path ='sb3model\\default_evo_exp\\flatfloor_pretrain_1e6_t2.zip'
+    save_path ='sb3model/default_evo_exp/flatfloor_pretrain_1e6_s1.zip'
     #save_path = 'best_model\\1e6_default_t2_cpu10_sac_HumanoidCustomEnv-v0.zip'
     print(save_path)
     # Load the saved model
@@ -154,6 +154,7 @@ if __name__ == "__main__":
             healthy_r_total += detail['healthy_reward_sum']
             control_c_total += detail['control_cost_sum']
             contact_c_total += detail['contact_cost_sum']
+            final_x          = info['xyz_position'][0]
             episode_rewards.append(episode_reward)
             episode_lengths.append(episode_length)
             print(
@@ -166,6 +167,7 @@ if __name__ == "__main__":
             print('healthy R: ', healthy_r_total)
             print('control C: ', control_c_total)
             print('contact C: ', contact_c_total)
+            print('final x:',final_x)
             print('************************')
 
         mean_reward = np.mean(episode_rewards)
@@ -176,6 +178,7 @@ if __name__ == "__main__":
         print(f"Episode_reward={mean_reward:.2f} +/- {std_reward:.2f}")
         print(f"Episode_length={mean_len:.2f} +/- {std_len:.2f}")
         print("==============================")
+        print(env.observation_space)
     except KeyboardInterrupt:
         pass
 

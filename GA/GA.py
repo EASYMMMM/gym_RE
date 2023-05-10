@@ -167,6 +167,8 @@ class GA_Design_Optim():
                         episode_reward[idx] = 0
             mean_reward = np.mean(episode_rewards)
             v_ave = infos['ave_velocity']
+            if mean_reward < 400:
+                v_ave = 0
             f = v_ave
             if self.out_of_range(new_params, clip_range = 0.1):
                 # 如果参数更新幅度过大，惩罚20fitness

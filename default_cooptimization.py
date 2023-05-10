@@ -82,11 +82,11 @@ if __name__ == "__main__":
     # env kwargs
     env_kwargs = {'terrain_type':terrain_type}
 
-
+    pretrain = False
 
     ####################################################################################
     ## PRE TRAIN
-    
+
     turn = 't3'
     env_id = 'HumanoidCustomEnv-v0'
     num_cpu = 10
@@ -132,18 +132,19 @@ if __name__ == "__main__":
 
     model = SAC("MlpPolicy", env, verbose=1, tensorboard_log = tensorboard_log_path, **hyperparams)
 
-    try:
-        model.learn(n_timesteps, callback=callbacks , tb_log_name = tensorboard_log_name )
-    except KeyboardInterrupt:
-        pass
-    print('=====================================')
-    print(f"Saving to {save_path}.zip")
-    model.save(save_path)
-    model.save_replay_buffer(save_path+'replay_buffer')
-    end_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-    print('Started at: ' + begin_time)
-    print('Ended at: ' + end_time)
-    print('=====================================')
+    if pretrain:
+        try:
+            model.learn(n_timesteps, callback=callbacks , tb_log_name = tensorboard_log_name )
+        except KeyboardInterrupt:
+            pass
+        print('=====================================')
+        print(f"Saving to {save_path}.zip")
+        model.save(save_path)
+        model.save_replay_buffer(save_path+'replay_buffer')
+        end_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+        print('Started at: ' + begin_time)
+        print('Ended at: ' + end_time)
+        print('=====================================')
     del env
     del model
     del callbacks

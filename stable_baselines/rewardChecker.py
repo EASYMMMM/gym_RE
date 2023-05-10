@@ -28,7 +28,6 @@ def update_info_buffer(self, infos: List[Dict[str, Any]], dones: Optional[np.nda
         maybe_is_success = info.get("is_success")
         if maybe_ep_info is not None:
             maybe_ep_info.update(info.get("reward_details"))
-            maybe_ep_info.update(info.get("xyz_position"))
             self.ep_info_buffer.extend([maybe_ep_info])
         if maybe_is_success is not None and dones[idx]:
             self.ep_success_buffer.append(maybe_is_success)

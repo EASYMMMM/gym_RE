@@ -284,7 +284,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         z = self.sim.data.qpos[2]
         if self.terrain_type == 'default':
             is_inthemap = self.sim.data.qpos[0] < 15 # 别走出地图。    
-            is_inthemap = self.sim.data.qpos[1]>1 or self.sim.data.qpos[1]<-1 # 沿y轴也做出限制 
+            is_inthemap = self.sim.data.qpos[1]<1 and self.sim.data.qpos[1]>-1 # 沿y轴也做出限制 
         if self.terrain_type == 'ladders':
             min_z = 0.9
             lowest_ladder = self.limb_position['left_foot'] if self.limb_position['left_foot'] < self.limb_position['right_foot'] else self.limb_position['right_foot']

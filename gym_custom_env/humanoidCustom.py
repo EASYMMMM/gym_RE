@@ -62,7 +62,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         posture_reward_weight = 1,              # 站立奖励
         contact_reward_weight = 1.0,            # 梯子/阶梯 接触奖励
         terminate_when_unhealthy=True,
-        healthy_z_range=(0.8, 5.0),
+        healthy_z_range=(0.9, 5.0),
         terrain_info=True,
         reset_noise_scale=1e-2,
         camera_config = "horizontal",
@@ -209,7 +209,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         # 楼梯地形同时考虑姿态和朝向
         if self.terrain_type == 'default':
             v_y = self.y_velocity if self.y_velocity > 0 else -self.y_velocity # 绝对值
-            r_y = 0 if v_y < 0.2 else -(v_y - 0.2)
+            r_y = 0 if v_y < 0.4 else -(v_y - 0.4)
             #yaw = - 1.5 * y*y + 1
             #if yaw < -1:
             #    yaw = -1

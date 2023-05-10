@@ -120,7 +120,7 @@ if __name__ == "__main__":
     begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     
 
-    model = SAC("MlpPolicy", env, verbose=1, tensorboard_log = tensorboard_log_path, **hyperparams)
+    model = SAC("MlpPolicy", env, verbose=1, tensorboard_log = tensorboard_log_path, **hyperparams,seed=seed)
 
     try:
         model.learn(n_timesteps, callback=callbacks , tb_log_name = tensorboard_log_name )

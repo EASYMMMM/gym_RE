@@ -72,7 +72,7 @@ if __name__ == "__main__":
     BaseAlgorithm._update_info_buffer = update_info_buffer
     OffPolicyAlgorithm._dump_logs = dump_logs
 
-    seed = 1
+    seed = 2
 
     env_id = 'HumanoidCustomEnv-v0'
     num_cpu = 10
@@ -111,7 +111,7 @@ if __name__ == "__main__":
             gamma=0.98,
             policy_kwargs=dict(net_arch=[256, 256]),
             learning_starts=10000,
-            buffer_size=int(10000),
+            buffer_size=int(50000),
             tau=0.01,
             gradient_steps=4,
         )

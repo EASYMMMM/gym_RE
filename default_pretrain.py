@@ -111,7 +111,7 @@ if __name__ == "__main__":
             gamma=0.98,
             policy_kwargs=dict(net_arch=[256, 256]),
             learning_starts=10000,
-            buffer_size=int(50000),
+            buffer_size=int(200000),
             tau=0.01,
             gradient_steps=4,
         )

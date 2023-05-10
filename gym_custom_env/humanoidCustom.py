@@ -118,6 +118,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.y_velocity = 0                         # 质心沿y速度
         self.z_velocity = 0                         # 质心沿z速度
         self._walking_counter = 0                   # 判定正常前进计数器
+        self.v_list = list()
         self.already_touched =[]                    # ladder:记录已经碰撞过的geom对
         self.limb_position = {'right_hand':0,    # ladder:记录手脚到达过的最高位置
                               'left_hand':0,
@@ -285,10 +286,11 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         min_z, max_z = self._healthy_z_range
         z = self.sim.data.qpos[2]
         if self.terrain_type == 'default':
-            is_inthemap = self.sim.data.qpos[0] < 10 # 别走出地图。 
+            x_limit = self.sim.data.qpos[0] < 10 # 别走出地图。 
             if self.sim.data.qpos[0] >= 10:
                 self._success = True
-            is_inthemap = self.sim.data.qpos[1]<1 and self.sim.data.qpos[1]>-1 # 沿y轴也做出限制 
+            y_limit = self.sim.data.qpos[1]<1 and self.sim.data.qpos[1]>-1 # 沿y轴也做出限制 
+            is_inthemap = x_limit and y_limit
         if self.terrain_type == 'ladders':
             min_z = 0.9
             lowest_ladder = self.limb_position['left_foot'] if self.limb_position['left_foot'] < self.limb_position['right_foot'] else self.limb_position['right_foot']
@@ -599,6 +601,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             position = position[2:]
 
 
+
     def step(self, action):
         '''
         step(self, action) -> observation, reward, done, info
@@ -615,7 +618,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.x_velocity = x_velocity
         self.y_velocity = y_velocity
         self.z_velocity = z_velocity
-
+        self.v_list.append(x_velocity)
+        
         # 是否仍在前进，只调用一次，防止反复调用is_walking出错
         self._is_walking = self.is_walking
 
@@ -638,6 +642,10 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         done = self.done
         self.reward_accumulate(forward_r=forward_reward,healthy_r=healthy_reward,posture_r=posture_reward,
                                 contact_r=contact_reward,contact_c=contact_cost,control_c=ctrl_cost)
+        v_ave = 0
+        if done:
+            v_ave = sum(self.v_list)/len(self.v_list)
+        
         info = {
             "reward_details":{"forward_reward_sum": self.forward_reward_sum,
                               "contact_reward_sum": self.contact_reward_sum,
@@ -654,7 +662,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             "is_healthy": self.is_healthy,
             "is_walking": self._is_walking,
             "contact pairs":self.already_touched,
-            "is_success":self._success
+            "is_success":self._success,
+            "ave_velocity":v_ave,
         }
 
         return observation, reward, done, info

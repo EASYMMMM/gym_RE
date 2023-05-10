@@ -1,7 +1,7 @@
 # 由于我的笔记本显存不够，创建model时会报错，故使用set parameters
 # 手动更改模型路径
 '''
-python stable_baselines/enjoy_mydesktop.py --algo sac --env HumanoidCustomEnv-v0  --terrain-type steps  --model-name 5e6_steps_ankle_t4_cpu8
+python stable_baselines/enjoy_mydesktop.py --algo sac --env HumanoidCustomEnv-v0  --terrain-type steps 
 '''
 # ------- 来自于mujoco150在win+py3.9下的矫情的要求 --------
 # 手动添加mujoco路径
@@ -68,12 +68,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
     ################################################################################
     ################################################################################
-    save_path = 'best_model/5e6_steps_t5_cpu8_sac_HumanoidCustomEnv-v0.zip'
+    #save_path = 'best_model/5e6_steps_t5_cpu8_sac_HumanoidCustomEnv-v0.zip'
     #save_path = 'best_model/5e6_evo_steps_t3_cpu8_sac_HumanoidCustomEnv-v0.zip'
     #save_path = 'best_model/2e6_steps_pretrain_cpu8_sac_HumanoidCustomEnv-v0.zip'
 
     # 平地行走
-    #save_path = 'best_model\\1e6_default_t2_cpu10_sac_HumanoidCustomEnv-v0.zip'
+    save_path = 'best_model\\1e6_default_t2_cpu10_sac_HumanoidCustomEnv-v0.zip'
     
     # 更新参数
     params = {   'thigh_lenth':0.3512,           # 大腿长 0.34
@@ -159,8 +159,8 @@ if __name__ == "__main__":
                     env.render(mode="human")
                     dt = 1.0 / 240.0
                     time.sleep(dt)
-                if episode_length == 140:
-                    input()
+                #if episode_length == 140:
+                #    input()
 
             detail = info.get('reward_details')
             forward_r_total += detail['forward_reward_sum']
@@ -169,6 +169,8 @@ if __name__ == "__main__":
             healthy_r_total += detail['healthy_reward_sum']
             control_c_total += detail['control_cost_sum']
             contact_c_total += detail['contact_cost_sum']
+            v_ave = info['ave_velocity']
+            final_x = detail['final_x']
             episode_rewards.append(episode_reward)
             episode_lengths.append(episode_length)
             print(
@@ -183,6 +185,8 @@ if __name__ == "__main__":
             print('contact C: ', contact_c_total)
             print('is healthy' ,info["is_healthy"])
             print('is walking' ,info["is_walking"])
+            print('average V:',v_ave)
+            print('final_x:',final_x)
             print('************************')
             # env.update_xml_model(params)
             # params['shin_lenth'] = 0.5 + 0.1*i

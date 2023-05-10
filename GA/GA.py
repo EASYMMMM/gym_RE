@@ -166,8 +166,11 @@ class GA_Design_Optim():
                         episode_rewards.append(episode_reward[idx])
                         episode_reward[idx] = 0
             mean_reward = np.mean(episode_rewards)
-            v_ave = infos['ave_velocity']
-            if mean_reward < 400:
+            v_ave_list = list()
+            for info in infos:
+                v_ave_list.append(info['ave_velocity']) 
+            v_ave = np.mean(v_ave_list)
+            if mean_reward < 350:
                 v_ave = 0
             f = v_ave
             if self.out_of_range(new_params, clip_range = 0.1):

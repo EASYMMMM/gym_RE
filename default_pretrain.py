@@ -72,12 +72,12 @@ if __name__ == "__main__":
     BaseAlgorithm._update_info_buffer = update_info_buffer
     OffPolicyAlgorithm._dump_logs = dump_logs
 
-    turn = 't2'
+    seed = 1
 
     env_id = 'HumanoidCustomEnv-v0'
     num_cpu = 10
     n_timesteps = 1000000
-    model_name = "flatfloor_pretrain_1e6_"+turn
+    model_name = f"flatfloor_pretrain_1e6_s{seed}"
     
     terrain_type = 'default'
     env_kwargs = {'terrain_type':terrain_type}
@@ -86,7 +86,7 @@ if __name__ == "__main__":
     save_path = f"sb3model/default_evo_exp/"+model_name
 
     # tensorboard log 路径
-    tensorboard_log_path = 'experiments\\flat_floor_evo_v1'
+    tensorboard_log_path = f'experiments\\flat_floor_evo_s{seed}'
     tensorboard_log_name = model_name
 
     # Instantiate and wrap the environment

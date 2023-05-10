@@ -82,9 +82,11 @@ if __name__ == "__main__":
     # env kwargs
     env_kwargs = {'terrain_type':terrain_type}
 
+
+
     ####################################################################################
     ## PRE TRAIN
-
+    
     turn = 't3'
     env_id = 'HumanoidCustomEnv-v0'
     num_cpu = 10

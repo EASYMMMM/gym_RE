@@ -205,7 +205,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         # 将点积映射到[0, 1]范围内的奖励值
         # 楼梯地形同时考虑姿态和朝向
         if self.terrain_type == 'default':
-            reward = 0
+            reward = self._posture_reward_weight * yaw
         if self.terrain_type == "steps" :
             # 这里计算出的点积取负。实验证明站立时点积为-1，暂时还不知道是为什么
             reward = self._posture_reward_weight * ( (( - z_dot_product + 1.0) / 2.0) + ( yaw ) )/2

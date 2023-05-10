@@ -114,6 +114,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init_counter(self):
         # 初始化/清零需要用到的储存数组
         self.x_velocity = 0                         # 质心沿x速度
+        self.y_velocity = 0                         # 质心沿y速度
         self.z_velocity = 0                         # 质心沿z速度
         self._walking_counter = 0                   # 判定正常前进计数器
         self.already_touched =[]                    # ladder:记录已经碰撞过的geom对
@@ -205,9 +206,11 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         # 将点积映射到[0, 1]范围内的奖励值
         # 楼梯地形同时考虑姿态和朝向
         if self.terrain_type == 'default':
-            if yaw < -1:
-                yaw = -1
-            reward = self._posture_reward_weight * yaw
+            v_y = self.y_velocity if self.y_velocity > 0 else -self.y_velocity
+            #yaw = - 1.5 * y*y + 1
+            #if yaw < -1:
+            #    yaw = -1
+            reward = self._posture_reward_weight *((( - z_dot_product + 1.0) / 2.0)+(1-v_y))
         if self.terrain_type == "steps" :
             # 这里计算出的点积取负。实验证明站立时点积为-1，暂时还不知道是为什么
             reward = self._posture_reward_weight * ( (( - z_dot_product + 1.0) / 2.0) + ( yaw ) )/2
@@ -281,7 +284,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         z = self.sim.data.qpos[2]
         if self.terrain_type == 'default':
             is_inthemap = self.sim.data.qpos[0] < 15 # 别走出地图。    
-
+            is_inthemap = self.sim.data.qpos[1]>1 or self.sim.data.qpos[1]<-1 # 沿y轴也做出限制 
         if self.terrain_type == 'ladders':
             min_z = 0.9
             lowest_ladder = self.limb_position['left_foot'] if self.limb_position['left_foot'] < self.limb_position['right_foot'] else self.limb_position['right_foot']
@@ -483,7 +486,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 #        if self.terrain_type == 'steps':
 #            position[0], position[2] = self._get_steps_pos()
         if self.terrain_type == 'default':
-            position = position[1:]  # 只把x去掉
+            position = position[2:] 
 
         if self.terrain_type == 'steps' :
             if  self._terrain_info:
@@ -604,6 +607,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         xyz_velocity = (xyz_position_after[0:3] - xyz_position_before[0:3]) / self.dt
         x_velocity, y_velocity, z_velocity = xyz_velocity
         self.x_velocity = x_velocity
+        self.y_velocity = y_velocity
         self.z_velocity = z_velocity
 
         # 是否仍在前进，只调用一次，防止反复调用is_walking出错

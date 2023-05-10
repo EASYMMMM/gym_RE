@@ -1,0 +1,42 @@
+Table \ref{tab:GA hyperp} shows the hyperparameters used in GA. GA is time-consuming. Using the above parameters, a full GA run takes about 30 to 40 minutes.
+
+At the beginning, the population is randomly initialized, and the corresponding morphological parameters of each individual are random numbers within a limited range. The limits and parameter types are given in the table \ref{tab:Optimized parameters}. We hope that through population iteration, we can produce individuals with higher rewards. At the same time, the population converges, evolving from random distribution into several specific small populations with high rewards.
+
+\subsection{Result}
+
+Figure \ref{fig:GA_optim_result} and \ref{fig:GA_optim_result_scatter} shows the result of the experiments. A population with 50 individuals evolved for 10 generations.
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=0.8\textwidth]{images/GA_optim_result_t0.png}
+  \end{center}
+  \caption{Result of GA test experiment. The upper figure is the morphology parameters of best individual in each generation, the lower figure is the reward obtained by the best individual.}\label{fig:GA_optim_result}
+\end{figure}
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=0.8\textwidth]{images/GA_optim_result_scatter_t0.png}
+  \end{center}
+  \caption{The parameter distribution in the population. For orange dots, the x-axis represent thigh length and y-axis represent shin length. For blue dots, the x-axis represent upper arm length and y-axis represent lower arm length. }\label{fig:GA_optim_result_scatter}
+\end{figure}
+
+
+
+
+
+
+
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=0.8\textwidth]{images/GA_optim_result_t1.png}
+  \end{center}
+  \caption{Result of GA test experiment.}\label{fig:GA_optim_result}
+\end{figure}
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=0.8\textwidth]{images/GA_optim_result_scatter_t1.png}
+  \end{center}
+  \caption{The parameter distribution in the population.}\label{fig:GA_optim_result_scatter}
+\end{figure}

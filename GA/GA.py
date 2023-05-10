@@ -166,10 +166,12 @@ class GA_Design_Optim():
                         episode_rewards.append(episode_reward[idx])
                         episode_reward[idx] = 0
             mean_reward = np.mean(episode_rewards)
+            v_ave = infos['ave_velocity']
+            f = v_ave
             if self.out_of_range(new_params, clip_range = 0.1):
                 # 如果参数更新幅度过大，惩罚20fitness
-                mean_reward -= self.overchange_punish
-            fitness[i]  = mean_reward
+                f -= self.overchange_punish
+            fitness[i]  = f
             print('num:',i)
         self.best_reward.append(np.max(fitness))
         self.fitness_data.append(fitness)

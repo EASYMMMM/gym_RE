@@ -167,10 +167,14 @@ class GA_Design_Optim():
                         episode_reward[idx] = 0
             mean_reward = np.mean(episode_rewards)
             v_ave_list = list()
-            for info in infos:
+            for info in infos: # 获取episode平均速度
                 v_ave_list.append(info['ave_velocity']) 
             v_ave = np.mean(v_ave_list)
-            if mean_reward < 350:
+            if self.terrain_type == 'default':
+                min_reward = 350
+            if self.terrain_type == 'steps':
+                min_reward = 550
+            if mean_reward < min_reward:
                 v_ave = 0
             f = v_ave
             if self.out_of_range(new_params, clip_range = 0.1):

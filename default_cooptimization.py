@@ -149,8 +149,8 @@ if __name__ == "__main__":
     del model
     del callbacks
 
-    pretrained_model = save_path +'.zip'
-    buffer_model = save_path+'replay_buffer.pkl'
+    pretrained_model = 'sb3model\\default_evo_exp\\flatfloor_pretrain_1e6_s2.zip'
+    buffer_model = 'sb3model\\default_evo_exp\\flatfloor_pretrain_1e6_s2replay_buffer.pkl'
     ####################################################################################
     ## 无惩罚 EVO
 
@@ -199,7 +199,7 @@ if __name__ == "__main__":
     del callbacks
 
     ####################################################################################
-    ## 有惩罚30 EVO
+    ## 有惩罚1 EVO
 
     model_name = "flatfloor_evo_30punish_"+turn
     # 模型存放路径
@@ -218,7 +218,7 @@ if __name__ == "__main__":
                                     pop_size = 40,
                                     terrain_type = 'default',
                                     pretrain_num=1000000,
-                                    overchange_punish=30)]
+                                    overchange_punish=1)]
 
     begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     

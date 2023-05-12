@@ -82,16 +82,18 @@ if __name__ == "__main__":
     # env kwargs
     env_kwargs = {'terrain_type':terrain_type}
 
-    pretrain = False
+    # 是否进行预训练
+    pretrain = True
 
     ####################################################################################
     ## PRE TRAIN
     
-    turn = 's2t1'
+    seed = 3
+    #turn = 's2t1'
     env_id = 'HumanoidCustomEnv-v0'
     num_cpu = 10
     n_timesteps = 1000000
-    model_name = "flatfloor_pretrain_1e6_"+turn
+    model_name = f"flatfloor_pretrain_1e6_s{seed}"
 
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/default_evo_exp/"+model_name
@@ -121,7 +123,7 @@ if __name__ == "__main__":
             gamma=0.98,
             policy_kwargs=dict(net_arch=[256, 256]),
             learning_starts=10000,
-            buffer_size=int(50000),
+            buffer_size=int(1000000),
             tau=0.01,
             gradient_steps=4,
         )
@@ -130,7 +132,7 @@ if __name__ == "__main__":
     begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     
 
-    model = SAC("MlpPolicy", env, verbose=1, tensorboard_log = tensorboard_log_path, **hyperparams)
+    model = SAC("MlpPolicy", env, verbose=1, tensorboard_log = tensorboard_log_path, **hyperparams, seed=seed)
 
     if pretrain:
         try:
@@ -149,12 +151,13 @@ if __name__ == "__main__":
     del model
     del callbacks
 
-    pretrained_model = 'sb3model\\default_evo_exp\\flatfloor_pretrain_1e6_s2.zip'
-    buffer_model = 'sb3model\\default_evo_exp\\flatfloor_pretrain_1e6_s2replay_buffer.pkl'
+    pretrained_model = save_path + ".zip"
+    buffer_model = save_path + 'replay_buffer.pkl'
     ####################################################################################
     ## 无惩罚 EVO
 
-    model_name = "flatfloor_evo_"+turn
+    n_timesteps = 1500000
+    model_name = f"flatfloor_evo_s{seed}"
     # 模型存放路径
     save_path = f"sb3model/default_evo_exp/{model_name}"
     # tensorboard log 文件名称
@@ -201,7 +204,7 @@ if __name__ == "__main__":
     ####################################################################################
     ## 有惩罚1 EVO
 
-    model_name = "flatfloor_evo_30punish_"+turn
+    model_name = f"flatfloor_evo_punish_s{seed}"
     # 模型存放路径
     save_path = f"sb3model/default_evo_exp/{model_name}"
     # tensorboard log 文件名称
@@ -218,7 +221,7 @@ if __name__ == "__main__":
                                     pop_size = 40,
                                     terrain_type = 'default',
                                     pretrain_num=1000000,
-                                    overchange_punish=1)]
+                                    overchange_punish=0.5)]
 
     begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     
@@ -249,7 +252,7 @@ if __name__ == "__main__":
     ####################################################################################
     ## 原模型继续训练
 
-    model_name = "flatfloor_noevo_"+turn
+    model_name = f"flatfloor_noevo_s{seed}"
     # 模型存放路径
     save_path = f"sb3model/default_evo_exp/{model_name}"
     # tensorboard log 文件名称

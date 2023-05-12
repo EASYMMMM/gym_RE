@@ -83,7 +83,7 @@ if __name__ == "__main__":
     env_kwargs = {'terrain_type':terrain_type}
 
     # 存放在sb3model/文件夹下
-    save_path = f"sb3model/default_evo_exp/"+model_name
+    save_path = f"sb3model/default_evo_exp_s{seed}/"+model_name
 
     # tensorboard log 路径
     tensorboard_log_path = f'experiments\\flat_floor_evo_s{seed}'
@@ -111,7 +111,7 @@ if __name__ == "__main__":
             gamma=0.98,
             policy_kwargs=dict(net_arch=[256, 256]),
             learning_starts=10000,
-            buffer_size=int(200000),
+            buffer_size=int(1000000),
             tau=0.01,
             gradient_steps=4,
         )

@@ -280,4 +280,12 @@ x_i = \frac{b_i}{2^L}(x_{max}-x_{min}) + x_{min}
 $$
 
 
+$$
+F_i = \frac{\sum_{n=1}^{N}\sum R{(\pi_\theta,p_i)}}{N}
+$$
 
+
+
+
+
+## 实验和结果

@@ -56,6 +56,7 @@ class GA_Design_Optim():
                  n_envs         = 8,
                  optim_bound   = [0.7, 1.3],
                  overchange_punish = 0,  # 更新幅度过大的惩罚项
+                 elite_num    = 3,  # 精英策略
                  terrain_type = 'steps'
                     ):
         self.decode_size    = decode_size                      # 单个数值的编码长度
@@ -65,6 +66,7 @@ class GA_Design_Optim():
         self.n_generations  = n_generations                    # 迭代次数
         self.optim_bound    = optim_bound
         self.overchange_punish = overchange_punish
+        self.elite_num      = elite_num
         self.__origin_design_params  = {   'thigh_lenth':0.34,           # 大腿长 0.34
                                            'shin_lenth':0.3,              # 小腿长 0.3
                                            'upper_arm_lenth':0.2771,        # 大臂长 0.2771
@@ -171,7 +173,7 @@ class GA_Design_Optim():
                 v_ave_list.append(info['ave_velocity']) 
             v_ave = np.mean(v_ave_list)
             if self.terrain_type == 'default':
-                min_reward = 350
+                min_reward = 550
             if self.terrain_type == 'steps':
                 min_reward = 550
             if mean_reward < min_reward:
@@ -261,10 +263,13 @@ class GA_Design_Optim():
             child[mutate_point] = child[mutate_point] ^ 1  # 将变异点的二进制为反转
 
 
-    def select(self, pop, fitness):  # nature selection wrt pop's fitness
-        idx = np.random.choice(np.arange(self.POP_size), size=self.POP_size, replace=True,
+    def select(self, pop, fitness:np.ndarray):  # nature selection wrt pop's fitness
+        # 精英策略
+        idx = np.random.choice(np.arange(self.POP_size), size=self.POP_size - self.elite_num, replace=True,
                             p=(fitness) / (fitness.sum()))
-        return pop[idx]
+        elite_idx = fitness.argsort()[-self.elite_num:]  
+        new_idx = np.append(idx,elite_idx)                  
+        return pop[new_idx]
 
     def out_of_range(self, new_p:dict, clip_range = 0.1):
         # 更新限幅

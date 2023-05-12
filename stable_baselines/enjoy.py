@@ -83,13 +83,14 @@ if __name__ == "__main__":
     env_id = args.env
     terrain = args.terrain_type
     # Create an env similar to the training env
-    env = gym.make(env_id, terrain_type=terrain,terrain_info = False)
-    params = {   'thigh_lenth':0.3808,           # 大腿长 0.34
-                'shin_lenth':0.2680,              # 小腿长 0.3
-                'upper_arm_lenth':0.2608,        # 大臂长 0.2771
-                'lower_arm_lenth':0.2514,        # 小臂长 0.2944
-                'foot_lenth':0.2187,       }     # 脚长   0.18
-    #env.update_xml_model(params)
+    env = gym.make(env_id, terrain_type=terrain)
+    #evo_punish_s1
+    params = {   'thigh_lenth':0.3469,           # 大腿长 0.34
+                'shin_lenth':0.2828,              # 小腿长 0.3
+                'upper_arm_lenth':0.2775,        # 大臂长 0.2771
+                'lower_arm_lenth':0.3234,        # 小臂长 0.2944
+                'foot_lenth':0.1725,       }     # 脚长   0.18
+    env.update_xml_model(params)
     # Enable GUI
     if not args.no_render:
         env.render(mode="human")
@@ -111,8 +112,10 @@ if __name__ == "__main__":
         # Try to load best model
         save_path = os.path.join(f"{args.algo}_{env_id}", "best_model.zip")
     print('load from:')
-    save_path ='sb3model/default_evo_exp/flatfloor_pretrain_1e6_s2.zip'
-    #save_path = 'best_model\\1e6_default_t2_cpu10_sac_HumanoidCustomEnv-v0.zip'
+    #save_path ='sb3model/default_evo_exp/flatfloor_pretrain_1e6_s2.zip'
+    #save_path = 'sb3model\\steps_evo_exp\\steps_noevo_s1.zip'
+    save_path = 'sb3model\\steps_evo_exp\\steps_evo_punish_s1.zip'
+    #save_path = 'sb3model\\steps_evo_exp\\steps_evo_s1.zip'
     print(save_path)
     # Load the saved model
     model = algo.load(save_path, env=env)
@@ -126,7 +129,7 @@ if __name__ == "__main__":
     print("==============================")
     try:
         # Use deterministic actions for evaluation
-        episode_rewards, episode_lengths = [], []
+        episode_rewards, episode_lengths, episode_ave_velocitys, episode_success_rate = [], [], [], []
         for _ in range(args.n_episodes):
             obs = env.reset()
             done = False
@@ -155,8 +158,12 @@ if __name__ == "__main__":
             control_c_total += detail['control_cost_sum']
             contact_c_total += detail['contact_cost_sum']
             final_x          = info['xyz_position'][0]
+            ave_velocity     = info['ave_velocity']
+            is_success       = info['is_success']
             episode_rewards.append(episode_reward)
             episode_lengths.append(episode_length)
+            episode_ave_velocitys.append(ave_velocity)
+            episode_success_rate.append(is_success)
             print(
                 f"Episode {len(episode_rewards)} reward={episode_reward}, length={episode_length}"
             )
@@ -168,15 +175,22 @@ if __name__ == "__main__":
             print('control C: ', control_c_total)
             print('contact C: ', contact_c_total)
             print('final x:',final_x)
+            print('ave velocity:',ave_velocity)
             print('************************')
 
         mean_reward = np.mean(episode_rewards)
         std_reward = np.std(episode_rewards)
 
         mean_len, std_len = np.mean(episode_lengths), np.std(episode_lengths)
+
+        mean_ave_v = np.mean(episode_ave_velocitys)
+        std_ave_v = np.std(episode_ave_velocitys)
+        success_rate = sum(episode_success_rate)/len(episode_success_rate)
         print("========== Results ===========")
         print(f"Episode_reward={mean_reward:.2f} +/- {std_reward:.2f}")
         print(f"Episode_length={mean_len:.2f} +/- {std_len:.2f}")
+        print(f"Episode_ave_v={mean_ave_v:.2f} +/- {std_ave_v:.2f}")
+        print(f"Episode_success_rate={success_rate:.2f}")
         print("==============================")
     except KeyboardInterrupt:
         pass

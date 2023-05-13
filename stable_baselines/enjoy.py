@@ -84,12 +84,12 @@ if __name__ == "__main__":
     terrain = args.terrain_type
     # Create an env similar to the training env
     env = gym.make(env_id, terrain_type=terrain)
-    #flatfloor_evo_30punish_s2t1
-    params = {   'thigh_lenth':0.4001,           # 大腿长 0.34
-                'shin_lenth':0.2693,              # 小腿长 0.3
-                'upper_arm_lenth':0.309,        # 大臂长 0.2771
-                'lower_arm_lenth':0.227,        # 小臂长 0.2944
-                'foot_lenth':0.1632,       }     # 脚长   0.18
+    #evo_s1
+    params = {   'thigh_lenth':0.3806,           # 大腿长 0.34
+                'shin_lenth':0.2439,              # 小腿长 0.3
+                'upper_arm_lenth':0.2837,        # 大臂长 0.2771
+                'lower_arm_lenth':0.3638,        # 小臂长 0.2944
+                'foot_lenth':0.2062,       }     # 脚长   0.18
     env.update_xml_model(params)
     # Enable GUI
     if not args.no_render:
@@ -115,11 +115,12 @@ if __name__ == "__main__":
     #save_path ='sb3model/default_evo_exp/flatfloor_pretrain_1e6_s2.zip'
     #save_path = 'sb3model\\default_evo_exp\\flatfloor_noevo_s2t1.zip'
     #save_path = 'sb3model\\default_evo_exp\\flatfloor_evo_s2t1.zip'
-    save_path = 'sb3model\\default_evo_exp\\flatfloor_evo_30punish_s2t1.zip'
+    #save_path = 'sb3model\\default_evo_exp\\flatfloor_evo_30punish_s2t1.zip'
     
     #save_path = 'sb3model\\steps_evo_exp\\steps_noevo_s1.zip'
     #save_path = 'sb3model\\steps_evo_exp\\steps_evo_punish_s1.zip'
-    #save_path = 'sb3model\\steps_evo_exp\\steps_evo_s1.zip'
+    save_path = 'sb3model\\steps_evo_exp\\steps_evo_s1.zip'
+    
     print(save_path)
     # Load the saved model
     model = algo.load(save_path, env=env)
@@ -134,7 +135,7 @@ if __name__ == "__main__":
     try:
         # Use deterministic actions for evaluation
         episode_rewards, episode_lengths, episode_ave_velocitys, episode_success_rate = [], [], [], []
-        for _ in range(args.n_episodes):
+        for _ in range(10):
             obs = env.reset()
             done = False
             episode_reward = 0.0
@@ -171,15 +172,16 @@ if __name__ == "__main__":
             print(
                 f"Episode {len(episode_rewards)} reward={episode_reward}, length={episode_length}"
             )
-            print("contact pairs",info["contact pairs"])
+            #print("contact pairs",info["contact pairs"])
             print('forward R: ', forward_r_total)
-            print('contact R: ', contact_r_total)
-            print('posture R: ', posture_r_total)
-            print('healthy R: ', healthy_r_total)
-            print('control C: ', control_c_total)
-            print('contact C: ', contact_c_total)
+            #print('contact R: ', contact_r_total)
+            #print('posture R: ', posture_r_total)
+            #print('healthy R: ', healthy_r_total)
+            #print('control C: ', control_c_total)
+            #print('contact C: ', contact_c_total)
             print('final x:',final_x)
             print('ave velocity:',ave_velocity)
+            print('success:',is_success)
             print('************************')
 
         mean_reward = np.mean(episode_rewards)

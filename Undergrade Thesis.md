@@ -261,6 +261,10 @@ $$
 r_{p} = (\vec{z}_{world}\cdot\vec{z_{agent}} + 1)/2 + (0.5-{y_{center}}^2)
 $$
 
+$$
+R_f = \int_{0}^{T}{w_fr_fd_t}=w_f\int_{0}^{T}{v_td_t}=w_fX_T
+$$
+
 
 
 
@@ -285,7 +289,54 @@ F_i = \frac{\sum_{n=1}^{N}\sum R{(\pi_\theta,p_i)}}{N}
 $$
 
 
+$$
+F_i = \frac{\sum_{n=1}^{N}{\bar{v_i}}}{N}
+$$
+
+$$
+\begin{equation}
+    F_i = \frac{\sum_{n=1}^{N}{\bar{v_i}}}{N}
+\end{equation}
+$$
+
+$$
+\bar{v}_{i, fitness} = \left\{
+\begin{array}{rcl}
+\overline{v}_i &\mbox{for} & R_i  \\ 
+0 & \mbox{for} & 3\leq|z|\leq5            \\
+
+\end{array}
+\right.
+$$
 
 
 
-## 实验和结果
+
+
+
+
+## 4. 实验和结果
+
+### 4.1 楼梯+进化 s1
+
+#### 4.1.1 不进化对照组
+
+![image-20230512131932590](C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230512131932590.png)
+
+#### 4.1.2 带有惩罚项的进化
+
+![image-20230512131953199](C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230512131953199.png)
+
+### 4.2 平地+进化 s2
+
+#### 4.2.1 不进化对照组
+
+![image-20230512132940468](C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230512132940468.png)
+
+#### 4.2.2 进化
+
+![image-20230512133233782](C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230512133233782.png)
+
+#### 4.2.3 带有惩罚项的进化
+
+![image-20230512133453959](C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230512133453959.png)

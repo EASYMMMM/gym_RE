@@ -1,31 +1,31 @@
-Task	Success	Ave_V
-No Evolution	1	1.62
-No Evolution	1	1.77
-No Evolution	1	1.73
-No Evolution	1	1.7
-No Evolution	1	1.51
-No Evolution	0	1.39
-No Evolution	1	1.76
-No Evolution	0	1.38
-No Evolution	1	1.64
-No Evolution	1	1.84
-Evolution with limit	1	1.82
-Evolution with limit	1	1.8
-Evolution with limit	1	1.76
-Evolution with limit	1	1.81
-Evolution with limit	1	1.87
-Evolution with limit	1	1.82
-Evolution with limit	1	1.84
-Evolution with limit	1	1.81
-Evolution with limit	1	1.86
-Evolution with limit	1	1.79
-Evolution without limit	1	1.79
-Evolution without limit	1	1.76
-Evolution without limit	1	1.94
-Evolution without limit	0	1.51
-Evolution without limit	0	1.17
-Evolution without limit	0	1.62
-Evolution without limit	1	1.72
-Evolution without limit	0	1.74
-Evolution without limit	0	1.75
-Evolution without limit	0	1.63
+Task,Success,Ave_V
+No Evolution,1,1.62
+No Evolution,1,1.77
+No Evolution,1,1.73
+No Evolution,1,1.7
+No Evolution,1,1.51
+No Evolution,0,1.39
+No Evolution,1,1.76
+No Evolution,0,1.38
+No Evolution,1,1.64
+No Evolution,1,1.84
+Evolution with limit,1,1.82
+Evolution with limit,1,1.8
+Evolution with limit,1,1.76
+Evolution with limit,1,1.81
+Evolution with limit,1,1.87
+Evolution with limit,1,1.82
+Evolution with limit,1,1.84
+Evolution with limit,1,1.81
+Evolution with limit,1,1.86
+Evolution with limit,1,1.79
+Evolution without limit,1,1.79
+Evolution without limit,1,1.76
+Evolution without limit,1,1.94
+Evolution without limit,0,1.51
+Evolution without limit,0,1.17
+Evolution without limit,0,1.62
+Evolution without limit,1,1.72
+Evolution without limit,0,1.74
+Evolution without limit,0,1.75
+Evolution without limit,0,1.63

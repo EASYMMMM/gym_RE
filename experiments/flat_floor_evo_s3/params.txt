@@ -1,0 +1,16 @@
+
+FLAT FLOOR
+    #evo_punish_s3
+    params = {   'thigh_lenth':0.3185,           # 大腿长 0.34
+                'shin_lenth':0.231,              # 小腿长 0.3
+                'upper_arm_lenth':0.3095,        # 大臂长 0.2771
+                'lower_arm_lenth':0.2214,        # 小臂长 0.2944
+                'foot_lenth':0.1526,       }     # 脚长   0.18
+
+
+    #evo_s1
+    params = {   'thigh_lenth':0.3321,           # 大腿长 0.34
+                'shin_lenth':0.2968,              # 小腿长 0.3
+                'upper_arm_lenth':0.2922,        # 大臂长 0.2771
+                'lower_arm_lenth':0.2747,        # 小臂长 0.2944
+                'foot_lenth':0.2013,       }     # 脚长   0.18

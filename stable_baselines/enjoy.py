@@ -84,12 +84,12 @@ if __name__ == "__main__":
     terrain = args.terrain_type
     # Create an env similar to the training env
     env = gym.make(env_id, terrain_type=terrain)
-    #evo_punish_s1
-    params = {   'thigh_lenth':0.3469,           # 大腿长 0.34
-                'shin_lenth':0.2828,              # 小腿长 0.3
-                'upper_arm_lenth':0.2775,        # 大臂长 0.2771
-                'lower_arm_lenth':0.3234,        # 小臂长 0.2944
-                'foot_lenth':0.1725,       }     # 脚长   0.18
+    #flatfloor_evo_30punish_s2t1
+    params = {   'thigh_lenth':0.4001,           # 大腿长 0.34
+                'shin_lenth':0.2693,              # 小腿长 0.3
+                'upper_arm_lenth':0.309,        # 大臂长 0.2771
+                'lower_arm_lenth':0.227,        # 小臂长 0.2944
+                'foot_lenth':0.1632,       }     # 脚长   0.18
     env.update_xml_model(params)
     # Enable GUI
     if not args.no_render:
@@ -113,8 +113,12 @@ if __name__ == "__main__":
         save_path = os.path.join(f"{args.algo}_{env_id}", "best_model.zip")
     print('load from:')
     #save_path ='sb3model/default_evo_exp/flatfloor_pretrain_1e6_s2.zip'
+    #save_path = 'sb3model\\default_evo_exp\\flatfloor_noevo_s2t1.zip'
+    #save_path = 'sb3model\\default_evo_exp\\flatfloor_evo_s2t1.zip'
+    save_path = 'sb3model\\default_evo_exp\\flatfloor_evo_30punish_s2t1.zip'
+    
     #save_path = 'sb3model\\steps_evo_exp\\steps_noevo_s1.zip'
-    save_path = 'sb3model\\steps_evo_exp\\steps_evo_punish_s1.zip'
+    #save_path = 'sb3model\\steps_evo_exp\\steps_evo_punish_s1.zip'
     #save_path = 'sb3model\\steps_evo_exp\\steps_evo_s1.zip'
     print(save_path)
     # Load the saved model

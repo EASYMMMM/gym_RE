@@ -75,7 +75,7 @@ if __name__ == "__main__":
     terrain_type = 'default'
     pretrained_model = 'sb3model\\default_evo_exp\\flatfloor_pretrain_1e6_s2.zip'
     buffer_model = 'sb3model\\default_evo_exp\\flatfloor_pretrain_1e6_s2replay_buffer.pkl'
-    tensorboard_log_path = 'experiments\\flat_floor_evo_s2'
+    tensorboard_log_path = 'experiments\\flat_floor_evo_s3'
     # 添加日志中的reward分析功能
     BaseAlgorithm._update_info_buffer = update_info_buffer
     OffPolicyAlgorithm._dump_logs = dump_logs

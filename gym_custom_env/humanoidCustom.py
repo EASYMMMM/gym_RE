@@ -21,10 +21,11 @@ DEFAULT_CAMERA_CONFIG = {
     "elevation": -20.0,
 }
 
+
 HORIZONTAL_CAMERA_CONFIG = {
     "trackbodyid": 1,
-    "distance": 10.0,
-    "lookat": np.array((0.0, 0.0, 1.0)),
+    "distance": 10.0,   # 场地限制10：8.  场地限制15：11
+    "lookat": np.array((6.3, 0.0, 1.0)), # 场地限制10：4.5 .  场地限制13：6.3
     "elevation": 0.0,
 }
 
@@ -67,7 +68,9 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         reset_noise_scale=1e-2,
         camera_config = "horizontal",
         single_contact_reward = 10,
-        use_origin_model = False, #使用原版模型
+        use_origin_model = False, # 是否使用原版模型，控制器试验时用
+        flatfloor_size = 10, # 平地的长度限制。默认10，录制视频时可调至15
+        y_limit = True,     # 平地的y轴限制。训练时开启，测试时关闭。
         exclude_current_positions_from_observation=False,  # Flase: 使obs空间包括躯干的x，y坐标; True: 不包括
     ):
         utils.EzPickle.__init__(**locals())
@@ -95,6 +98,8 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self._terrain_info = terrain_info
         self._reset_noise_scale = reset_noise_scale
         self._use_origin_model = use_origin_model
+        self._flatfloor_size = flatfloor_size
+        self._y_limit = y_limit
         self.camera_config = {
             "defalt":DEFAULT_CAMERA_CONFIG,
             "horizontal":HORIZONTAL_CAMERA_CONFIG,
@@ -286,10 +291,13 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         min_z, max_z = self._healthy_z_range
         z = self.sim.data.qpos[2]
         if self.terrain_type == 'default':
-            x_limit = self.sim.data.qpos[0] < 10 # 别走出地图。 
-            if self.sim.data.qpos[0] >= 10:
+            x_limit = self.sim.data.qpos[0] < self._flatfloor_size # 别走出地图。 
+            if self.sim.data.qpos[0] >= self._flatfloor_size:
                 self._success = True
-            y_limit = self.sim.data.qpos[1]<1 and self.sim.data.qpos[1]>-1 # 沿y轴也做出限制 
+            if self._y_limit:
+                y_limit = self.sim.data.qpos[1]<1 and self.sim.data.qpos[1]>-1 # 沿y轴也做出限制 
+            else:
+                y_limit = True
             is_inthemap = x_limit and y_limit
         if self.terrain_type == 'ladders':
             min_z = 0.9

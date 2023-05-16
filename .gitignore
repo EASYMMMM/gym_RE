@@ -1,5 +1,7 @@
 # 存储训练模型的文件夹
 sb3model/
+# 存储视频的文件夹
+video/
 **/humanoid_exp.xml
 /gym_custom_env/assets/humanoid_exp.xml
 ###### git ignore templet for python ###### 

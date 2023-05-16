@@ -1,7 +1,13 @@
-# 由于我的笔记本显存不够，创建model时会报错，故使用set parameters
-# 手动更改模型路径
+# Code adapted from https://github.com/DLR-RM/rl-baselines3-zoo
+# it requires stable-baselines3 to be installed
+# Colab Notebook: https://colab.research.google.com/github/Stable-Baselines-Team/rl-colab-notebooks/blob/sb3/pybullet.ipynb
+# You can run it using: python -m pybullet_envs.stable_baselines.enjoy --algo td3 --env HalfCheetahBulletEnv-v0
+# Author: Antonin RAFFIN
+# MIT License
+
 '''
-python stable_baselines/enjoy_mydesktop.py --algo sac --env HumanoidCustomEnv-v0  --terrain-type steps 
+python  stable_baselines/enjoy_mydesktop.py --algo sac --env HumanoidCustomEnv-v0  --terrain-type default
+
 '''
 # ------- 来自于mujoco150在win+py3.9下的矫情的要求 --------
 # 手动添加mujoco路径
@@ -19,9 +25,9 @@ import gym_custom_env       # 注册自定义环境
 import gym
 import numpy as np
 import pybullet_envs
-import mujoco_py
+from gym.wrappers import Monitor
 from stable_baselines3 import SAC, TD3, PPO
-
+from mujoco_py.generated import const
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -66,30 +72,18 @@ if __name__ == "__main__":
         type=str,
     )        
     args = parser.parse_args()
-    ################################################################################
-    ################################################################################
-    #save_path = 'best_model/5e6_steps_t5_cpu8_sac_HumanoidCustomEnv-v0.zip'
-    #save_path = 'best_model/5e6_evo_steps_t3_cpu8_sac_HumanoidCustomEnv-v0.zip'
-    #save_path = 'best_model/2e6_steps_pretrain_cpu8_sac_HumanoidCustomEnv-v0.zip'
 
-    # 平地行走
-    save_path = 'best_model\\1e6_default_t2_cpu10_sac_HumanoidCustomEnv-v0.zip'
-    
-    # 更新参数
-    params = {   'thigh_lenth':0.3512,           # 大腿长 0.34
-            'shin_lenth':0.2572,              # 小腿长 0.2572
-            'upper_arm_lenth':0.2343,        # 大臂长 0.2771
-            'lower_arm_lenth':0.3282,        # 小臂长 0.2944
-            'foot_lenth':0.2105,       }     # 脚长   0.18
-    ################################################################################
-    ################################################################################
     env_id = args.env
     terrain = args.terrain_type
     # Create an env similar to the training env
-    env = gym.make(env_id, terrain_type=terrain)
-
+    env = gym.make(env_id, terrain_type=terrain, flatfloor_size=16, y_limit = False)
+    #evo_punish_s3
+    params = {   'thigh_lenth':0.3185,           # 大腿长 0.34
+                'shin_lenth':0.231,              # 小腿长 0.3
+                'upper_arm_lenth':0.3095,        # 大臂长 0.2771
+                'lower_arm_lenth':0.2214,        # 小臂长 0.2944
+                'foot_lenth':0.1526,       }     # 脚长   0.18
     #env.update_xml_model(params)
-
     # Enable GUI
     if not args.no_render:
         env.render(mode="human")
@@ -100,46 +94,38 @@ if __name__ == "__main__":
         "ppo": PPO,
     }[args.algo]
 
-        # Tuned hyperparameters from https://github.com/DLR-RM/rl-baselines3-zoo
-    hyperparams = {
-        "sac": dict(
-            batch_size=256,
-            gamma=0.98,
-            policy_kwargs=dict(net_arch=[256, 256]),
-            learning_starts=10000,
-            buffer_size=int(5e4),
-            tau=0.01,
-            gradient_steps=4,
-        ),
-        "ppo": dict(
-            batch_size=512,
-            learning_rate=2.5e-4,
-            policy_kwargs=dict(net_arch=({'pi':[128,128]},{'vf':[128,128]})),
-            gamma=0.99
-        )
-    }[args.algo]
     # We assume that the saved model is in the same folder
 
-
-
-
+  
     print('load from:')
-    print(save_path)
+    #save_path ='sb3model/default_evo_exp/flatfloor_pretrain_1e6_s2.zip'
+    save_path = 'best_model\\flatfloor_exp_s3\\flatfloor_noevo_s3.zip'
+    #save_path = 'sb3model\\default_evo_exp\\flatfloor_evo_s3.zip'
+    #save_path = 'best_model\\flatfloor_exp_s3\\flatfloor_evo_punish_s3.zip'
+    
+    #save_path = 'sb3model\\steps_evo_exp\\steps_noevo_s1.zip'
+    #save_path = 'sb3model\\steps_evo_exp\\steps_evo_punish_s1.zip'
+    #save_path = 'sb3model\\steps_evo_exp\\steps_evo_s1.zip'
 
-    model = algo("MlpPolicy", env, verbose=1,  **hyperparams)
+    print(save_path)
     # Load the saved model
-    model.set_parameters(save_path)
+    model = algo.load(save_path, env=env)
+
+
     print("==============================")
     print(f"Method: {args.algo}")
     print(f"Time steps: {args.model_name}")
     # print(f"gradient steps:{model.gradient_steps}")
     print("model path:"+save_path)
     print("==============================")
-    #viewer2 = mujoco_py.MjRenderContextOffscreen(env.sim, 0)
+
+    outdir = 'screenshot'
+    #env = Monitor(env, outdir, video_callable=lambda episode_id: True,  force=True) 
+
     try:
         # Use deterministic actions for evaluation
-        episode_rewards, episode_lengths = [], []
-        for i in range(7):
+        episode_rewards, episode_lengths, episode_ave_velocitys, episode_success_rate = [], [], [], []
+        for _ in range(10):
             obs = env.reset()
             done = False
             episode_reward = 0.0
@@ -150,54 +136,54 @@ if __name__ == "__main__":
             healthy_r_total = 0
             control_c_total = 0
             contact_c_total = 0
+            
             while not done:
                 action, _ = model.predict(obs, deterministic=True)
                 obs, reward, done, info = env.step(action)
                 episode_reward += reward
                 episode_length += 1
+                color = np.array([1.0, 0, 0.0, 1])
+                if env.sim.data.qpos[0] > 13:
+                    color = np.array([0,1.0, 0.0, 1])
                 if not args.no_render:
                     env.render(mode="human")
+                    env.viewer.add_marker(pos=[13,0.4,1], size=np.array([0.05, 0.05, 1.0]), label="",rgba=color, type=const.GEOM_CYLINDER)
+                    env.viewer.add_marker(pos=[13,-0.4,1], size=np.array([0.05, 0.05, 1.0]), label="",rgba=color, type=const.GEOM_CYLINDER)
+                    #env.viewer.add_marker(pos=[13,0,1], size=np.array([0.05, 1.5, 0.05]), label="",rgba=np.array([1.0, 0, 0.0, 1]), type=const.GEOM_CYLINDER)
                     dt = 1.0 / 240.0
                     time.sleep(dt)
-                #if episode_length == 140:
-                #    input()
-
+                
             detail = info.get('reward_details')
             forward_r_total += detail['forward_reward_sum']
-            contact_r_total += detail['contact_reward_sum']
-            posture_r_total += detail['posture_reward_sum']
-            healthy_r_total += detail['healthy_reward_sum']
-            control_c_total += detail['control_cost_sum']
-            contact_c_total += detail['contact_cost_sum']
-            v_ave = info['ave_velocity']
-            final_x = detail['final_x']
+            final_x          = info['xyz_position'][0]
+            ave_velocity     = info['ave_velocity']
+            is_success       = info['is_success']
             episode_rewards.append(episode_reward)
             episode_lengths.append(episode_length)
+            episode_ave_velocitys.append(ave_velocity)
+            episode_success_rate.append(is_success)
             print(
                 f"Episode {len(episode_rewards)} reward={episode_reward}, length={episode_length}"
             )
-            print("contact pairs",info["contact pairs"])
             print('forward R: ', forward_r_total)
-            print('contact R: ', contact_r_total)
-            print('posture R: ', posture_r_total)
-            print('healthy R: ', healthy_r_total)
-            print('control C: ', control_c_total)
-            print('contact C: ', contact_c_total)
-            print('is healthy' ,info["is_healthy"])
-            print('is walking' ,info["is_walking"])
-            print('average V:',v_ave)
-            print('final_x:',final_x)
+            print('final x:',final_x)
+            print('ave velocity:',ave_velocity)
+            print('success:',is_success)
             print('************************')
-            # env.update_xml_model(params)
-            # params['shin_lenth'] = 0.5 + 0.1*i
 
         mean_reward = np.mean(episode_rewards)
         std_reward = np.std(episode_rewards)
 
         mean_len, std_len = np.mean(episode_lengths), np.std(episode_lengths)
+
+        mean_ave_v = np.mean(episode_ave_velocitys)
+        std_ave_v = np.std(episode_ave_velocitys)
+        success_rate = sum(episode_success_rate)/len(episode_success_rate)
         print("========== Results ===========")
         print(f"Episode_reward={mean_reward:.2f} +/- {std_reward:.2f}")
         print(f"Episode_length={mean_len:.2f} +/- {std_len:.2f}")
+        print(f"Episode_ave_v={mean_ave_v:.2f} +/- {std_ave_v:.2f}")
+        print(f"Episode_success_rate={success_rate:.2f}")
         print("==============================")
     except KeyboardInterrupt:
         pass

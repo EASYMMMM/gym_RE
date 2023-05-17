@@ -191,7 +191,7 @@ class MujocoXML():
         # 添加纹理
         gradient_attr = { "builtin":"gradient",
                           "height":"100",
-                          "rgb1":".4 .5 .6",
+                          "rgb1":".4 .5 .6",   # "rgb1":".4 .5 .6"
                           "rgb2":"0 0 0",
                           "type":"skybox",
                           "width":"100",
@@ -213,7 +213,7 @@ class MujocoXML():
                           "height":"100",
                           "name":"texplane",
                           "random":"0.01",
-                          "rgb1":"0 0 0",
+                          "rgb1":"0 0 0", # "rgb1":"0.5 0.5 0.5", 
                           "rgb2":"0.8 0.8 0.8",
                           "type":"2d",
                           "width":"100",

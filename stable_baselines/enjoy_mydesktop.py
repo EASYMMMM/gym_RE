@@ -28,6 +28,7 @@ import pybullet_envs
 from gym.wrappers import Monitor
 from stable_baselines3 import SAC, TD3, PPO
 from mujoco_py.generated import const
+from collections import deque
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -99,11 +100,11 @@ if __name__ == "__main__":
   
     print('load from:')
     #save_path ='sb3model/default_evo_exp/flatfloor_pretrain_1e6_s2.zip'
-    save_path = 'best_model\\flatfloor_exp_s3\\flatfloor_noevo_s3.zip'
+    #save_path = 'best_model\\flatfloor_exp_s3\\flatfloor_noevo_s3.zip'
     #save_path = 'sb3model\\default_evo_exp\\flatfloor_evo_s3.zip'
     #save_path = 'best_model\\flatfloor_exp_s3\\flatfloor_evo_punish_s3.zip'
     
-    #save_path = 'sb3model\\steps_evo_exp\\steps_noevo_s1.zip'
+    save_path = 'best_model\\steps_evo_exp\\steps_noevo_s1.zip'
     #save_path = 'sb3model\\steps_evo_exp\\steps_evo_punish_s1.zip'
     #save_path = 'sb3model\\steps_evo_exp\\steps_evo_s1.zip'
 
@@ -136,8 +137,10 @@ if __name__ == "__main__":
             healthy_r_total = 0
             control_c_total = 0
             contact_c_total = 0
-            
+            coms = deque(maxlen=1000)
+            j = 0
             while not done:
+                j = j+1
                 action, _ = model.predict(obs, deterministic=True)
                 obs, reward, done, info = env.step(action)
                 episode_reward += reward
@@ -147,12 +150,20 @@ if __name__ == "__main__":
                     color = np.array([0,1.0, 0.0, 1])
                 if not args.no_render:
                     env.render(mode="human")
-                    env.viewer.add_marker(pos=[13,0.4,1], size=np.array([0.05, 0.05, 1.0]), label="",rgba=color, type=const.GEOM_CYLINDER)
-                    env.viewer.add_marker(pos=[13,-0.4,1], size=np.array([0.05, 0.05, 1.0]), label="",rgba=color, type=const.GEOM_CYLINDER)
-                    #env.viewer.add_marker(pos=[13,0,1], size=np.array([0.05, 1.5, 0.05]), label="",rgba=np.array([1.0, 0, 0.0, 1]), type=const.GEOM_CYLINDER)
+                    #env.viewer.add_marker(pos=[13,0.4,1], size=np.array([0.05, 0.05, 1.0]), label="",rgba=color, type=const.GEOM_CYLINDER)
+                    #env.viewer.add_marker(pos=[13,-0.4,1], size=np.array([0.05, 0.05, 1.0]), label="",rgba=color, type=const.GEOM_CYLINDER)
                     dt = 1.0 / 240.0
                     time.sleep(dt)
-                
+                # 躯干跟踪点
+                if j % 3 == 0:
+                    #coms.append(info['xyz_position'])
+                    #coms.append(np.array([info["x_position"], info["y_position"] , info["z_position"]  ]))
+                    coms.append(np.array(env.sim.data.qpos[0:3]))
+                #for com in coms:
+                #    env.viewer.add_marker(pos=com, size=np.array([0.06, 0.06, 0.06]), label="",rgba=np.array([0, 0, 1, 1]), type=const.GEOM_SPHERE)
+
+
+
             detail = info.get('reward_details')
             forward_r_total += detail['forward_reward_sum']
             final_x          = info['xyz_position'][0]

@@ -71,6 +71,17 @@ class HumanoidXML(MujocoXML):
                       "pos":"0 0 1.3",
                       "specular":".1 .1 .1",        } 
         worldbody_light = worldbody.child_element("light",light_attr)
+        camera_attr_3 = {'name':'track_3',
+                       'mode':'fixed',
+                       'pos':'6.5 0 11.5',
+                       'xyaxes':'1 0 0 0 1 0',}
+        camera_3 = worldbody.child_element("camera",camera_attr_3)
+        camera_attr_4 = {'name':'staris_camera',
+                       'mode':'fixed',
+                       'pos':'-3 -5 2.6',
+                       'xyaxes':'0.7 -0.7 0 0.1 0.1 0.99',}
+        camera_4 = worldbody.child_element("camera",camera_attr_4)
+
 
     def set_terrain(self,
                     name: Union[str, None] = None,
@@ -188,12 +199,13 @@ class HumanoidXML(MujocoXML):
                        'mode':'trackcom',
                        'pos':'0 -4 0',
                        'xyaxes':'1 0 0 0 0 1',}
-        camera = torso.child_element("camera",camera_attr)
+        camera_1 = torso.child_element("camera",camera_attr)
         camera_attr_2 = {'name':'track_2',
                        'mode':'trackcom',
                        'pos':'0 -6 0',
                        'xyaxes':'1 0 0 0 0 1',}
-        camera = torso.child_element("camera",camera_attr_2)
+        camera_2 = torso.child_element("camera",camera_attr_2)
+
         root_joint = self.add_joint( name='root',
                                      parent = torso,
                                      joint_type='free', 

@@ -24,10 +24,11 @@ DEFAULT_CAMERA_CONFIG = {
 
 HORIZONTAL_CAMERA_CONFIG = {
     "trackbodyid": 1,
-    "distance": 10.0,   # 场地限制10：8.  场地限制15：11
-    "lookat": np.array((6.3, 0.0, 1.0)), # 场地限制10：4.5 .  场地限制13：6.3
+    "distance": 8,   # 场地限制10：8.  场地限制15：11
+    "lookat": np.array((2.5, 0.0, 1.0)), # FLAT FLOOR:[场地限制10：4. 场地限制13：6.3]
     "elevation": 0.0,
 }
+
 
 def mass_center(model, sim):
     mass = np.expand_dims(model.body_mass, axis=1)

@@ -76,7 +76,7 @@ if __name__ == "__main__":
 
     env_id = 'HumanoidCustomEnv-v0'
     num_cpu = 10
-    n_timesteps = 2000000
+    n_timesteps = 3000000
     model_name = f"steps_pretrain_2e6_s{seed}"
     
     terrain_type = 'steps'
@@ -106,7 +106,7 @@ if __name__ == "__main__":
     eval_env = Monitor(gym.make(env_id,terrain_type = terrain_type))
     # callbacks = [EvalCallback(eval_env, best_model_save_path=save_path)]
     callbacks  = [EvolutionCallback(eval_env,n_timesteps,
-                                    warm_up_steps=400000,
+                                    warm_up_steps=200000,
                                     design_update_steps=200000,
                                     pop_size = 40,
                                     terrain_type = terrain_type,
@@ -202,7 +202,7 @@ if __name__ == "__main__":
     eval_env = Monitor(gym.make(env_id,terrain_type = terrain_type))
     # callbacks = [EvalCallback(eval_env, best_model_save_path=save_path)]
     callbacks  = [EvolutionCallback(eval_env,n_timesteps,
-                                    warm_up_steps=400000,
+                                    warm_up_steps=200000,
                                     design_update_steps=200000,
                                     pop_size = 40,
                                     terrain_type = terrain_type,

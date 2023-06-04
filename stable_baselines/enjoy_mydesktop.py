@@ -84,7 +84,7 @@ if __name__ == "__main__":
                 'upper_arm_lenth':0.3095,        # 大臂长 0.2771
                 'lower_arm_lenth':0.2214,        # 小臂长 0.2944
                 'foot_lenth':0.1526,       }     # 脚长   0.18
-    #env.update_xml_model(params)
+    env.update_xml_model(params)
     # Enable GUI
     if not args.no_render:
         env.render(mode="human")
@@ -102,15 +102,30 @@ if __name__ == "__main__":
     #save_path ='sb3model/default_evo_exp/flatfloor_pretrain_1e6_s2.zip'
     #save_path = 'best_model\\flatfloor_exp_s3\\flatfloor_noevo_s3.zip'
     #save_path = 'sb3model\\default_evo_exp\\flatfloor_evo_s3.zip'
-    #save_path = 'best_model\\flatfloor_exp_s3\\flatfloor_evo_punish_s3.zip'
+    save_path = 'best_model\\flatfloor_exp_s3\\flatfloor_evo_punish_s3.zip'
     
-    save_path = 'best_model\\steps_evo_exp\\steps_noevo_s1.zip'
-    #save_path = 'sb3model\\steps_evo_exp\\steps_evo_punish_s1.zip'
+    #save_path = 'best_model\\steps_evo_exp\\steps_noevo_s1.zip'
+    #save_path = 'best_model\\steps_evo_exp\\steps_evo_punish_s1.zip'
     #save_path = 'sb3model\\steps_evo_exp\\steps_evo_s1.zip'
 
     print(save_path)
-    # Load the saved model
-    model = algo.load(save_path, env=env)
+
+
+    # 加载完整模型
+    #model = algo.load(save_path, env=env)
+
+    # 只加载网络
+    hyperparams =dict(
+        batch_size=256,
+        gamma=0.98,
+        policy_kwargs=dict(net_arch=[256, 256]),
+        learning_starts=10000,
+        buffer_size=int(10000),
+        tau=0.01,
+        gradient_steps=4,
+    )
+    model = SAC("MlpPolicy", env, verbose=1, **hyperparams,seed=1)
+    model.set_parameters(save_path)
 
 
     print("==============================")
@@ -126,7 +141,7 @@ if __name__ == "__main__":
     try:
         # Use deterministic actions for evaluation
         episode_rewards, episode_lengths, episode_ave_velocitys, episode_success_rate = [], [], [], []
-        for _ in range(10):
+        for _ in range(30):
             obs = env.reset()
             done = False
             episode_reward = 0.0
@@ -146,12 +161,19 @@ if __name__ == "__main__":
                 episode_reward += reward
                 episode_length += 1
                 color = np.array([1.0, 0, 0.0, 1])
-                if env.sim.data.qpos[0] > 13:
+                if env.sim.data.qpos[0] > 13: # 平地
                     color = np.array([0,1.0, 0.0, 1])
+                if env.sim.data.qpos[0] > 6.3: # 楼梯
+                    color = np.array([0,1.0, 0.0, 1])                    
                 if not args.no_render:
                     env.render(mode="human")
+                    # 平地
                     #env.viewer.add_marker(pos=[13,0.4,1], size=np.array([0.05, 0.05, 1.0]), label="",rgba=color, type=const.GEOM_CYLINDER)
                     #env.viewer.add_marker(pos=[13,-0.4,1], size=np.array([0.05, 0.05, 1.0]), label="",rgba=color, type=const.GEOM_CYLINDER)
+                    # 楼梯
+                    env.viewer.add_marker(pos=[6.3,1.0,3.2], size=np.array([0.05, 0.05, 1.0]), label="",rgba=color, type=const.GEOM_CYLINDER)
+                    env.viewer.add_marker(pos=[6.3,-1.0,3.2], size=np.array([0.05, 0.05, 1.0]), label="",rgba=color, type=const.GEOM_CYLINDER)
+
                     dt = 1.0 / 240.0
                     time.sleep(dt)
                 # 躯干跟踪点
@@ -161,7 +183,7 @@ if __name__ == "__main__":
                     coms.append(np.array(env.sim.data.qpos[0:3]))
                 #for com in coms:
                 #    env.viewer.add_marker(pos=com, size=np.array([0.06, 0.06, 0.06]), label="",rgba=np.array([0, 0, 1, 1]), type=const.GEOM_SPHERE)
-
+            time.sleep(1)
 
 
             detail = info.get('reward_details')

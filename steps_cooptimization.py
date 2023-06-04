@@ -6,7 +6,7 @@
 # MIT License
 
 '''
-楼梯地形 预训练+联合优化
+楼梯地形 联合优化
 
 python cooptimization.py --algo td3 --env HalfCheetah-v2
 
@@ -89,59 +89,11 @@ if __name__ == "__main__":
     tensorboard_log_path = f'experiments\\steps_evo_s{seed}'
     tensorboard_log_name = model_name
 
-    ###############################################################################
-    ###############################################################################
-    # pretrain
-
-    # Instantiate and wrap the environment
-    env = make_vec_env(env_id = env_id, n_envs = num_cpu, env_kwargs = env_kwargs)
-    # Create the evaluation environment and callbacks
-    eval_env = Monitor(gym.make(env_id,terrain_type = terrain_type))
-    callbacks = [EvalCallback(eval_env, best_model_save_path=save_path)]
-    '''callbacks  = [EvolutionCallback(eval_env,n_timesteps,
-                                    warm_up_steps=400000,
-                                    design_update_steps=100000,
-                                    pop_size = 40,
-                                    terrain_type = 'default',
-                                    pretrain_num=1000000)]'''
-
-    n_actions = env.action_space.shape[0]
-
-    # Tuned hyperparameters from https://github.com/DLR-RM/rl-baselines3-zoo
-    hyperparams =dict(
-            batch_size=256,
-            gamma=0.98,
-            policy_kwargs=dict(net_arch=[256, 256]),
-            learning_starts=10000,
-            buffer_size=int(1000000),
-            tau=0.01,
-            gradient_steps=4,
-        )
-
-
-    begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-    
-
-    model = SAC("MlpPolicy", env, verbose=1, tensorboard_log = tensorboard_log_path, **hyperparams,seed=seed)
-
-    try:
-        model.learn(n_timesteps, callback=callbacks , tb_log_name = tensorboard_log_name )
-    except KeyboardInterrupt:
-        pass
-    print('=====================================')
-    print(f"Saving to {save_path}.zip")
-    model.save(save_path)
-    model.save_replay_buffer(save_path+'replay_buffer')
-    end_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-    print('Started at: ' + begin_time)
-    print('Ended at: ' + end_time)
-    print('=====================================')
-
     pretrained_model = f'{save_path}.zip'
     buffer_model = f'{save_path}replay_buffer.pkl'
     ####################################################################################
     ## 无惩罚 EVO
-
+    seed='1_015H'
     model_name = f"steps_evo_s{seed}"
     # 模型存放路径
     save_path = "sb3model/steps_evo_exp/"+model_name

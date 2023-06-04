@@ -48,18 +48,18 @@ t = HumanoidXML(terrain_type=t_type,gravity=0)
 t.write_xml(file_path="ee.xml")
 
 params = {}
-# FLAT FLOOR evo_punish_s3
-params = {   'thigh_lenth':0.3185,           # 大腿长 0.34
-            'shin_lenth':0.231,              # 小腿长 0.3
-            'upper_arm_lenth':0.3095,        # 大臂长 0.2771
-            'lower_arm_lenth':0.2214,        # 小臂长 0.2944
-            'foot_lenth':0.1526,       }     # 脚长   0.18
 # STEPS evo_punish_s1
 params = {   'thigh_lenth':0.3469,           # 大腿长 0.34
             'shin_lenth':0.2828,              # 小腿长 0.3
             'upper_arm_lenth':0.2775,        # 大臂长 0.2771
             'lower_arm_lenth':0.3234,        # 小臂长 0.2944
             'foot_lenth':0.1725,       }     # 脚长   0.18
+# FLAT FLOOR evo_punish_s3
+params = {   'thigh_lenth':0.3185,           # 大腿长 0.34
+            'shin_lenth':0.231,              # 小腿长 0.3
+            'upper_arm_lenth':0.3095,        # 大臂长 0.2771
+            'lower_arm_lenth':0.2214,        # 小臂长 0.2944
+            'foot_lenth':0.1526,       }     # 脚长   0.18
 # 更新XML文件
 t.set_params(params)
 t.update_xml(file_path='ee.xml')
@@ -153,7 +153,7 @@ for i in range(timesteps):
 
     torso_x = sim.data.qpos[0]
     #print(torso_x)
-    viewer.add_marker(pos=[torso_x,1,torso_z], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([1.0, 0, 0.0, 1]), type=const.GEOM_SPHERE)
+    #viewer.add_marker(pos=[torso_x,1,torso_z], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([1.0, 0, 0.0, 1]), type=const.GEOM_SPHERE)
 
     y = sim.data.qpos[1]
     #viewer.add_marker(pos=[15,y,1.7], size=np.array([0.05, 0.05, 0.05]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)

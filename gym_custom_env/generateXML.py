@@ -77,9 +77,15 @@ class HumanoidXML(MujocoXML):
                        'xyaxes':'1 0 0 0 1 0',}
         camera_3 = worldbody.child_element("camera",camera_attr_3)
         camera_attr_4 = {'name':'staris_camera',
-                       'mode':'fixed',
+                         'mode':'fixed',
+                       'pos':'-1 -6 2.6',
+                       'xyaxes':'0.88 -0.5 0 0.1 0.1 0.99',}
+        '''
+                camera_attr_4 = {'name':'staris_camera',
+                         'mode':'fixed',
                        'pos':'-3 -5 2.6',
                        'xyaxes':'0.7 -0.7 0 0.1 0.1 0.99',}
+                       '''
         camera_4 = worldbody.child_element("camera",camera_attr_4)
 
 
@@ -159,7 +165,7 @@ class HumanoidXML(MujocoXML):
             # should be equal to the xyz in box_size
             box_x = 0.3
             box_y = 1.2
-            box_z = 0.1
+            box_z = 0.15    # 原版高度： 0.1
             self.step_size = [box_x*2,box_y*2,box_z*2]
 
             box_rgba = "0 .9 0 1"

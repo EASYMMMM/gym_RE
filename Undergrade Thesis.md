@@ -309,6 +309,16 @@ $$
 \right.
 $$
 
+$$
+F_i' = \left\{
+\begin{array}{rcl}
+F_i &\mbox{for} & |\frac{p_i-p_{last}}{p_{last}}| \leq 0.1  \\ 
+F_i - F_p & \mbox{for} & |\frac{p_i-p_{last}}{p_{last}}| > 0.1  \\ 
+
+\end{array}
+\right.
+$$
+
 
 
 

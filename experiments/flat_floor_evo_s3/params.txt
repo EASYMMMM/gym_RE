@@ -14,3 +14,20 @@ FLAT FLOOR
                 'upper_arm_lenth':0.2922,        # 大臂长 0.2771
                 'lower_arm_lenth':0.2747,        # 小臂长 0.2944
                 'foot_lenth':0.2013,       }     # 脚长   0.18
+
+
+Flat floor no evo
+========== Results ===========
+Episode_reward=993.05 +/- 135.25
+Episode_length=360.40 +/- 42.60
+Episode_ave_v=3.05 +/- 0.15
+Episode_success_rate=0.97
+==============================
+
+Flat floor evo with punish
+========== Results ===========
+Episode_reward=1013.99 +/- 61.52
+Episode_length=331.23 +/- 17.25
+Episode_ave_v=3.38 +/- 0.08
+Episode_success_rate=0.97
+==============================

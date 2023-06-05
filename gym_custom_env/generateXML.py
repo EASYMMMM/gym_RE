@@ -161,11 +161,11 @@ class HumanoidXML(MujocoXML):
         # 定义楼梯
         if terrain_type == 'steps':     
             # Define the parameters for the box geometries
-            box_size = "0.3 1.2 0.1"
             # should be equal to the xyz in box_size
             box_x = 0.3
             box_y = 1.2
             box_z = 0.15    # 原版高度： 0.1
+            box_size = f"{box_x} {box_y} {box_z}"
             self.step_size = [box_x*2,box_y*2,box_z*2]
 
             box_rgba = "0 .9 0 1"

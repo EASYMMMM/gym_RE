@@ -90,6 +90,12 @@ if __name__ == "__main__":
                 'upper_arm_lenth':0.2922,        # 大臂长 0.2771
                 'lower_arm_lenth':0.2747,        # 小臂长 0.2944
                 'foot_lenth':0.2013,       }     # 脚长   0.18
+    #evo_punish_s1_015H
+    params = {   'thigh_lenth':0.3328,           # 大腿长 0.34
+                'shin_lenth':0.2634,              # 小腿长 0.3
+                'upper_arm_lenth':0.2526,        # 大臂长 0.2771
+                'lower_arm_lenth':0.3343,        # 小臂长 0.2944
+                'foot_lenth':0.156,       }     # 脚长   0.18
     env.update_xml_model(params)
     # Enable GUI
     if not args.no_render:
@@ -115,11 +121,13 @@ if __name__ == "__main__":
     #save_path ='sb3model/default_evo_exp/flatfloor_pretrain_1e6_s2.zip'
     #save_path = 'sb3model\\default_evo_exp\\flatfloor_noevo_s3.zip'
     #save_path = 'sb3model\\default_evo_exp\\flatfloor_evo_s3.zip'
-    save_path = 'sb3model\\default_evo_exp\\flatfloor_evo_punish_s3.zip'
+    #save_path = 'sb3model\\default_evo_exp\\flatfloor_evo_punish_s3.zip'
     
     #save_path = 'sb3model\\steps_evo_exp\\steps_noevo_s1.zip'
     #save_path = 'sb3model\\steps_evo_exp\\steps_evo_punish_s1.zip'
     #save_path = 'sb3model\\steps_evo_exp\\steps_evo_s1.zip'
+    save_path = 'sb3model\\steps_evo_exp\\steps_evo_punish_s1_015H.zip'
+    #save_path = 'sb3model\\steps_evo_exp\\steps_noevo_s1_015H.zip'
 
     print(save_path)
     # Load the saved model
@@ -135,7 +143,7 @@ if __name__ == "__main__":
     try:
         # Use deterministic actions for evaluation
         episode_rewards, episode_lengths, episode_ave_velocitys, episode_success_rate = [], [], [], []
-        for _ in range(10):
+        for _ in range(30):
             obs = env.reset()
             done = False
             episode_reward = 0.0

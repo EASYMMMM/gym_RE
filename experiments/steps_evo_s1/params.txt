@@ -14,3 +14,10 @@
                 'upper_arm_lenth':0.2837,        # 大臂长 0.2771
                 'lower_arm_lenth':0.3638,        # 小臂长 0.2944
                 'foot_lenth':0.2062,       }     # 脚长   0.18
+
+    #evo_punish_s1_015H
+    params = {   'thigh_lenth':0.3328,           # 大腿长 0.34
+                'shin_lenth':0.2634,              # 小腿长 0.3
+                'upper_arm_lenth':0.2526,        # 大臂长 0.2771
+                'lower_arm_lenth':0.3343,        # 小臂长 0.2944
+                'foot_lenth':0.156,       }     # 脚长   0.18

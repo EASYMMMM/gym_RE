@@ -93,7 +93,7 @@ if __name__ == "__main__":
     buffer_model = f'{save_path}replay_buffer.pkl'
     ####################################################################################
     ## 无惩罚 EVO
-    seed='1_015H'
+    seed='1_008H'
     model_name = f"steps_evo_s{seed}"
     # 模型存放路径
     save_path = "sb3model/steps_evo_exp/"+model_name

@@ -164,7 +164,7 @@ class HumanoidXML(MujocoXML):
             # should be equal to the xyz in box_size
             box_x = 0.3
             box_y = 1.2
-            box_z = 0.08    # 原版高度： 0.1
+            box_z = 0.10    # 原版高度： 0.1
             box_size = f"{box_x} {box_y} {box_z}"
             self.step_size = [box_x*2,box_y*2,box_z*2]
 

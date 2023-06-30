@@ -44,6 +44,7 @@ params = { #'torso_width':0.5,
 
 # 生成XML文件
 t_type = 'default'
+t_type = 'steps'
 t = HumanoidXML(terrain_type=t_type,gravity=0)
 t.write_xml(file_path="ee.xml")
 
@@ -60,6 +61,7 @@ params = {   'thigh_lenth':0.3185,           # 大腿长 0.34
             'upper_arm_lenth':0.3095,        # 大臂长 0.2771
             'lower_arm_lenth':0.2214,        # 小臂长 0.2944
             'foot_lenth':0.1526,       }     # 脚长   0.18
+params = {   'steps_height':0.20,     }     # 脚长   0.18         
 # 更新XML文件
 t.set_params(params)
 t.update_xml(file_path='ee.xml')

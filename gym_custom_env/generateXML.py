@@ -42,6 +42,7 @@ class HumanoidXML(MujocoXML):
                             'lower_arm_lenth':0.2944,      # 小臂长 0.2944
                             'lower_arm_size':0.031,        # 小臂粗 0.031
                             'foot_lenth':0.18,             # 脚长   0.18
+                            'steps_height':0.10,           # 楼梯高 0.10
                             }
         self.param_list = self.__default_param_list.copy()
 
@@ -164,7 +165,7 @@ class HumanoidXML(MujocoXML):
             # should be equal to the xyz in box_size
             box_x = 0.3
             box_y = 1.2
-            box_z = 0.08    # 原版高度： 0.1
+            box_z = self.param_list['steps_height']    # 原版高度： 0.1
             box_size = f"{box_x} {box_y} {box_z}"
             self.step_size = [box_x*2,box_y*2,box_z*2]
 
@@ -722,7 +723,7 @@ class HumanoidXML(MujocoXML):
         设定params list
         '''
         self.param_list.update(params)
-        self.param_list['init_position'] = [-1,0,0.76+params['shin_lenth']+params['thigh_lenth'] ] 
+        self.param_list['init_position'] = [-1,0,0.76+self.param_list['shin_lenth']+self.param_list['thigh_lenth'] ] 
         return
 
     def update_xml(self, file_path='humanoid.xml'):

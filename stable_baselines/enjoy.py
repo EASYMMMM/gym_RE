@@ -96,7 +96,7 @@ if __name__ == "__main__":
                 'upper_arm_lenth':0.2526,        # 大臂长 0.2771
                 'lower_arm_lenth':0.3343,        # 小臂长 0.2944
                 'foot_lenth':0.156,       }     # 脚长   0.18
-    env.update_xml_model(params)
+    #env.update_xml_model(params)
     # Enable GUI
     if not args.no_render:
         env.render(mode="human")
@@ -126,8 +126,12 @@ if __name__ == "__main__":
     #save_path = 'sb3model\\steps_evo_exp\\steps_noevo_s1.zip'
     #save_path = 'sb3model\\steps_evo_exp\\steps_evo_punish_s1.zip'
     #save_path = 'sb3model\\steps_evo_exp\\steps_evo_s1.zip'
-    save_path = 'sb3model\\steps_evo_exp\\steps_evo_punish_s1_015H.zip'
+    save_path = 'sb3model\\steps_evo_exp\\steps_pretrain_1e6_s1_cost05.zip'
+    #save_path = 'sb3model\\steps_evo_exp\\steps_evo_punish_s1_015H.zip'
     #save_path = 'sb3model\\steps_evo_exp\\steps_noevo_s1_015H.zip'
+    #save_path = 'sb3model\\steps_evo_exp\\steps_evo_punish_s1_008H.zip'
+    #save_path = 'sb3model\\steps_evo_exp\\steps_noevo_s1_008H.zip'
+
 
     print(save_path)
     # Load the saved model

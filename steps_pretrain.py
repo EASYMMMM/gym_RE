@@ -6,7 +6,7 @@
 # MIT License
 
 '''
-平坦地形 联合优化
+针对楼梯地形进行预训练
 
 python cooptimization.py --algo td3 --env HalfCheetah-v2
 
@@ -72,7 +72,8 @@ if __name__ == "__main__":
     BaseAlgorithm._update_info_buffer = update_info_buffer
     OffPolicyAlgorithm._dump_logs = dump_logs
 
-    seed = 1
+    # 提升control cost尝试生成步态
+    seed = '1_cost05'
 
     env_id = 'HumanoidCustomEnv-v0'
     num_cpu = 10
@@ -93,7 +94,7 @@ if __name__ == "__main__":
     env = make_vec_env(env_id = env_id, n_envs = num_cpu, env_kwargs = env_kwargs)
 
     # Create the evaluation environment and callbacks
-    eval_env = Monitor(gym.make(env_id,terrain_type = terrain_type))
+    eval_env = Monitor(gym.make(env_id,terrain_type = terrain_type,ctrl_cost_weight=0.5))
 
     callbacks = [EvalCallback(eval_env, best_model_save_path=save_path)]
     '''callbacks  = [EvolutionCallback(eval_env,n_timesteps,
@@ -119,7 +120,7 @@ if __name__ == "__main__":
 
     begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     
-
+    seed = 1
     model = SAC("MlpPolicy", env, verbose=1, tensorboard_log = tensorboard_log_path, **hyperparams,seed=seed)
 
     try:

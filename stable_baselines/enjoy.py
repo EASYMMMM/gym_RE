@@ -13,7 +13,7 @@ python stable_baselines/enjoy.py --algo sac --env Humanoid-v3
 python stable_baselines/enjoy.py --algo ppo --env Humanoid-v3  --model-name 2e6 
 
 python stable_baselines/enjoy.py --algo sac --env HumanoidCustomEnv-v0  --terrain-type ladders  --model-name 2e6_ladder_hand_t4_cpu8
-
+python stable_baselines/enjoy.py --algo sac --env HumanoidCustomEnv-v0  --terrain-type steps 
 
 '''
 # ------- 来自于mujoco150在win+py3.9下的矫情的要求 --------
@@ -132,6 +132,8 @@ if __name__ == "__main__":
     #save_path = 'sb3model\\steps_evo_exp\\steps_evo_punish_s1_008H.zip'
     #save_path = 'sb3model\\steps_evo_exp\\steps_noevo_s1_008H.zip'
 
+    # 可变楼梯高度
+    save_path = 'sb3model\\steps_gethigher\\steps_gethigher_s1.zip'
 
     print(save_path)
     # Load the saved model
@@ -147,7 +149,7 @@ if __name__ == "__main__":
     try:
         # Use deterministic actions for evaluation
         episode_rewards, episode_lengths, episode_ave_velocitys, episode_success_rate = [], [], [], []
-        for _ in range(30):
+        for _ in range(5):
             obs = env.reset()
             done = False
             episode_reward = 0.0

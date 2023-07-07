@@ -67,7 +67,7 @@ if __name__ == "__main__":
 
     env_id = 'HumanoidCustomEnv-v0'
     num_cpu = 10
-    n_timesteps = 2000000
+    n_timesteps = 1500000
     model_name = f"steps_gethigher_s{seed}"
     
     terrain_type = 'steps'
@@ -118,7 +118,7 @@ if __name__ == "__main__":
 
     ####################################################################################
     ## 更改楼梯高度继续训练
-    for i in range(3):
+    for i in range(5):
         steps_H = steps_H + 0.05
         height_list.append(steps_H)
         design_params = {'steps_height': steps_H}

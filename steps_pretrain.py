@@ -73,7 +73,7 @@ if __name__ == "__main__":
     OffPolicyAlgorithm._dump_logs = dump_logs
 
     # 提升control cost尝试生成步态
-    seed = '1_cost05'
+    seed = '1_test'
 
     env_id = 'HumanoidCustomEnv-v0'
     num_cpu = 10

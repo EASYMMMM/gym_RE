@@ -61,7 +61,7 @@ params = {   'thigh_lenth':0.3185,           # 大腿长 0.34
             'upper_arm_lenth':0.3095,        # 大臂长 0.2771
             'lower_arm_lenth':0.2214,        # 小臂长 0.2944
             'foot_lenth':0.1526,       }     # 脚长   0.18
-params = {   'steps_height':0.20,     }     # 脚长   0.18         
+params = {   'steps_height':0.10,     }      # 楼梯高度   0.18         
 # 更新XML文件
 t.set_params(params)
 t.update_xml(file_path='ee.xml')
@@ -164,6 +164,9 @@ for i in range(timesteps):
     #viewer.add_marker(pos=[6,0,3], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
     #viewer.add_marker(pos=[0,1.2,0.5], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
 
+    pelvis_x, pelvis_y, pelvis_z = sim.data.get_geom_xpos('pelvis_geom')
+    viewer.add_marker(pos=[pelvis_x,pelvis_y,pelvis_z], size=np.array([0.2, 0.2, 0.2]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+
     if i % 4 == 0 and t_type == 'ladders':
         right_sensor_pos.append(np.array(sim.data.geom_xpos[45]))
     for com in right_sensor_pos:
@@ -232,7 +235,9 @@ for i in range(timesteps):
     for i in range(ncon):
         print(f'contact : {geomdict[sim.data.contact[i].geom1]} + {geomdict[sim.data.contact[i].geom2]}')
     print('geom_xpos lenth: ',len(sim.data.geom_xpos))
-    print('geom_xpos[1]',sim.data.geom_xpos[1])
+    print('geom_xpos[1]: ',sim.data.geom_xpos[1])
+    print('torso x point: ',sim.data.qpos[0])
+    print(sim.data.get_geom_xpos('pelvis_geddom'))
     print(geomdict)
     print('*************')    
     #print('geom name floor id:' , sim.model.geom_name2id("floor"))

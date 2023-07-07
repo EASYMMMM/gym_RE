@@ -69,9 +69,9 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         reset_noise_scale=1e-2,
         camera_config = "horizontal",
         single_contact_reward = 10,
-        use_origin_model = False, # 是否使用原版模型，控制器试验时用
-        flatfloor_size = 10, # 平地的长度限制。默认10，录制视频时可调至15
-        y_limit = True,     # 平地的y轴限制。训练时开启，测试时关闭。
+        use_origin_model = False,                          # 是否使用原版模型，控制器试验时用
+        flatfloor_size = 10,                               # 平地的长度限制。默认10，录制视频时可调至15
+        y_limit = True,                                    # 平地的y轴限制。训练时开启，测试时关闭。
         exclude_current_positions_from_observation=False,  # Flase: 使obs空间包括躯干的x，y坐标; True: 不包括
     ):
         utils.EzPickle.__init__(**locals())
@@ -508,8 +508,12 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         if self.terrain_type == 'steps' :
             if  self._terrain_info:
                 position = position[3:]
+                # 骨盆的阶梯相对位置信息
                 steps_pos = self._get_steps_pos()
                 position = np.append(position,steps_pos)
+                # 双手的阶梯相对位置信息
+                #steps_pos = self._get_steps_pos()
+                #position = np.append(position,steps_pos)
             else:
                 position = position[2:]
 
@@ -545,16 +549,17 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         # 如果单纯计算速度作为reward，很难保证绕开梯子抓住
         pass
 
-    def _get_steps_pos(self):
-        # 读取当前机器人相对于台阶的x,y,z距离: 
+    def _get_steps_pos(self, geom_name:str = 'pelvis_geom'):
+        # 读取当前机器人某个部位相对于台阶的x,y,z距离: 
+        geom_x, geom_y, geom_z = self.sim.data.get_geom_xpos(geom_name) # 通过get_geom_xpos获得几何体的坐标
         step_size_x, step_size_y, step_size_z = self.xml_model.step_size
-        x_w = self.sim.data.qpos[0] + step_size_x + 0.0001  # 机器人在全局的x坐标
-        x_list=[]
+        x_w = geom_x + step_size_x + 0.0001  # 机器人在全局的x坐标
+        height_list=[]        # 一系列坐标点到楼梯的高度
         for i in range(7):
             x_ = x_w - 0.1 + i*0.1
-            z_ = self.sim.data.qpos[2] - (x_ // step_size_x)*step_size_z # 机器人当前的距离地面（台阶）的高度
-            x_list.append(z_)
-        return x_list 
+            z_ = geom_z - (x_ // step_size_x)*step_size_z # 机器人当前的距离地面（台阶）的高度
+            height_list.append(z_)
+        return height_list 
 
     def _get_ladders_pos(self):
         # 读取当前机器人相对于阶梯的x,y,z距离: 

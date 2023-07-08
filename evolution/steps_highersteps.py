@@ -67,11 +67,12 @@ if __name__ == "__main__":
 
     env_id = 'HumanoidCustomEnv-v0'
     num_cpu = 10
-    n_timesteps = 1500000
+    n_timesteps = 2000000
     model_name = f"steps_gethigher_s{seed}"
     
     terrain_type = 'steps'
-    env_kwargs = {'terrain_type':terrain_type}
+    env_kwargs = {'terrain_type':terrain_type,
+                  'hand_steps_info':True}
 
     # 存放在sb3model/文件夹下
     save_path = "sb3model/steps_gethigher/"+model_name
@@ -119,11 +120,12 @@ if __name__ == "__main__":
     ####################################################################################
     ## 更改楼梯高度继续训练
     for i in range(5):
-        steps_H = steps_H + 0.05
+        steps_H = steps_H + 0.025
         height_list.append(steps_H)
         design_params = {'steps_height': steps_H}
         model.env.update_xml_model(design_params)
         tensorboard_log_name = model_name+'_'+str(steps_H) 
+        n_timesteps = 1000000
         try:
             model.learn(n_timesteps, callback=callbacks ,reset_num_timesteps = False, tb_log_name = tensorboard_log_name )
         except KeyboardInterrupt:

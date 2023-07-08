@@ -69,6 +69,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         reset_noise_scale=1e-2,
         camera_config = "horizontal",
         single_contact_reward = 10,
+        hand_steps_info  = False,                          # 楼梯地形中，是否开启手部的高度信息
         use_origin_model = False,                          # 是否使用原版模型，控制器试验时用
         flatfloor_size = 10,                               # 平地的长度限制。默认10，录制视频时可调至15
         y_limit = True,                                    # 平地的y轴限制。训练时开启，测试时关闭。
@@ -101,6 +102,7 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self._use_origin_model = use_origin_model
         self._flatfloor_size = flatfloor_size
         self._y_limit = y_limit
+        self._hand_steps_info = hand_steps_info
         self.camera_config = {
             "defalt":DEFAULT_CAMERA_CONFIG,
             "horizontal":HORIZONTAL_CAMERA_CONFIG,
@@ -310,8 +312,9 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             else:
                 is_inthemap = True    
         if self.terrain_type == 'steps':
-            step_pos = self._get_steps_pos()
-            z = step_pos[1]
+            # 楼梯地形中，判断torso到楼梯地面的高度
+            step_height = self._get_steps_pos(geom_name= 'torso_geom')
+            z = step_height[1]  # 一系列高度点中，第二个点为torso到地面的高度
             is_inthemap = self.sim.data.qpos[0] < 6.6         #  机器人仍然在阶梯范围内  
             if self.sim.data.qpos[0] >= 6.6:
                 self._success = True
@@ -512,8 +515,11 @@ class HumanoidCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                 steps_pos = self._get_steps_pos()
                 position = np.append(position,steps_pos)
                 # 双手的阶梯相对位置信息
-                #steps_pos = self._get_steps_pos()
-                #position = np.append(position,steps_pos)
+                if self._hand_steps_info :
+                    righthand_pos = self._get_steps_pos(geom_name = 'right_hand')
+                    position = np.append(position,righthand_pos)
+                    lefthand_pos = self._get_steps_pos(geom_name = 'left_hand')
+                    position = np.append(position,lefthand_pos)
             else:
                 position = position[2:]
 

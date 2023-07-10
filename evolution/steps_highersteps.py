@@ -1,7 +1,7 @@
 '''
 楼梯层高升高，刺激智能体学习
 
-python steps_highersteps.py 
+python evolution/steps_highersteps.py 
 
 '''
 import argparse

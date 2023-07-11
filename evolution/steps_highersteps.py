@@ -88,7 +88,7 @@ if __name__ == "__main__":
     # Instantiate and wrap the environment
     env = make_vec_env(env_id = env_id, n_envs = num_cpu, env_kwargs = env_kwargs)
     # Create the evaluation environment and callbacks
-    eval_env = Monitor(gym.make(env_id,terrain_type = terrain_type))
+    eval_env = Monitor(gym.make(env_id,terrain_type = terrain_type,hand_steps_info = True))
     callbacks = [EvalCallback(eval_env, best_model_save_path=save_path)]
 
     n_actions = env.action_space.shape[0]

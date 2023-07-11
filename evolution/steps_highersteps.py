@@ -119,8 +119,8 @@ if __name__ == "__main__":
 
     ####################################################################################
     ## 更改楼梯高度继续训练
-    for i in range(5):
-        steps_H = steps_H + 0.025
+    for i in range(10):
+        steps_H = steps_H + 0.02
         height_list.append(steps_H)
         design_params = {'steps_height': steps_H}
         model.env.update_xml_model(design_params)
@@ -136,6 +136,7 @@ if __name__ == "__main__":
     print('=====================================')
     print(f"Saving to {save_path}.zip")
     model.save(save_path)
+    model.save_replay_buffer(save_path+'replay_buffer')
     end_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     print('Started at: ' + begin_time)
     print('Ended at: ' + end_time)

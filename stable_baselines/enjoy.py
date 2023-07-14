@@ -82,8 +82,12 @@ if __name__ == "__main__":
 
     env_id = args.env
     terrain = args.terrain_type
+
     # Create an env similar to the training env
-    env = gym.make(env_id, terrain_type=terrain)
+    # env = gym.make(env_id, terrain_type=terrain)
+    env = gym.make(env_id, terrain_type=terrain, hand_steps_info = True) # 添加手部高度信息
+
+    # 进化
     #evo_s1
     params = {   'thigh_lenth':0.3321,           # 大腿长 0.34
                 'shin_lenth':0.2968,              # 小腿长 0.3
@@ -96,7 +100,13 @@ if __name__ == "__main__":
                 'upper_arm_lenth':0.2526,        # 大臂长 0.2771
                 'lower_arm_lenth':0.3343,        # 小臂长 0.2944
                 'foot_lenth':0.156,       }     # 脚长   0.18
-    #env.update_xml_model(params)
+    
+    # 楼梯高度升高刺激训练
+    params = {'steps_height': 0.175}
+
+    # 更新xml模型
+    env.update_xml_model(params)
+
     # Enable GUI
     if not args.no_render:
         env.render(mode="human")
@@ -118,7 +128,7 @@ if __name__ == "__main__":
         # Try to load best model
         save_path = os.path.join(f"{args.algo}_{env_id}", "best_model.zip")
     print('load from:')
-    save_path = 'sb3model\\HumanoidCustomEnv-v0\\2e6_ladder_t1_cpu10_sac_HumanoidCustomEnv-v0.zip'
+    #save_path = 'sb3model\\HumanoidCustomEnv-v0\\2e6_ladder_t1_cpu10_sac_HumanoidCustomEnv-v0.zip'
     #save_path ='sb3model/default_evo_exp/flatfloor_pretrain_1e6_s2.zip'
     #save_path = 'sb3model\\default_evo_exp\\flatfloor_noevo_s3.zip'
     #save_path = 'sb3model\\default_evo_exp\\flatfloor_evo_s3.zip'
@@ -134,7 +144,7 @@ if __name__ == "__main__":
     #save_path = 'sb3model\\steps_evo_exp\\steps_noevo_s1_008H.zip'
 
     # 可变楼梯高度
-    #save_path = 'sb3model\\steps_gethigher\\steps_gethigher_s1.zip'
+    save_path = 'sb3model\\steps_gethigher\\steps_gethigher_s1.zip'
 
     print(save_path)
     # Load the saved model

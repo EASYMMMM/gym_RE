@@ -44,7 +44,7 @@ params = { #'torso_width':0.5,
 
 # 生成XML文件
 t_type = 'default'
-t_type = 'steps'
+t_type = 'ladders'
 t = HumanoidXML(terrain_type=t_type,gravity=0)
 t.write_xml(file_path="ee.xml")
 
@@ -63,8 +63,8 @@ params = {   'thigh_lenth':0.3185,           # 大腿长 0.34
             'foot_lenth':0.1526,       }     # 脚长   0.18
 params = {   'steps_height':0.10,     }      # 楼梯高度   0.18         
 # 更新XML文件
-t.set_params(params)
-t.update_xml(file_path='ee.xml')
+#t.set_params(params)
+#t.update_xml(file_path='ee.xml')
 
 # 加载 XML 文件
 # model = mujoco_py.load_model_from_path("gym_custom_env\\assets\\humanoid_custom.xml")
@@ -165,7 +165,7 @@ for i in range(timesteps):
     #viewer.add_marker(pos=[0,1.2,0.5], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
 
     pelvis_x, pelvis_y, pelvis_z = sim.data.get_geom_xpos('pelvis_geom')
-    viewer.add_marker(pos=[pelvis_x,pelvis_y,pelvis_z], size=np.array([0.2, 0.2, 0.2]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+    viewer.add_marker(pos=[pelvis_x,pelvis_y,3], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
 
     if i % 4 == 0 and t_type == 'ladders':
         right_sensor_pos.append(np.array(sim.data.geom_xpos[45]))
@@ -237,7 +237,7 @@ for i in range(timesteps):
     print('geom_xpos lenth: ',len(sim.data.geom_xpos))
     print('geom_xpos[1]: ',sim.data.geom_xpos[1])
     print('torso x point: ',sim.data.qpos[0])
-    print(sim.data.get_geom_xpos('pelvis_geddom'))
+    #print(sim.data.get_geom_xpos('pelvis_geddom'))     
     print(geomdict)
     print('*************')    
     #print('geom name floor id:' , sim.model.geom_name2id("floor"))

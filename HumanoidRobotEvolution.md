@@ -289,71 +289,73 @@ $$
 
 #### 3.2 梯子地形
 
-- **原版（3月）梯子地形：**
+##### **v0（3月）梯子地形**
 
-  梯子地形的reward function目前基本的形式与楼梯地形相同：
+梯子地形的reward function目前基本的形式与楼梯地形相同：
 
-  其中包括：
+其中包括：
 
-  1. 前进项：沿x位置，沿x速度，沿z位置，沿z速度
-  2. 接触项：当agent的手或者脚与梯子接触时，给予高额reward。每个手/脚接触每层梯子的reward仅给一次，防止agent将手放在梯子上不动。越高处的梯子给的reward越高。
-  3. 姿态项：躯干站立越直，奖励越高。
-  4. 生存惩罚：当agent存活时，给予负的生存奖励，逼迫其进行探索。
+1. 前进项：沿x位置，沿x速度，沿z位置，沿z速度
+2. 接触项：当agent的手或者脚与梯子接触时，给予高额reward。每个手/脚接触每层梯子的reward仅给一次，防止agent将手放在梯子上不动。越高处的梯子给的reward越高。
+3. 姿态项：躯干站立越直，奖励越高。
+4. 生存惩罚：当agent存活时，给予负的生存奖励，逼迫其进行探索。
 
-  $$
-  R = w_{forward}r_{foward} + w_{healthy}r_{healthy} + w_{stand}r_{stand} - w_{control}c_{control} - w_{contact}c_{contact}
-  $$
+$$
+R = w_{forward}r_{foward} + w_{healthy}r_{healthy} + w_{stand}r_{stand} - w_{control}c_{control} - w_{contact}c_{contact}
+$$
 
-  其中的前进奖励项更改为向上高度的奖励：
-  $$
-  r_{forward} = w_{speed}v_x + w_{height}z
-  $$
-  作为调整，调低了前进速度权重$w_{speed}$，调高了高度奖励$w_{height}$，调低了生存奖励$w_{healthy}$，调低了直立奖励$w_{stand}$。目的是进一步鼓励机器人沿着梯子上升。
+其中的前进奖励项更改为向上高度的奖励：
+$$
+r_{forward} = w_{speed}v_x + w_{height}z
+$$
+作为调整，调低了前进速度权重$w_{speed}$，调高了高度奖励$w_{height}$，调低了生存奖励$w_{healthy}$，调低了直立奖励$w_{stand}$。目的是进一步鼓励机器人沿着梯子上升。
 
-  问题也非常明显。相比于走楼梯，爬梯子是一系列更为复杂的动作，需要全身协调配合。因此，尽管有着向上高度的奖励函数来引导它向上，但是agent并不知道如何向上攀爬。
+问题也非常明显。相比于走楼梯，爬梯子是一系列更为复杂的动作，需要全身协调配合。因此，尽管有着向上高度的奖励函数来引导它向上，但是agent并不知道如何向上攀爬。
 
-  <img src="C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230404152020410.png" alt="image-20230404152020410" style="zoom:50%;" />
-  
-- **新版（4月）梯子地形奖励函数：**
+<img src="C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230404152020410.png" alt="image-20230404152020410" style="zoom: 33%;" />
 
-  Observation Space：
+##### v1（4月）梯子地形奖励函数
 
-  添加对梯子的相对位置信息读取：
+- 根据reward shaping思想，对奖励函数进行了更新。同时添加离散的手脚动作规划奖励
 
-  确定agent当前触碰到的最低一级梯子（地板和第一级梯子优先级相同），最低一级梯子往上数三个梯子，取agent到这三个梯子中心的x方向距离，z方向距离，总共6个数据。
+Observation Space：
 
-  Action Space：
+添加对梯子的相对位置信息读取：
 
-  无改动，仍然是 $19\times1$的动作空间。
+确定agent当前触碰到的最低一级梯子（地板和第一级梯子优先级相同），最低一级梯子往上数三个梯子，取agent到这三个梯子中心的x方向距离，z方向距离，总共6个数据。
 
-  Reward：
+Action Space：
 
-  共四项：
-  $$
-  R = w_{forward}r_{foward} + w_{healthy}r_{healthy} + w_{stand}r_{stand} + w_{contact}r_{contact} - w_{control}c_{control} - w_{contact}c_{contact}
-  $$
+无改动，仍然是 $19\times1$的动作空间。
 
-  1. 前进项：只保留x方向速度和z方向速度，其中z方向速度占比更大。
-     $$
-     r_{forward}= v_x + 2v_z
-     $$
+Reward：
 
-  2. 生存项：当agent存活时，给予负的生存奖励，逼迫其进行探索。为-0.2。当触碰到最高处的阶梯时，终止。
+共四项：
+$$
+R = w_{forward}r_{foward} + w_{healthy}r_{healthy} + w_{stand}r_{stand} + w_{contact}r_{contact} - w_{control}c_{control} - w_{contact}c_{contact}
+$$
 
-  3. 接触项：agent手/脚接触到梯子时
+1. 前进项：只保留x方向速度和z方向速度，其中z方向速度占比更大。
+   $$
+   r_{forward}= v_x + 2v_z
+   $$
 
-     ​    吸收楼梯环境的经验，消去和全局位置相关的特征，以提升训练稳定性。对于不同的台阶，均给出相同的reward值。这个值不应太大，在先前的试验中，若离散reward给的太高，会严重影响agent的exploration效率，过早收敛。
+2. 生存项：当agent存活时，给予负的生存奖励，逼迫其进行探索。为-0.2。当触碰到最高处的阶梯时，终止。
 
-     ​    根据李宏毅Reward shaping的主要思想，$R(s_t)$函数应具有单一方向的持续上升的梯度，此方向为先验知识指导agent学习的方向。既然难以指导agent学会爬梯子的动作，不如惩罚agent不爬梯子/向下走。
+3. 接触项：agent手/脚接触到梯子时
 
-     由此，最终接触项设计如下：
+   ​    吸收楼梯环境的经验，消去和全局位置相关的特征，以提升训练稳定性。对于不同的台阶，均给出相同的reward值。这个值不应太大，在先前的试验中，若离散reward给的太高，会严重影响agent的exploration效率，过早收敛。
 
-     - 单次接触reward设计为10。
-     - 若某个肢体（左右手、左右脚）碰到了比先前碰到过的最高阶梯要低的阶梯，给予-200的reward。
-     - 重复接触不计算reward。
+   ​    根据李宏毅Reward shaping的主要思想，$R(s_t)$函数应具有单一方向的持续上升的梯度，此方向为先验知识指导agent学习的方向。既然难以指导agent学会爬梯子的动作，不如惩罚agent不爬梯子/向下走。
 
-  4. 姿态项：移除了直立奖励，爬梯子的过程中应该很难保持直立。添加了朝向奖励。
-  
+   由此，最终接触项设计如下：
+
+   - 单次接触reward设计为10。
+   - 若某个肢体（左右手、左右脚）碰到了比先前碰到过的最高阶梯要低的阶梯，给予-200的reward。
+   - 重复接触不计算reward。
+
+4. 姿态项：移除了直立奖励，爬梯子的过程中应该很难保持直立。添加了朝向奖励。
+
 - **任务分解版本方案一：**    
 
   提到了梯子的斜角最好为70°。目前设定的单阶梯子垂直高度为0.25，计算得到单阶梯子水平宽为0.09，暂取0.10。
@@ -419,7 +421,7 @@ $$
 
 8. 继续上一条改动，将梯子斜度提升（x间距0.16），仍然失败。蛤蟆跳。
 
-   <img src="C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230420135607018.png" alt="image-20230420135607018" style="zoom: 20%;" /><img src="C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230420135719561.png" alt="image-20230420135719561" style="zoom:100%;" />
+   <img src="C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230420135607018.png" alt="image-20230420135607018" style="zoom: 20%;" /><img src="C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230420135719561.png" alt="image-20230420135719561" style="zoom: 33%;" />
 
 9. 4月20日，准备对手部添加关节。意味着先前全部的模型将被弃用（虽然本来也没有能用的）。
 

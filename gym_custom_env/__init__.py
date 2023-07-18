@@ -21,3 +21,9 @@ register(
     max_episode_steps=1000,
 )
 
+ # mujoco环境
+register(  
+    id='HumanoidLadderCustomEnv-v0',
+    entry_point='gym_custom_env.humanoidLadderCustom:HumanoidLadderCustomEnv',
+    max_episode_steps=1000,
+)

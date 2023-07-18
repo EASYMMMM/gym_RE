@@ -136,7 +136,7 @@ class HumanoidXML(MujocoXML):
             #      4.19修改：梯子间距0.16
             #      4.20修改：梯子间距0.10，高度0.25（按照论文
             #      7.18修改：梯子间距0.05
-            positions = [(round((i+1) * 0.05, 3), 0, round((i+1) * 0.25, 3)) for i in range(11)]
+            positions = [(round((i) * 0.05, 3), 0, round((i) * 0.25, 3)) for i in range(16)]
             self.ladder_positions = positions
             # Create a geometry for each position
             for i, pos in enumerate(positions):

@@ -166,6 +166,7 @@ for i in range(timesteps):
 
     pelvis_x, pelvis_y, pelvis_z = sim.data.get_geom_xpos('pelvis_geom')
     viewer.add_marker(pos=[pelvis_x,pelvis_y,3], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+    viewer.add_marker(pos=[pelvis_x,pelvis_y,1.4], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
 
     if i % 4 == 0 and t_type == 'ladders':
         right_sensor_pos.append(np.array(sim.data.geom_xpos[45]))
@@ -237,8 +238,9 @@ for i in range(timesteps):
     print('geom_xpos lenth: ',len(sim.data.geom_xpos))
     print('geom_xpos[1]: ',sim.data.geom_xpos[1])
     print('torso x point: ',sim.data.qpos[0])
-    #print(sim.data.get_geom_xpos('pelvis_geddom'))     
-    print(geomdict)
+    print('ladder pos:',t.ladder_positions)
+    print('left_hand_sensor_geom:',sim.data.get_geom_xpos('left_hand_sensor_geom')[0])     
+    # print(geomdict)
     print('*************')    
     #print('geom name floor id:' , sim.model.geom_name2id("floor"))
     #print('geom name lwaist id:' , sim.model.geom_name2id("lwaist"))

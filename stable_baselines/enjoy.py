@@ -102,7 +102,7 @@ if __name__ == "__main__":
                 'foot_lenth':0.156,       }     # 脚长   0.18
     
     # 楼梯高度升高刺激训练
-    params = {'steps_height': 0.175}
+    params = {'steps_height': 0.30}
 
     # 更新xml模型
     env.update_xml_model(params)

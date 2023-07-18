@@ -79,16 +79,6 @@ class HumanoidLadderCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     ):
         utils.EzPickle.__init__(**locals())
 
-        # set the terrain, generate XML file
-        self.terrain_type = terrain_type        
-        terrain_list = ('default','ladders') # 默认平地，台阶，梯子
-        assert self.terrain_type in terrain_list, 'ERROR:Undefined terrain type'  
-        xml_name = 'humanoid_ladder_exp.xml'
-        self.xml_model = HumanoidXML(terrain_type=self.terrain_type, gravity=self._env_gravity)
-        self.xml_model.write_xml(file_path=f"gym_custom_env/assets/{xml_name}")
-        dir_path = os.path.dirname(__file__)
-        xml_file_path = f"{dir_path}\\assets\\{xml_name}"
-
         # 变量初始化
         self._forward_speed_reward_weight = 1 if terrain_type == 'default' else forward_speed_reward_weight
         self._forward_distance_reward_weight = forward_distance_reward_weight
@@ -116,11 +106,21 @@ class HumanoidLadderCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             exclude_current_positions_from_observation
         )
 
+        # set the terrain, generate XML file
+        self.terrain_type = terrain_type        
+        terrain_list = ('default','ladders') # 默认平地，台阶，梯子
+        assert self.terrain_type in terrain_list, 'ERROR:Undefined terrain type'  
+        xml_name = 'humanoid_ladder_exp.xml'
+        self.xml_model = HumanoidXML(terrain_type=self.terrain_type, gravity=self._env_gravity)
+        self.xml_model.write_xml(file_path=f"gym_custom_env/assets/{xml_name}")
+        dir_path = os.path.dirname(__file__)
+        xml_file_path = f"{dir_path}\\assets\\{xml_name}"
+
 
         self.__init_counter()
         if self._use_origin_model:
             xml_file_path = f"{dir_path}\\assets\\humanoid_origin.xml"
-        print("============ HUMANOID CUSTOM ENV ============")
+        print("============ HUMANOID LADDER CUSTOM ENV ============")
         print(f"=====terrain type:{self.terrain_type}=====")
         mujoco_env.MujocoEnv.__init__(self, xml_file_path, 5)
         self.geomdict = self.get_geom_idname()      # geom id name字典

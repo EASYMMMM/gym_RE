@@ -314,6 +314,8 @@ $$
 
 <img src="C:\Users\孟一凌\AppData\Roaming\Typora\typora-user-images\image-20230404152020410.png" alt="image-20230404152020410" style="zoom: 33%;" />
 
+---
+
 ##### v1（4月）梯子地形奖励函数
 
 - 根据reward shaping思想，对奖励函数进行了更新。同时添加离散的手脚动作规划奖励
@@ -443,6 +445,34 @@ $$
 4. 梯子识别。
 
 - **肢体末端传感器，对爬梯动作有所贡献。**
+
+---
+
+##### v2 环境刺激爬梯学习（无重力）
+
+从无重力开始训练，逐渐增加重力，添加系统的复杂度，从而鼓励学习。
+
+observation空间：
+
+- 选取humanoid能碰到的最低横杆（torso往下1.4），依次往上数9个横杆，读取torso相对于这九个横杆的x，z位置。
+- 在上述9个横杆中，选取最高的4个横杆，读取双手（sensor geom）相对于这四个横杆的x，z位置。
+
+Reward共四项：
+
+$$
+R = w_{forward}r_{foward} + w_{healthy}r_{healthy} + w_{stand}r_{stand} + w_{contact}r_{contact} - w_{control}c_{control} - w_{contact}c_{contact}
+$$
+
+1. 前进项：只保留x方向速度和z方向速度，其中z方向速度占比更大。
+   $$
+   r_{forward}= v_x + 2v_z
+   $$
+
+2. 生存项：-0.2
+
+3. 接触项：暂设为0
+
+4. 姿态项：暂设为0
 
 #### 3.3 离散Reward Function在本任务中的具体实现
 

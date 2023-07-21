@@ -2,14 +2,7 @@
 ladder_traning_gravity.py
 通过更改环境重力刺激爬梯子训练
 
-'''
-
-'''
-训练爬梯子任务的humanoid
-
-开启多个环境同时训练
-
-python stable_baselines/ladder_training.py --algo sac --num-cpu 8 --n-timesteps 2000000 --model-name 2e6_ladder_t1
+python stable_baselines/ladder_training_gravity.py --algo sac --model-name s1
 
 '''
 import argparse
@@ -108,7 +101,7 @@ if __name__ == "__main__":
 
     env_id = args.env
     num_cpu = args.num_cpu
-    n_timesteps = 1000000
+    n_timesteps = 600000
     model_name = args.model_name + "_cpu" + str(num_cpu) + "_gravity_"
     seed = 1 # random seed
     env_kwargs = {'env_gravity':0}
@@ -197,11 +190,12 @@ if __name__ == "__main__":
 
     ####################################################################################
     ## 更改环境重力继续训练
-    turn = 20
+    turn = 2
     for i in range(turn):
-        g = (i+1)/turn * 9.81
+        g = (i+1)/turn * (-9.81)
         gravity_list.append(g)
         design_params = {'gravity': g}
+        #model.env.reset()
         model.env.update_xml_model(design_params)
         tensorboard_log_name = model_name+'_'+str(g) 
         n_timesteps = 300000

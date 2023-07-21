@@ -43,7 +43,7 @@ class HumanoidXML(MujocoXML):
                             'lower_arm_size':0.031,        # 小臂粗 0.031
                             'foot_lenth':0.18,             # 脚长   0.18
                             'steps_height':0.10,           # 楼梯高 0.10
-                            'gravity':9.81,                # 重力 9.81
+                            'gravity':-9.81,                # 重力 -9.81
                             }
         self.param_list = self.__default_param_list.copy()
 
@@ -726,7 +726,11 @@ class HumanoidXML(MujocoXML):
         设定params list
         '''
         self.param_list.update(params)
-        self.param_list['init_position'] = [-1,0,0.76+self.param_list['shin_lenth']+self.param_list['thigh_lenth'] ] 
+        if self.terrain_type == 'ladders':
+            init_x = -0.3
+        else:
+            init_x = -1
+        self.param_list['init_position'] = [init_x,0,0.76+self.param_list['shin_lenth']+self.param_list['thigh_lenth'] ] 
         return
 
     def set_gravity(self, gravity:float )-> None:

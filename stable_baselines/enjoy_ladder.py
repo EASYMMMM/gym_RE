@@ -6,14 +6,8 @@
 # MIT License
 
 '''
-python stable_baselines/enjoy.py --algo td3 --env HalfCheetah-v2
 
-python stable_baselines/enjoy.py --algo sac --env Humanoid-v3
-
-python stable_baselines/enjoy.py --algo ppo --env Humanoid-v3  --model-name 2e6 
-
-python stable_baselines/enjoy.py --algo sac --env HumanoidCustomEnv-v0  --terrain-type ladders  --model-name 2e6_ladder_hand_t4_cpu8
-python stable_baselines/enjoy.py --algo sac --env HumanoidCustomEnv-v0  --terrain-type steps 
+python stable_baselines/enjoy_ladder.py --algo sac --env HumanoidCustomEnv-v0  --terrain-type steps 
 
 '''
 # ------- 来自于mujoco150在win+py3.9下的矫情的要求 --------
@@ -49,7 +43,7 @@ if __name__ == "__main__":
         choices=["sac", "td3", "ppo"],
     )
     parser.add_argument(
-        "--env", type=str, default="HalfCheetahBulletEnv-v0", help="environment ID"
+        "--env", type=str, default="HumanoidLadderCustomEnv-v0", help="environment ID"
     )
     parser.add_argument(
         "-n", "--n-episodes", help="Number of episodes", default=5, type=int
@@ -106,7 +100,7 @@ if __name__ == "__main__":
 
     print('load from:')
     # 可变楼梯高度
-    save_path = ''
+    save_path = 'sb3model//HumanoidLadderCustomEnv-v0//NoGrav_ladder_t1_cpu10_sac_Ladder.zip'
 
     print(save_path)
     # Load the saved model
@@ -115,7 +109,7 @@ if __name__ == "__main__":
 
     print("==============================")
     print(f"Method: {args.algo}")
-    print(f"Time steps: {args.model_name}")
+    #print(f"Time steps: {args.model_name}")
     # print(f"gradient steps:{model.gradient_steps}")
     print("model path:"+save_path)
     print("==============================")

@@ -43,6 +43,7 @@ class HumanoidXML(MujocoXML):
                             'lower_arm_size':0.031,        # 小臂粗 0.031
                             'foot_lenth':0.18,             # 脚长   0.18
                             'steps_height':0.10,           # 楼梯高 0.10
+                            'gravity':9.81,                # 重力 9.81
                             }
         self.param_list = self.__default_param_list.copy()
 
@@ -728,13 +729,18 @@ class HumanoidXML(MujocoXML):
         self.param_list['init_position'] = [-1,0,0.76+self.param_list['shin_lenth']+self.param_list['thigh_lenth'] ] 
         return
 
+    def set_gravity(self, gravity:float )-> None:
+        # 设置环境重力。更改后需通过update_xml更新xml文档
+        self.gravity = gravity
+        return
+
     def update_xml(self, file_path='humanoid.xml'):
         '''
         更新XML文档
         为防止冲突，删除原先的root节点，重新生成XML tree。
         '''
         del self.root
-        super(HumanoidXML ,self).__init__(root_tag='mujoco',gravity=self.gravity)
+        super(HumanoidXML ,self).__init__(root_tag='mujoco',gravity=self.param_list['gravity'] )
         self.write_xml(file_path=file_path)
 
 

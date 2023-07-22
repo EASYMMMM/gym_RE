@@ -99,9 +99,9 @@ if __name__ == "__main__":
 
 
     print('load from:')
-    # 可变楼梯高度
-    save_path = 'sb3model//HumanoidLadderCustomEnv-v0//NoGrav_ladder_t1_cpu10_sac_Ladder.zip'
-
+    # 变重力
+    # save_path = 'sb3model//HumanoidLadderCustomEnv-v0//NoGrav_ladder_t1_cpu10_sac_Ladder.zip'
+    save_path = 'sb3model//HumanoidLadderCustomEnv-v0//s1_cpu10_gravity_sac_Ladder.zip'
     print(save_path)
     # Load the saved model
     model = algo.load(save_path, env=env)

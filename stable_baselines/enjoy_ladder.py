@@ -69,7 +69,7 @@ if __name__ == "__main__":
 
     # Create an env similar to the training env
     # env = gym.make(env_id, terrain_type=terrain)
-    env = gym.make(env_id, terrain_type='ladders', env_gravity = 0 ) 
+    env = gym.make(env_id, terrain_type='ladders', env_gravity = -3.4 ) 
 
     # 进化
     #evo_s1

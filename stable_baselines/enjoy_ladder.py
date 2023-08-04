@@ -103,8 +103,20 @@ if __name__ == "__main__":
     # save_path = 'sb3model//HumanoidLadderCustomEnv-v0//NoGrav_ladder_t1_cpu10_sac_Ladder.zip'
     save_path = 'sb3model//HumanoidLadderCustomEnv-v0//s1_cpu10_gravity_sac_Ladder.zip'
     print(save_path)
+
     # Load the saved model
-    model = algo.load(save_path, env=env)
+    #model = algo.load(save_path, env=env)
+    hyperparams =dict(
+        batch_size=256,
+        gamma=0.98,
+        policy_kwargs=dict(net_arch=[256, 256]),
+        learning_starts=10000,
+        buffer_size=int(10000),
+        tau=0.01,
+        gradient_steps=4,
+    )
+    model = SAC("MlpPolicy", env, verbose=1, **hyperparams,seed=1)
+    model.set_parameters(save_path)
 
 
     print("==============================")

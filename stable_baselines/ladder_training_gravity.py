@@ -190,7 +190,7 @@ if __name__ == "__main__":
 
     ####################################################################################
     ## 更改环境重力继续训练
-    turn = 20
+    """     turn = 20
     for i in range(turn):
         g = (i+1)/turn * (-9.81)
         gravity_list.append(g)
@@ -202,7 +202,7 @@ if __name__ == "__main__":
         try:
             model.learn(n_timesteps, callback=callbacks ,reset_num_timesteps = False, tb_log_name = tensorboard_log_name )
         except KeyboardInterrupt:
-            pass
+            pass """
 
 
     print('=====================================')

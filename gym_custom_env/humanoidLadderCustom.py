@@ -112,6 +112,9 @@ class HumanoidLadderCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         assert self.terrain_type in terrain_list, 'ERROR:Undefined terrain type'  
         xml_name = 'humanoid_ladder_exp.xml'
         self.xml_model = HumanoidXML(terrain_type=self.terrain_type, gravity=self._env_gravity)
+        params = {   'thigh_lenth':0.05,         
+                    'shin_lenth':0.05,         }  # FIXME 没有腿
+        self.xml_model.set_params(params)
         self.xml_model.write_xml(file_path=f"gym_custom_env/assets/{xml_name}")
         dir_path = os.path.dirname(__file__)
         xml_file_path = f"{dir_path}\\assets\\{xml_name}"
@@ -289,7 +292,7 @@ class HumanoidLadderCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                 y_limit = True
             is_inthemap = x_limit and y_limit
         if self.terrain_type == 'ladders':
-            min_z = 0.9
+            min_z = 0.4  # FIXME 摔倒高度
             lowest_ladder = self.limb_position['left_foot'] if self.limb_position['left_foot'] < self.limb_position['right_foot'] else self.limb_position['right_foot']
             lowest_ladder_height = lowest_ladder * self.xml_model.ladder_positions[0][2]
             z = self.sim.data.qpos[2] - lowest_ladder_height
@@ -564,31 +567,30 @@ class HumanoidLadderCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         # 获取全部阶梯的位置
         ladders_pos = self.xml_model.ladder_positions
         lowest_ladder = self.limb_position['left_foot'] if self.limb_position['left_foot'] < self.limb_position['right_foot'] else self.limb_position['right_foot']
-        x_w = self.sim.data.qpos[0]  # 机器人在全局的x坐标
-        z_w = self.sim.data.qpos[2]  # 机器人在全局的z坐标
-        lowest_ladder_num = 0
-        for l_p in ladders_pos: # 找到机器人能触及的范围内最低的一层阶梯 （torso往下1.4）
-            if l_p[2] > z_w - 1.45:
+        x_w = self.sim.data.qpos[0]  # 机器人torso在全局的x坐标
+        z_w = self.sim.data.qpos[2]  # 机器人torso在全局的z坐标
+        for l_p in ladders_pos: # TODO:找到机器人能触及的范围内最低的一层阶梯 （torso往下1.4）
+            if l_p[2] > z_w - 0.8:
                 lowest_ladder = l_p
                 break
-            lowest_ladder_num += 1
+
         
         # 扫描从最低往上共9个横杆，读取torso相对于横杆的数据
         pos_list=[]
-        for i in range(9):
-            _x = ladders_pos[lowest_ladder_num+i][0] - x_w
-            _z = - ladders_pos[lowest_ladder_num+i][2] + z_w
+        for i in range(6):
+            _x = ladders_pos[lowest_ladder+i][0] - x_w
+            _z = - ladders_pos[lowest_ladder+i][2] + z_w
             pos_list.append(_x)
             pos_list.append(_z)
         # 扫描9个横杆中最上方的4个横杆，读取左右手相对于横杆的数据
-        for i in range(4):
-            right_hand_target_dis_x = self.sim.data.get_geom_xpos('right_hand_sensor_geom')[0] - ladders_pos[lowest_ladder_num+5+i][0]
+        for i in range(3):
+            right_hand_target_dis_x = self.sim.data.get_geom_xpos('right_hand_sensor_geom')[0] - ladders_pos[lowest_ladder+3+i][0]
             pos_list.append(right_hand_target_dis_x)
-            right_hand_target_dis_z = self.sim.data.get_geom_xpos('right_hand_sensor_geom')[2] - ladders_pos[lowest_ladder_num+5+i][2]
+            right_hand_target_dis_z = self.sim.data.get_geom_xpos('right_hand_sensor_geom')[2] - ladders_pos[lowest_ladder+3+i][2]
             pos_list.append(right_hand_target_dis_z)
-            left_hand_target_dis_x = self.sim.data.get_geom_xpos('left_hand_sensor_geom')[0] - ladders_pos[lowest_ladder_num+5+i][0]
+            left_hand_target_dis_x = self.sim.data.get_geom_xpos('left_hand_sensor_geom')[0] - ladders_pos[lowest_ladder+3+i][0]
             pos_list.append(left_hand_target_dis_x)
-            left_hand_target_dis_z = self.sim.data.get_geom_xpos('left_hand_sensor_geom')[2] - ladders_pos[lowest_ladder_num+5+i][2]
+            left_hand_target_dis_z = self.sim.data.get_geom_xpos('left_hand_sensor_geom')[2] - ladders_pos[lowest_ladder+3+i][2]
             pos_list.append(left_hand_target_dis_z)
         return pos_list 
 

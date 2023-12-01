@@ -9,6 +9,13 @@ def register(id, *args, **kvargs):
 
 # ----------- 自定义的env环境 -------------
 register(  
+    id='TranslationOscillatorEnv-v0',
+    entry_point='gym_custom_env.TranslationOscillator:TranslationOscillator',
+    max_episode_steps=2000,
+    reward_threshold=2000.0,
+)
+ 
+register(  
     id='CircleBoxCustomBulletEnv-v0',
     entry_point='gym_custom_env.circleBox:CircleDrive',
     max_episode_steps=2000,

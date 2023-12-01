@@ -1,4 +1,4 @@
-# 1Humanoid Robot Evolution
+# Humanoid Robot Evolution
 
 ## 零、题目
 

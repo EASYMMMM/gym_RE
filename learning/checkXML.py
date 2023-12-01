@@ -63,10 +63,12 @@ params = {   'thigh_lenth':0.3185,           # 大腿长 0.34
             'foot_lenth':0.1526,       }     # 脚长   0.18
 params = {   'steps_height':0.10,     }      # 楼梯高度   0.18  
 # FLAT FLOOR evo_punish_s3
-params = {   'thigh_lenth':0.05,           # 大腿长 0.34
-            'shin_lenth':0.05,              # 小腿长 0.3
-            'gravity':0,
-                   }     # 脚长   0.18       
+params = {   'thigh_lenth':0.02,           # 大腿长 0.34
+            'shin_lenth':0.02,              # 小腿长 0.3
+            'upper_arm_lenth':0.2,        # 大臂长 0.2771
+            'lower_arm_lenth':0.21,        # 小臂长 0.2944
+            'foot_lenth':0.08,    
+            'gravity':0,   }     # 脚长   0.18  
 # 更新XML文件
 t.set_params(params)
 t.update_xml(file_path='ee.xml')
@@ -170,9 +172,9 @@ for i in range(timesteps):
     #viewer.add_marker(pos=[0,1.2,0.5], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
 
     pelvis_x, pelvis_y, pelvis_z = sim.data.get_geom_xpos('pelvis_geom')
-    viewer.add_marker(pos=[pelvis_x,pelvis_y,3], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
-    viewer.add_marker(pos=[pelvis_x,pelvis_y,1.4], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
-    viewer.add_marker(pos=[pelvis_x,pelvis_y,1.0], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+    # viewer.add_marker(pos=[pelvis_x,pelvis_y,3], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+    # viewer.add_marker(pos=[pelvis_x,pelvis_y,1.4], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
+    # viewer.add_marker(pos=[pelvis_x,pelvis_y,1.0], size=np.array([0.1, 0.1, 0.1]), rgba=np.array([0, 0, 1.0, 1]), type=const.GEOM_SPHERE)
 
     if i % 4 == 0 and t_type == 'ladders':
         right_sensor_pos.append(np.array(sim.data.geom_xpos[45]))

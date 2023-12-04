@@ -69,7 +69,7 @@ if __name__ == "__main__":
 
     # Create an env similar to the training env
     # env = gym.make(env_id, terrain_type=terrain)
-    env = gym.make(env_id, terrain_type='ladders', env_gravity = -3.4 ) 
+    env = gym.make(env_id, terrain_type='ladders') 
 
     # 进化
     #evo_s1
@@ -101,11 +101,17 @@ if __name__ == "__main__":
     print('load from:')
     # 变重力
     # save_path = 'sb3model//HumanoidLadderCustomEnv-v0//NoGrav_ladder_t1_cpu10_sac_Ladder.zip'
-    save_path = 'sb3model//HumanoidLadderCustomEnv-v0//s1_cpu10_gravity_sac_Ladder.zip'
+    # save_path = 'sb3model//HumanoidLadderCustomEnv-v0//s1_cpu10_gravity_sac_Ladder.zip'
+    # save_path = 'sb3model//HumanoidLadderCustomEnv-v0//s1_cpu10_gravity_ppo_Ladder.zip'
+    # No Legs
+    # save_path = 'sb3model//HumanoidLadderCustomEnv-v0//ladder_t1_noleg_cpu10_sac_Ladder//best_model.zip'
+    # save_path = 'sb3model//HumanoidLadderCustomEnv-v0//ladder_t2_noleg_cpu10_sac_Ladder.zip'
+    save_path = 'sb3model//HumanoidLadderCustomEnv-v0//ladder_t3_noleg_cpu10_sac_Ladder.zip'
+
     print(save_path)
 
     # Load the saved model
-    #model = algo.load(save_path, env=env)
+    model = algo.load(save_path, env=env)
     hyperparams =dict(
         batch_size=256,
         gamma=0.98,
@@ -115,8 +121,8 @@ if __name__ == "__main__":
         tau=0.01,
         gradient_steps=4,
     )
-    model = SAC("MlpPolicy", env, verbose=1, **hyperparams,seed=1)
-    model.set_parameters(save_path)
+    #model = SAC("MlpPolicy", env, verbose=1, **hyperparams,seed=1)
+    #model.set_parameters(save_path)
 
 
     print("==============================")

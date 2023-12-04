@@ -11,7 +11,7 @@ def register(id, *args, **kvargs):
 register(  
     id='TranslationOscillatorEnv-v0',
     entry_point='gym_custom_env.TranslationOscillator:TranslationOscillator',
-    max_episode_steps=2000,
+    max_episode_steps=300,
     reward_threshold=2000.0,
 )
  

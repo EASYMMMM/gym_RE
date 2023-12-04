@@ -112,8 +112,11 @@ class HumanoidLadderCustomEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         assert self.terrain_type in terrain_list, 'ERROR:Undefined terrain type'  
         xml_name = 'humanoid_ladder_exp.xml'
         self.xml_model = HumanoidXML(terrain_type=self.terrain_type, gravity=self._env_gravity)
-        params = {   'thigh_lenth':0.05,         
-                    'shin_lenth':0.05,         }  # FIXME 没有腿
+        params = {   'thigh_lenth':0.02,         
+                    'shin_lenth':0.02,
+                    'upper_arm_lenth':0.2,    # 0.277
+                    'lower_arm_lenth':0.21,   # 0.29
+                     'foot_lenth':0.08                }  # FIXME 没有腿
         self.xml_model.set_params(params)
         self.xml_model.write_xml(file_path=f"gym_custom_env/assets/{xml_name}")
         dir_path = os.path.dirname(__file__)

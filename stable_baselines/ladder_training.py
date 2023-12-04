@@ -99,7 +99,7 @@ if __name__ == "__main__":
     n_timesteps = args.n_timesteps
     model_name = args.model_name + "_cpu" + str(num_cpu) + "_"
 
-    env_kwargs = {'env_gravity':0}
+    env_kwargs = {'env_gravity':-9.81}
 
 
     if args.algo == 'sac':

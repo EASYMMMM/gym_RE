@@ -16,7 +16,8 @@ class TranslationOscillator(gym.Env):
                  random_seed = None, 
                  epsilon : float = 0.1,
                  simulation_dt : float = 0.02,
-                 reward_weight : list = [1,0.1,1,0.1]):
+                 reward_weight : list = [2,0.2,1,0.1],
+                 frame_skip :int = 5):
         self._render = render
         # 定义动作空间
         self.action_space = spaces.Box(
@@ -27,8 +28,8 @@ class TranslationOscillator(gym.Env):
 
         # 定义状态空间 (x1, x2, x3, x4)
         self.observation_space = spaces.Box(
-            low=np.array([-10.,-10.,-np.pi,-10.]),
-            high=np.array([10., 10., np.pi, 10.]),
+            low=np.array([-5.,-5.,-np.pi,-5.]),
+            high=np.array([5., 5., np.pi, 5.]),
         )
 
         if random_seed != None:
@@ -36,6 +37,7 @@ class TranslationOscillator(gym.Env):
         self.epsilon = epsilon # 耦合系数
         self.dt = simulation_dt # 仿真时间步长
         self.reward_weight = reward_weight # reward权重
+        self.frame_skip = frame_skip # 训练跳过的步数
         self.reset()
         
     
@@ -46,27 +48,31 @@ class TranslationOscillator(gym.Env):
         进行一步仿真计算
         计算出下一时刻的状态
         '''
-        x = self.last_state  # 当前状态
+        
         epsilon = self.epsilon
-        F = np.array([0.0,0.0,0.0,0.0])
-        G = np.array([0.0,0.0,0.0,0.0])
-        Q = np.array([0.0,0.0,0.0,0.0])
-        F[0] = x[1]
-        F[1] = (-x[0]+epsilon*x[3]*x[3]*np.sin(x[2]))/(1-epsilon*epsilon*np.cos(x[2])*np.cos(x[2]))
-        F[2] = x[3]
-        F[3] = (epsilon*np.cos(x[2])*(x[0]-epsilon*x[3]*x[3]*np.sin(x[2])))/(1-epsilon*epsilon*np.cos(x[2])*np.cos(x[2]))   
-        G[0] = 0
-        G[1] = (-epsilon*np.cos(x[2]))/(1-epsilon*epsilon*np.cos(x[2])*np.cos(x[2]))
-        G[2] = 0 
-        G[3] = (1)/(1-epsilon*epsilon*np.cos(x[2])*np.cos(x[2]))
-        Q[0] = 0
-        Q[1] = (1)/(1-epsilon*epsilon*np.cos(x[2])*np.cos(x[2]))
-        Q[2] = 0
-        Q[3] = (-epsilon*np.cos(x[2]))/(1-epsilon*epsilon*np.cos(x[2])*np.cos(x[2]))
-        f = np.array(0.1*np.sin(self.total_t*np.pi))
-        N = np.array(action)
-        x_dot = F + G*N + Q*f
-        next_x = x + x_dot*self.dt
+        current_x =  self.last_state  # 当前状态
+        for i in range(self.frame_skip):
+            x = current_x
+            F = np.array([0.0,0.0,0.0,0.0])
+            G = np.array([0.0,0.0,0.0,0.0])
+            Q = np.array([0.0,0.0,0.0,0.0])
+            F[0] = x[1]
+            F[1] = (-x[0]+epsilon*x[3]*x[3]*np.sin(x[2]))/(1-epsilon*epsilon*np.cos(x[2])*np.cos(x[2]))
+            F[2] = x[3]
+            F[3] = (epsilon*np.cos(x[2])*(x[0]-epsilon*x[3]*x[3]*np.sin(x[2])))/(1-epsilon*epsilon*np.cos(x[2])*np.cos(x[2]))   
+            G[0] = 0 
+            G[1] = (-epsilon*np.cos(x[2]))/(1-epsilon*epsilon*np.cos(x[2])*np.cos(x[2]))
+            G[2] = 0 
+            G[3] = (1)/(1-epsilon*epsilon*np.cos(x[2])*np.cos(x[2]))
+            Q[0] = 0
+            Q[1] = (1)/(1-epsilon*epsilon*np.cos(x[2])*np.cos(x[2]))
+            Q[2] = 0
+            Q[3] = (-epsilon*np.cos(x[2]))/(1-epsilon*epsilon*np.cos(x[2])*np.cos(x[2]))
+            f = np.array(0.1*np.sin(self.total_t*np.pi))
+            N = np.array(action)
+            x_dot = F + G*N + Q*f
+            next_x = x + x_dot*self.dt
+            current_x = next_x
         return np.array(next_x,dtype=np.float32)
 
     def reward(self, x):
@@ -94,7 +100,8 @@ class TranslationOscillator(gym.Env):
         if init_state != None:
             self.init_state = init_state
         else:
-            self.init_state = [(np.random.random()-0.5)*10,(np.random.random()-0.5)*10, (np.random.random()-0.5)*np.pi ,(np.random.random()-0.5)*10]
+            self.init_state = [(np.random.random()-0.5)*5,(np.random.random()-0.5)*5, (np.random.random()-0.5)*np.pi ,(np.random.random()-0.5)*5]
+        self.init_state = np.array([1,0,1,0])
         self.last_state = np.array(self.init_state) # 记录上一时刻的状态
         self.total_t = 0
         self.step_num = 0 # 计数器
@@ -105,11 +112,14 @@ class TranslationOscillator(gym.Env):
     @property
     def done(self):
         d = False
-        if self.total_reward < -1000: # 当负值奖励积累的太大时，提前终止训练
+        if self.total_reward < -300: # 当负值奖励积累的太大时，提前终止训练
             d = True
         if self.total_reward > 1500: # 总奖励达到1500，认为训练成功
             d = True
             self.success = True
+        # 偏差较大时提前终止
+        if self.last_state[0] > 4 or self.last_state[0]<-4: 
+            d = True                          
         return d
 
     def step(self, action):
@@ -120,6 +130,9 @@ class TranslationOscillator(gym.Env):
         self.total_reward += reward
         done = self.done
         info = {"is_success":self.success}
+        
+        scale = np.array([5,5,np.pi,5])
+        state = state / scale
         return state, reward, done, info
     
     def seed(self, seed=None):

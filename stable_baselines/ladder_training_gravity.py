@@ -101,10 +101,10 @@ if __name__ == "__main__":
 
     env_id = args.env
     num_cpu = args.num_cpu
-    n_timesteps = 600000
+    n_timesteps = 1000000
     model_name = args.model_name + "_cpu" + str(num_cpu) + "_gravity_"
     seed = 1 # random seed
-    env_kwargs = {'env_gravity':0}
+    env_kwargs = {'env_gravity':-9.81}
 
 
     if args.algo == 'sac':

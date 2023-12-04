@@ -6,7 +6,7 @@
 		<geom conaffinity="1" condim="1" contype="1" margin="0.001" material="geom" rgba="0.8 0.6 .4 1" />
 		<motor ctrllimited="true" ctrlrange="-.4 .4" />
 	</default>
-	<option integrator="RK4" iterations="50" solver="PGS" timestep="0.003" gravity="0 0 -3.4" />
+	<option integrator="RK4" iterations="50" solver="PGS" timestep="0.003" gravity="0 0 -9.81" />
 	<size nkey="5" nuser_geom="1" />
 	<visual>
 		<map fogend="5" fogstart="3" />
@@ -55,7 +55,7 @@
 		<geom name="bottom15" type="box" size="0.06 1.2 0.005" pos="0.7 0 3.4975" rgba="0.9 0 0 1" condim="3" friction="1 .1 .1" />
 		<geom name="ladder16" type="box" size="0.054 1.2 0.005" pos="0.75 0 3.7525" rgba="0 .9 0 1" condim="3" friction="1 .1 .1" />
 		<geom name="bottom16" type="box" size="0.06 1.2 0.005" pos="0.75 0 3.7475" rgba="0.9 0 0 1" condim="3" friction="1 .1 .1" />
-		<body name="torso" pos="-0.3 0 1.4">
+		<body name="torso" pos="-0.3 0 0.8">
 			<camera name="track" mode="trackcom" pos="0 -4 0" xyaxes="1 0 0 0 0 1" />
 			<camera name="track_2" mode="trackcom" pos="0 -6 0" xyaxes="1 0 0 0 0 1" />
 			<joint name="root" type="free" armature="0" limited="false" pos="0 0 0" stiffness="0" damping="0" />
@@ -73,14 +73,14 @@
 						<joint name="right_hip_x" type="hinge" armature="0.01" axis="1 0 0" pos="0 0 0" range="-25 5" stiffness="10" damping="5" />
 						<joint name="right_hip_z" type="hinge" armature="0.01" axis="0 0 1" pos="0 0 0" range="-60 35" stiffness="10" damping="5" />
 						<joint name="right_hip_y" type="hinge" armature="0.01" axis="0 1 0" pos="0 0 0" range="-110 20" stiffness="20" damping="5" />
-						<geom name="right_thigh_geom" type="capsule" size="0.06" fromto="0 0 0 0 0.01 -0.34" />
-						<body name="right_shin" pos="0 0.01 -0.403">
+						<geom name="right_thigh_geom" type="capsule" size="0.06" fromto="0 0 0 0 0.01 -0.02" />
+						<body name="right_shin" pos="0 0.01 -0.083">
 							<joint name="right_knee" type="hinge" armature="0.006" axis="0 -1 0" pos="0 0 0.02" range="-160 -2" />
-							<geom name="right_shin_geom" type="capsule" size="0.05" fromto="0 0 0 0 0 -0.3" />
-							<body name="right_foot" pos="0 0 -0.38">
+							<geom name="right_shin_geom" type="capsule" size="0.05" fromto="0 0 0 0 0 -0.02" />
+							<body name="right_foot" pos="0 0 -0.1">
 								<joint name="right_ankle" type="hinge" armature="0.006" axis="0 1 0" pos="0 0 0" range="-45 25" />
-								<geom name="right_foot_geom_1" type="capsule" size="0.025" fromto="-0.03 0 0 0.14824825237348266 0.02505115817281178 0" />
-								<geom name="right_foot_geom_2" type="capsule" size="0.025" fromto="-0.03 0 0 0.14824825237348266 -0.02505115817281178 0" />
+								<geom name="right_foot_geom_1" type="capsule" size="0.025" fromto="-0.03 0 0 0.049221445499325625 0.011133848076805236 0" />
+								<geom name="right_foot_geom_2" type="capsule" size="0.025" fromto="-0.03 0 0 0.049221445499325625 -0.011133848076805236 0" />
 								<geom name="right_foot_sensor_geom" type="capsule" size="0.0252" fromto="0.05912412618674133 -0.01252557908640589 0 0.05912412618674133 0.01252557908640589 0" rgba="1 0 0 1" />
 							</body>
 						</body>
@@ -89,14 +89,14 @@
 						<joint name="left_hip_x" type="hinge" armature="0.01" axis="-1 0 0" pos="0 0 0" range="-25 5" stiffness="10" damping="5" />
 						<joint name="left_hip_z" type="hinge" armature="0.01" axis="0 0 -1" pos="0 0 0" range="-60 35" stiffness="10" damping="5" />
 						<joint name="left_hip_y" type="hinge" armature="0.01" axis="0 1 0" pos="0 0 0" range="-110 20" stiffness="20" damping="5" />
-						<geom name="left_thigh_geom" type="capsule" size="0.06" fromto="0 0 0 0 -0.01 -0.34" />
-						<body name="left_shin" pos="0 -0.01 -0.403">
+						<geom name="left_thigh_geom" type="capsule" size="0.06" fromto="0 0 0 0 -0.01 -0.02" />
+						<body name="left_shin" pos="0 -0.01 -0.083">
 							<joint name="left_knee" type="hinge" armature="0.006" axis="0 -1 0" pos="0 0 0.02" range="-160 -2" />
-							<geom name="left_shin_geom" type="capsule" size="0.05" fromto="0 0 0 0 0 -0.3" />
-							<body name="left_foot" pos="0 0 -0.38">
+							<geom name="left_shin_geom" type="capsule" size="0.05" fromto="0 0 0 0 0 -0.02" />
+							<body name="left_foot" pos="0 0 -0.1">
 								<joint name="left_ankle" type="hinge" armature="0.006" axis="0 1 0" pos="0 0 0" range="-45 25" />
-								<geom name="left_foot_geom_1" type="capsule" size="0.025" fromto="-0.03 0 0 0.14824825237348266 0.02505115817281178 0" />
-								<geom name="left_foot_geom_2" type="capsule" size="0.025" fromto="-0.03 0 0 0.14824825237348266 -0.02505115817281178 0" />
+								<geom name="left_foot_geom_1" type="capsule" size="0.025" fromto="-0.03 0 0 0.049221445499325625 0.011133848076805236 0" />
+								<geom name="left_foot_geom_2" type="capsule" size="0.025" fromto="-0.03 0 0 0.049221445499325625 -0.011133848076805236 0" />
 								<geom name="left_foot_sensor_geom" type="capsule" size="0.0252" fromto="0.05912412618674133 -0.01252557908640589 0 0.05912412618674133 0.01252557908640589 0" rgba="1 0 0 1" />
 							</body>
 						</body>
@@ -106,11 +106,11 @@
 			<body name="right_upper_arm" pos="0 -0.17 0.06">
 				<joint name="right_shoulder1" type="hinge" armature="0.0068" axis="0 1 0" pos="0 0 0" range="-95 80" stiffness="1" />
 				<joint name="right_shoulder2" type="hinge" armature="0.0051" axis="0 0 1" pos="0 0 0" range="-85 30" stiffness="1" />
-				<geom name="right_upper_arm_geom" type="capsule" size="0.04" fromto="0 0 0 0.2771 0 0" />
-				<body name="right_lower_arm" pos="0.29710000000000003 0 0">
+				<geom name="right_upper_arm_geom" type="capsule" size="0.04" fromto="0 0 0 0.2 0 0" />
+				<body name="right_lower_arm" pos="0.22 0 0">
 					<joint name="right_elbow" type="hinge" armature="0.0028" axis="0 1 0" pos="0 0 0" range="-50 90" stiffness="0" />
-					<geom name="right_lower_arm_geom" type="capsule" size="0.031" fromto="0 0 0 0 0 0.2944" />
-					<body name="right_hand" pos="0 0 0.2944">
+					<geom name="right_lower_arm_geom" type="capsule" size="0.031" fromto="0 0 0 0 0 0.21" />
+					<body name="right_hand" pos="0 0 0.21">
 						<geom name="right_hand_geom" type="capsule" size="0.031" fromto="0.02 0 0 0.16999999999999998 0 0" />
 						<geom name="right_hand_sensor_geom" type="capsule" size="0.033" fromto="0.093 0 0 0.097 0 0" rgba="1 0 0 1" />
 						<joint name="right_wrist" type="hinge" armature="0.0028" axis="0 1 0" pos="0 0 0" range="-80 20" stiffness="0" />
@@ -120,11 +120,11 @@
 			<body name="left_upper_arm" pos="0 0.17 0.06">
 				<joint name="left_shoulder1" type="hinge" armature="0.0068" axis="0 1 0" pos="0 0 0" range="-95 80" stiffness="1" />
 				<joint name="left_shoulder2" type="hinge" armature="0.0051" axis="0 0 1" pos="0 0 0" range="-30 85" stiffness="1" />
-				<geom name="left_upper_arm_geom" type="capsule" size="0.04" fromto="0 0 0 0.2771 0 0" />
-				<body name="left_lower_arm" pos="0.29710000000000003 0 0">
+				<geom name="left_upper_arm_geom" type="capsule" size="0.04" fromto="0 0 0 0.2 0 0" />
+				<body name="left_lower_arm" pos="0.22 0 0">
 					<joint name="left_elbow" type="hinge" armature="0.0028" axis="0 1 0" pos="0 0 0" range="-50 90" stiffness="0" />
-					<geom name="left_lower_arm_geom" type="capsule" size="0.031" fromto="0 0 0 0 0 0.2944" />
-					<body name="left_hand" pos="0 0 0.2944">
+					<geom name="left_lower_arm_geom" type="capsule" size="0.031" fromto="0 0 0 0 0 0.21" />
+					<body name="left_hand" pos="0 0 0.21">
 						<geom name="left_hand_geom" type="capsule" size="0.031" fromto="0.02 0 0 0.16999999999999998 0 0" />
 						<joint name="left_wrist" type="hinge" armature="0.0028" axis="0 1 0" pos="0 0 0" range="-80 20" stiffness="0" />
 						<geom name="left_hand_sensor_geom" type="capsule" size="0.033" fromto="0.093 0 0 0.097 0 0" rgba="1 0 0 1" />

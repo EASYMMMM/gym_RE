@@ -18,19 +18,21 @@ class TranslationOscillator(gym.Env):
                  simulation_dt : float = 0.02,
                  reward_weight : list = [2,0.2,1,0.1],
                  frame_skip :int = 5,
-                 random_init  = False):
+                 random_init  = False,  # 随机初始状态
+                 suqare_reward = False, # 计算reward时，平方处理
+                 ):
         self._render = render
         # 定义动作空间
         self.action_space = spaces.Box(
-            low=np.array([-10.]),
-            high=np.array([10.]),
+            low=np.array([-5.]),
+            high=np.array([5.]),
             dtype=np.float32
         )
 
         # 定义状态空间 (x1, x2, x3, x4)
         self.observation_space = spaces.Box(
-            low=np.array([-5.,-5.,-np.pi,-5.]),
-            high=np.array([5., 5., np.pi, 5.]),
+            low=np.array([-2.,-2.,-np.pi,-2.]),
+            high=np.array([2., 2., np.pi, 2.]),
         )
 
         if random_seed != None:
@@ -40,6 +42,7 @@ class TranslationOscillator(gym.Env):
         self.reward_weight = reward_weight # reward权重
         self.frame_skip = frame_skip # 训练跳过的步数
         self.random_init = random_init # 随机初始状态
+        self.suqare_reward = suqare_reward # 平方reward
         self.reset()
         
     
@@ -84,10 +87,16 @@ class TranslationOscillator(gym.Env):
         '''
         w = self.reward_weight
         r = 0
-        r += -w[0]*np.abs(x[0])/10 
-        r += -w[1]*np.abs(x[1])/10 
-        r += -w[2]*np.abs(x[2])/np.pi 
-        r += -w[3]*np.abs(x[3])/10 
+        if self.suqare_reward:
+            r += -w[0]*np.abs(x[0])*np.abs(x[0])/2/2 
+            r += -w[1]*np.abs(x[1])*np.abs(x[1])/2/2
+            r += -w[2]*np.abs(x[2])*np.abs(x[2])/np.pi/np.pi
+            r += -w[3]*np.abs(x[3])*np.abs(x[3])/2/2 
+        else:
+            r += -w[0]*np.abs(x[0])/2 
+            r += -w[1]*np.abs(x[1])/2 
+            r += -w[2]*np.abs(x[2])/np.pi 
+            r += -w[3]*np.abs(x[3])/2 
         # 每步仿真奖励值[-2.2,0]，每秒（50Hz）最大得到100奖励值\
 
         # REWARD 取状态量中偏离目标状态最大的，做惩罚
@@ -104,7 +113,6 @@ class TranslationOscillator(gym.Env):
             self.init_state = [(np.random.random()-0.5)*2,0, (np.random.random()-0.5)*2 ,0]
         else:
             self.init_state = np.array([1,0,1,0])
-        self.init_state = np.array([1,0,1,0])
         self.last_state = np.array(self.init_state) # 记录上一时刻的状态
         self.total_t = 0
         self.step_num = 0 # 计数器
@@ -159,8 +167,11 @@ def play( env, model, init_state: np.ndarray = None ):
     episode_rewards, episode_lengths, = [], []
     
     for _ in range(1):
-        obs = env.reset(init_state = init_state)
-
+        obs = env.reset(init_state = init_state)   
+        all_x1.append(obs[0])
+        all_x2.append(obs[1])
+        all_x3.append(obs[2])
+        all_x4.append(obs[3])
         done = False
         episode_reward = 0.0
         episode_length = 0

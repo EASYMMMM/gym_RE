@@ -69,7 +69,6 @@ if __name__ == "__main__":
     model_name = args.model_name + "_"
      # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{args.algo}_{env_id}.zip"
-    
     print('load from:')
 
     print(save_path)
@@ -85,7 +84,9 @@ if __name__ == "__main__":
     print("==============================")
     try:
         # Use deterministic actions for evaluation
-        play(env,model,init_state=[1,1,1,1])
+        #play(env,model,init_state=[1,1,1,1])
+        play(env,model)
+
 
     except KeyboardInterrupt:
         pass

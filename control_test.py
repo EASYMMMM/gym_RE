@@ -6,7 +6,7 @@
 # MIT License
 
 '''
-python test.py --algo ppo --env TranslationOscillatorEnv-v0  --model-name t1
+python control_test.py --algo ppo --env TranslationOscillatorEnv-v0  --model-name t1
 
 '''
 # ------- 来自于mujoco150在win+py3.9下的矫情的要求 --------

@@ -8,9 +8,9 @@
 '''
 作出部分更改
 
-python train.py --algo ppo --env TranslationOscillatorEnv-v0 --n-timesteps 2000000 --model-name t3
+python control_train.py --algo ppo --env TranslationOscillatorEnv-v0 --n-timesteps 2000000 --model-name t3
 
-python train.py --algo sac --env TranslationOscillatorEnv-v0  --n-timesteps 2000000 --model-name 2e6_t4 
+python control_train.py --algo sac --env TranslationOscillatorEnv-v0  --n-timesteps 2000000 --model-name 2e6_t4 
 '''
 import argparse
 

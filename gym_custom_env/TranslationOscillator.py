@@ -18,7 +18,7 @@ class TranslationOscillator(gym.Env):
                  simulation_dt : float = 0.02,
                  reward_weight : list = [2,0.2,1,0.1],
                  frame_skip :int = 5,
-                 random_init  =False):
+                 random_init  = False):
         self._render = render
         # 定义动作空间
         self.action_space = spaces.Box(
@@ -104,6 +104,7 @@ class TranslationOscillator(gym.Env):
             self.init_state = [(np.random.random()-0.5)*2,0, (np.random.random()-0.5)*2 ,0]
         else:
             self.init_state = np.array([1,0,1,0])
+        self.init_state = np.array([1,0,1,0])
         self.last_state = np.array(self.init_state) # 记录上一时刻的状态
         self.total_t = 0
         self.step_num = 0 # 计数器

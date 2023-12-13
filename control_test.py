@@ -69,7 +69,7 @@ if __name__ == "__main__":
     model_name = args.model_name + "_"
      # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{args.algo}_{env_id}.zip"
-    save_path = 'best_model\\t1_Square_ppo_TranslationOscillatorEnv-v0.zip'
+    save_path = 'sb3model\\TranslationOscillatorEnv-v0\\t1_Square_ppo_TranslationOscillatorEnv-v0.zip'
     model_name =  't1_Square_ppo_'
     print('load from:')
 

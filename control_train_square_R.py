@@ -40,9 +40,9 @@ if __name__ == "__main__":
 
     # 环境名
     env_id = 'TranslationOscillatorEnv-v0'
-    n_timesteps = 800000
+    n_timesteps = 1000000
     model_name = 't1_Square'+ "_"
-    algo = 'ppo'
+    algo = 'sac'
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
 

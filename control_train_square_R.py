@@ -58,11 +58,11 @@ if __name__ == "__main__":
 
     callbacks = [EvalCallback(eval_env, best_model_save_path=save_path)]
 
-    algo = {
+    RLalgo = {
         "sac": SAC,
         "td3": TD3,
         "ppo": PPO,
-    }["ppo"]
+    }[algo]
 
     n_actions = env.action_space.shape[0]
     hyperparams = {
@@ -91,10 +91,10 @@ if __name__ == "__main__":
             learning_rate=2.5e-4,
             gamma=0.99
         )
-    }["ppo"]
+    }[algo]
 
     begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-    model = algo("MlpPolicy", env, verbose=1, tensorboard_log = tensorboard_log_path, **hyperparams,seed = seed)
+    model = RLalgo("MlpPolicy", env, verbose=1, tensorboard_log = tensorboard_log_path, **hyperparams,seed = seed)
     try:
         model.learn(n_timesteps, callback=callbacks , tb_log_name = tensorboard_log_name )
     except KeyboardInterrupt:
@@ -111,7 +111,6 @@ if __name__ == "__main__":
 #####################################################################################
     # 不带平方
     model_name = 't1_NoSquare'+ "_"
-    algo = 'ppo'
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
 
@@ -120,15 +119,10 @@ if __name__ == "__main__":
 
     # Instantiate and wrap the environment
     env = gym.make(env_id,suqare_reward=False)
-    algo = {
-        "sac": SAC,
-        "td3": TD3,
-        "ppo": PPO,
-    }["ppo"]
     # Create the evaluation environment and callbacks
     eval_env = Monitor(gym.make(env_id,suqare_reward=False))
     begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-    model = algo("MlpPolicy", env, verbose=1, tensorboard_log = tensorboard_log_path, **hyperparams,seed = seed)
+    model = RLalgo("MlpPolicy", env, verbose=1, tensorboard_log = tensorboard_log_path, **hyperparams,seed = seed)
     try:
         model.learn(n_timesteps, callback=callbacks , tb_log_name = tensorboard_log_name )
     except KeyboardInterrupt:

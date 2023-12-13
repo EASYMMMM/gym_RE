@@ -62,7 +62,7 @@ if __name__ == "__main__":
         "sac": SAC,
         "td3": TD3,
         "ppo": PPO,
-    }[algo]
+    }["ppo"]
 
     n_actions = env.action_space.shape[0]
     hyperparams = {
@@ -91,7 +91,7 @@ if __name__ == "__main__":
             learning_rate=2.5e-4,
             gamma=0.99
         )
-    }[algo]
+    }["ppo"]
 
     begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     model = algo("MlpPolicy", env, verbose=1, tensorboard_log = tensorboard_log_path, **hyperparams,seed = seed)
@@ -107,12 +107,24 @@ if __name__ == "__main__":
     print('Ended at: ' + end_time)
     print('=====================================')
 
+
+#####################################################################################
     # 不带平方
-    model_name = 't1_Square'+ "_"
+    model_name = 't1_NoSquare'+ "_"
+    algo = 'ppo'
+    # 存放在sb3model/文件夹下
+    save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
+
+    # tensorboard log 路径
+    tensorboard_log_name = f"{model_name}{algo}_{env_id}"
 
     # Instantiate and wrap the environment
     env = gym.make(env_id,suqare_reward=False)
-
+    algo = {
+        "sac": SAC,
+        "td3": TD3,
+        "ppo": PPO,
+    }["ppo"]
     # Create the evaluation environment and callbacks
     eval_env = Monitor(gym.make(env_id,suqare_reward=False))
     begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())

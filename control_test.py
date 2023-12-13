@@ -69,6 +69,7 @@ if __name__ == "__main__":
     model_name = args.model_name + "_"
      # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{args.algo}_{env_id}.zip"
+    save_path = 'sb3model\\TranslationOscillatorEnv-v0\\t1_Square_ppo_TranslationOscillatorEnv-v0.zip'
     print('load from:')
 
     print(save_path)
@@ -85,7 +86,7 @@ if __name__ == "__main__":
     try:
         # Use deterministic actions for evaluation
         #play(env,model,init_state=[1,1,1,1])
-        play(env,model)
+        play(env,model,csv_path='TORA_DATA/'+model_name+'.csv')
 
 
     except KeyboardInterrupt:

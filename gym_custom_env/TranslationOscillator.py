@@ -157,8 +157,8 @@ class TranslationOscillator(gym.Env):
 ''' 
 使用训练好的模型，进行测试
 '''
-def play( env, model, init_state: np.ndarray = None ):
-
+def play( env, model, init_state: np.ndarray = None ,csv_path = 'TORA.csv'):
+    import pandas as pd
     all_x1 = list()
     all_x2 = list()
     all_x3 = list()
@@ -166,44 +166,54 @@ def play( env, model, init_state: np.ndarray = None ):
     output = list()
     episode_rewards, episode_lengths, = [], []
     
-    for _ in range(1):
-        obs = env.reset(init_state = init_state)   
+    
+    obs = env.reset(init_state = init_state)   
+    all_x1.append(obs[0])
+    all_x2.append(obs[1])
+    all_x3.append(obs[2])
+    all_x4.append(obs[3])
+    done = False
+    episode_reward = 0.0
+    episode_length = 0
+    while not done:
+        action, _ = model.predict(obs, deterministic=True)
+        obs, reward, done, info = env.step(action)
+        print(reward)
+        episode_reward += reward
+        episode_length += 1
+        output.append(action)
         all_x1.append(obs[0])
         all_x2.append(obs[1])
         all_x3.append(obs[2])
         all_x4.append(obs[3])
-        done = False
-        episode_reward = 0.0
-        episode_length = 0
-        while not done:
-            action, _ = model.predict(obs, deterministic=True)
-            obs, reward, done, info = env.step(action)
-            print(reward)
-            episode_reward += reward
-            episode_length += 1
-            output.append(action)
-            all_x1.append(obs[0])
-            all_x2.append(obs[1])
-            all_x3.append(obs[2])
-            all_x4.append(obs[3])
-        is_success       = info['is_success']
-        episode_rewards.append(episode_reward)
-        episode_lengths.append(episode_length)
-        print('************************')    
-        print(
-            f"Episode {len(episode_rewards)} reward={episode_reward}, length={episode_length}"
-        )
-        print('success:',is_success)
-        print('************************')    
-        plt.figure(_)
-        plt.plot(all_x1, label = 'x1')
-        plt.plot(all_x2, label = 'x2')
-        plt.plot(all_x3, label = 'x3')
-        plt.plot(all_x4, label = 'x4')
-        plt.plot(output, linestyle = '-',label = 'output')
-        plt.legend()
-        plt.grid(True,linestyle = '--')
-        plt.show()
+    output.append(action)
+    is_success       = info['is_success']
+    episode_rewards.append(episode_reward)
+    episode_lengths.append(episode_length)
+    print('************************')    
+    print(
+        f"Episode {len(episode_rewards)} reward={episode_reward}, length={episode_length}"
+    )
+    print('success:',is_success)
+    print('************************')    
+    plt.figure(_)
+    plt.plot(all_x1, label = 'x1')
+    plt.plot(all_x2, label = 'x2')
+    plt.plot(all_x3, label = 'x3')
+    plt.plot(all_x4, label = 'x4')
+    plt.plot(output, linestyle = '-',label = 'output')
+    plt.legend()
+    plt.grid(True,linestyle = '--')
+    plt.show()
+
+    data ={'x1':all_x1,
+           'x2':all_x2,
+           'x3':all_x3,
+           'x4':all_x4,
+           'output':output}
+    df = pd.DataFrame(data)
+    filename = csv_path
+    df.to_csv(filename,index=False)
 
 
         

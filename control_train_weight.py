@@ -41,7 +41,7 @@ if __name__ == "__main__":
     # 环境名
     env_id = 'TranslationOscillatorEnv-v0'
     n_timesteps = 1000000
-    model_name = 't1_wr41_Square'+ "_"  #41 表示4 0.4 1 0.1
+    model_name = 't1_wr41_Square_acc'+ "_"  #41 表示4 0.4 1 0.1
     algo = 'ppo'
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
@@ -51,7 +51,7 @@ if __name__ == "__main__":
     tensorboard_log_name = f"{model_name}{algo}_{env_id}"
 
     # Instantiate and wrap the environment
-    env = gym.make(env_id,suqare_reward=True , reward_weight = [4,0.4,1,0.1])
+    env = gym.make(env_id,suqare_reward=True ,acc_state=True, reward_weight = [4,0.4,1,0.1])
 
     # Create the evaluation environment and callbacks
     eval_env = Monitor(gym.make(env_id,suqare_reward=True))
@@ -110,7 +110,7 @@ if __name__ == "__main__":
 
 #####################################################################################
     # 2倍
-    model_name = 't1_wr21_NoSquare'+ "_"
+    model_name = 't1_wr21_Square_acc'+ "_"
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
 
@@ -118,7 +118,7 @@ if __name__ == "__main__":
     tensorboard_log_name = f"{model_name}{algo}_{env_id}"
 
     # Instantiate and wrap the environment
-    env = gym.make(env_id,suqare_reward=False, reward_weight = [2,0.2,1,0.1])
+    env = gym.make(env_id,suqare_reward=True,acc_state=True, reward_weight = [2,0.2,1,0.1])
     # Create the evaluation environment and callbacks
     eval_env = Monitor(gym.make(env_id,suqare_reward=False))
     begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())

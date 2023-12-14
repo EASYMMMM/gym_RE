@@ -20,6 +20,7 @@ class TranslationOscillator(gym.Env):
                  frame_skip :int = 5,
                  random_init  = False,  # 随机初始状态
                  suqare_reward = False, # 计算reward时，平方处理
+                 acc_state = False,     # 观测状态中是否添加两个加速度
                  ):
         self._render = render
         # 定义动作空间
@@ -43,6 +44,9 @@ class TranslationOscillator(gym.Env):
         self.frame_skip = frame_skip # 训练跳过的步数
         self.random_init = random_init # 随机初始状态
         self.suqare_reward = suqare_reward # 平方reward
+        self.acc_state = acc_state 
+        self.last_xdd = 0 # 记录振荡平台的加速度
+        self.last_qdd = 0 # 记录小球的加速度
         self.reset()
         
     
@@ -77,6 +81,9 @@ class TranslationOscillator(gym.Env):
             N = np.array(action)
             x_dot = F + G*N + Q*f
             next_x = x + x_dot*self.dt
+            if self.acc_state:
+                self.last_xdd = x_dot[1]
+                self.last_qdd = x_dot[3]
             current_x = next_x
         return np.array(next_x,dtype=np.float32)
 
@@ -118,7 +125,11 @@ class TranslationOscillator(gym.Env):
         self.step_num = 0 # 计数器
         self.total_reward = 0
         self.success = False
-        return np.array(self.last_state,dtype=np.float32)
+        if self.acc_state:
+            state = np.append(self.init_state,[0,0])
+        else:
+            state = self.last_state
+        return np.array(state,dtype=np.float32)
     
     @property
     def done(self):
@@ -144,6 +155,9 @@ class TranslationOscillator(gym.Env):
         
         scale = np.array([5,5,np.pi,5])
         state = state / scale
+        if self.acc_state:
+            acc = np.array([self.last_xdd,self.last_qdd])
+            state = np.concatenate((state,acc) )
         return state, reward, done, info
     
     def seed(self, seed=None):

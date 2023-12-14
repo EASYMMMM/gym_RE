@@ -31,10 +31,16 @@ class TranslationOscillator(gym.Env):
         )
 
         # 定义状态空间 (x1, x2, x3, x4)
-        self.observation_space = spaces.Box(
-            low=np.array([-2.,-2.,-np.pi,-2.]),
-            high=np.array([2., 2., np.pi, 2.]),
-        )
+        if acc_state:
+            self.observation_space = spaces.Box(
+                low=np.array([-2.,-2.,-np.pi,-2.,-2,-2]),
+                high=np.array([2., 2., np.pi, 2., 2, 2]),
+            )
+        else:
+            self.observation_space = spaces.Box(
+                low=np.array([-2.,-2.,-np.pi,-2.]),
+                high=np.array([2., 2., np.pi, 2.]),
+            )
 
         if random_seed != None:
             self.seed(random_seed)

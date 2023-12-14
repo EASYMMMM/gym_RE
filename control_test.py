@@ -66,12 +66,13 @@ if __name__ == "__main__":
 
     # We assume that the saved model is in the same folder
 
-    model_name = args.model_name + "_"
+
      # 存放在sb3model/文件夹下
-    save_path = f"sb3model/{env_id}/{model_name}{args.algo}_{env_id}.zip"
-    save_path = 'sb3model\\TranslationOscillatorEnv-v0\\t1_Square_ppo_TranslationOscillatorEnv-v0.zip'
-    save_path = 'sb3model\\TranslationOscillatorEnv-v0\\t1_NoSquare_sac_TranslationOscillatorEnv-v0.zip'
-    model_name =  't1_NoSquare_sac_'
+    #save_path = f"sb3model/{env_id}/{model_name}{args.algo}_{env_id}.zip"
+    #save_path = 'sb3model\\TranslationOscillatorEnv-v0\\t1_Square_ppo_TranslationOscillatorEnv-v0.zip'
+    model_name =  't1_wr81_NoSquare_ppo_'
+    save_path = 'sb3model\\TranslationOscillatorEnv-v0\\'+ model_name + 'TranslationOscillatorEnv-v0.zip'
+    
     print('load from:')
 
     print(save_path)

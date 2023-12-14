@@ -41,7 +41,7 @@ if __name__ == "__main__":
     # 环境名
     env_id = 'TranslationOscillatorEnv-v0'
     n_timesteps = 1000000
-    model_name = 't1_wr41_Square_acc'+ "_"  #41 表示4 0.4 1 0.1
+    model_name = 't1_wr41_Square_acc_sr1'+ "_"  #41 表示4 0.4 1 0.1
     algo = 'ppo'
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
@@ -51,10 +51,20 @@ if __name__ == "__main__":
     tensorboard_log_name = f"{model_name}{algo}_{env_id}"
 
     # Instantiate and wrap the environment
-    env = gym.make(env_id,suqare_reward=True ,acc_state=True, reward_weight = [4,0.4,1,0.1])
+    env = gym.make(env_id, 
+                   suqare_reward=True ,
+                   acc_state=True, 
+                   stable_reward = 2,
+                   stable_limit = 0.1,
+                   reward_weight = [4,0.4,1,0.1])
 
     # Create the evaluation environment and callbacks
-    eval_env = Monitor(gym.make(env_id,suqare_reward=True))
+    eval_env = Monitor(gym.make(env_id, 
+                                suqare_reward=True ,
+                                acc_state=True, 
+                                stable_reward = 2,
+                                stable_limit = 0.1,
+                                reward_weight = [4,0.4,1,0.1]))
 
     callbacks = [EvalCallback(eval_env, best_model_save_path=save_path)]
 
@@ -110,7 +120,7 @@ if __name__ == "__main__":
 
 #####################################################################################
     # 2倍
-    model_name = 't1_wr21_Square_acc'+ "_"
+    model_name = 't1_wr41_Square_acc_sr2'+ "_"
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
 
@@ -118,9 +128,19 @@ if __name__ == "__main__":
     tensorboard_log_name = f"{model_name}{algo}_{env_id}"
 
     # Instantiate and wrap the environment
-    env = gym.make(env_id,suqare_reward=True,acc_state=True, reward_weight = [2,0.2,1,0.1])
+    env = gym.make(env_id, 
+                   suqare_reward=True ,
+                   acc_state=True, 
+                   stable_reward = 2,
+                   stable_limit = 0.2,
+                   reward_weight = [4,0.4,1,0.1])
     # Create the evaluation environment and callbacks
-    eval_env = Monitor(gym.make(env_id,suqare_reward=False))
+    eval_env = Monitor(gym.make(env_id, 
+                                suqare_reward=True ,
+                                acc_state=True, 
+                                stable_reward = 2,
+                                stable_limit = 0.2,
+                                reward_weight = [4,0.4,1,0.1]))
     begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     model = RLalgo("MlpPolicy", env, verbose=1, tensorboard_log = tensorboard_log_path, **hyperparams,seed = seed)
     try:

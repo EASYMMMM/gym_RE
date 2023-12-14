@@ -21,6 +21,8 @@ class TranslationOscillator(gym.Env):
                  random_init  = False,  # 随机初始状态
                  suqare_reward = False, # 计算reward时，平方处理
                  acc_state = False,     # 观测状态中是否添加两个加速度
+                 stable_reward = 0,     # 稳定额外奖励
+                 stable_limit = 0.1,    # 稳定阈值  
                  ):
         self._render = render
         # 定义动作空间
@@ -53,6 +55,8 @@ class TranslationOscillator(gym.Env):
         self.acc_state = acc_state 
         self.last_xdd = 0 # 记录振荡平台的加速度
         self.last_qdd = 0 # 记录小球的加速度
+        self.stable_reward = stable_reward # 额外奖励
+        self.stable_limit = stable_limit
         self.reset()
         
     
@@ -110,6 +114,12 @@ class TranslationOscillator(gym.Env):
             r += -w[1]*np.abs(x[1])/2 
             r += -w[2]*np.abs(x[2])/np.pi 
             r += -w[3]*np.abs(x[3])/2 
+
+        stable_limit = self.stable_limit
+        # 鼓励稳定在原点附近
+        if (x[0]<stable_limit and x[0]>-stable_limit) and (x[1]<stable_limit and x[1]>-stable_limit) and (x[2]<stable_limit and x[2]>-stable_limit) and (x[3]<stable_limit and x[3]>-stable_limit):
+            r += self.stable_reward
+
         # 每步仿真奖励值[-2.2,0]，每秒（50Hz）最大得到100奖励值\
 
         # REWARD 取状态量中偏离目标状态最大的，做惩罚

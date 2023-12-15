@@ -135,7 +135,7 @@ class TranslationOscillator(gym.Env):
             # 在[+-1, 0, +-1, 0]的范围内随机初始化
             self.init_state = [(np.random.random()-0.5)*2,0, (np.random.random()-0.5)*2 ,0]
         else:
-            self.init_state = np.array([1,0,1,0])
+            self.init_state = np.array([0,0,0,0])
         self.last_state = np.array(self.init_state) # 记录上一时刻的状态
         self.total_t = 0
         self.step_num = 0 # 计数器
@@ -244,6 +244,7 @@ def play( env, model, init_state: np.ndarray = None ,csv_path = 'TORA.csv'):
     df = pd.DataFrame(data)
     filename = csv_path
     df.to_csv(filename,index=False)
+    print(f'Write data to {filename}.')
 
 
         

@@ -132,10 +132,15 @@ class TranslationOscillator(gym.Env):
 
     def reset(self, init_state :np.ndarray= None):
         if self.random_init:
-            # 在[+-1, 0, +-1, 0]的范围内随机初始化
-            self.init_state = [(np.random.random()-0.5)*2,0, (np.random.random()-0.5)*2 ,0]
+            # 在[+1, 0, +1, 0]的范围内随机初始化
+            r = np.random.rand()
+            if r > 0.5:  # 一半初始状态，一半目标状态
+                self.init_state = np.array([1,0,1,0])
+            else:
+                self.init_state = np.array([0,0,0,0])
+            # self.init_state = [(np.random.random()-0.5)*2,0, (np.random.random()-0.5)*2 ,0]
         else:
-            self.init_state = np.array([0,0,0,0])
+            self.init_state = np.array([1,0,1,0])
         self.last_state = np.array(self.init_state) # 记录上一时刻的状态
         self.total_t = 0
         self.step_num = 0 # 计数器

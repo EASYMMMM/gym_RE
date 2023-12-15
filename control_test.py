@@ -59,7 +59,7 @@ if __name__ == "__main__":
     #env = gym.make(env_id) 
     env = gym.make(env_id,
                    suqare_reward=True ,
-                   #acc_state=True, 
+                   acc_state=True, 
                    reward_weight = [4,0.4,1,0.1])
     
     algo = {
@@ -74,7 +74,7 @@ if __name__ == "__main__":
      # 存放在sb3model/文件夹下
     #save_path = f"sb3model/{env_id}/{model_name}{args.algo}_{env_id}.zip"
     #save_path = 'sb3model\\TranslationOscillatorEnv-v0\\t1_Square_ppo_TranslationOscillatorEnv-v0.zip'
-    model_name =  't1_wr21_NoSquare_ppo_'
+    model_name =  't1_wr41_Square_acc_sr2_0init_ppo_'
     save_path = 'sb3model\\TranslationOscillatorEnv-v0\\'+ model_name + 'TranslationOscillatorEnv-v0.zip'
     
     print('load from:')

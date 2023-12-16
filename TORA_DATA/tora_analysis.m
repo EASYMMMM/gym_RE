@@ -1,7 +1,7 @@
-T1_name = 't1_wr21_Square_acc_ppo_';
-T2_name = 't1_wr41_Square_acc_ppo_';
-T3_name = 't1_wr41_Square_acc_sr1_randinit_ppo_';
-T4_name = 't1_wr41_Square_acc_sr2_randinit_ppo_';
+T1_name = 't1_wr41_Square_acc_sr1_randinit_ppo_';
+T2_name = 't1_wr41_Square_acc_sr1_randinit_sac_';
+T3_name = 't1_wr41_Square_ppo_';
+T4_name = 't1_Square_ppo_';
 T5_name = 't1_wr41_Square_acc_sr1_0init_ppo_';
 T6_name = 't1_wr41_Square_acc_sr2_0init_ppo_';
 
@@ -17,8 +17,8 @@ drawT1 = 1  ;
 drawT2 = 1  ;
 drawT3 = 0  ;
 drawT4 = 0  ;
-drawT5 = 0  ;
-drawT6 = 0  ;
+drawT5 = 1  ;
+drawT6 = 1  ;
 %% 
 figure(1)
 subplot(2,2,1)

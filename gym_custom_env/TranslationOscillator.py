@@ -69,7 +69,7 @@ class TranslationOscillator(gym.Env):
         '''
         
         epsilon = self.epsilon
-        current_x =  self.last_state  # 当前状态
+        current_x =  self.last_state[0:4]  # 当前状态
         for i in range(self.frame_skip):
             x = current_x
             F = np.array([0.0,0.0,0.0,0.0])
@@ -141,7 +141,6 @@ class TranslationOscillator(gym.Env):
             # self.init_state = [(np.random.random()-0.5)*2,0, (np.random.random()-0.5)*2 ,0]
         else:
             self.init_state = np.array([1,0,1,0])
-        self.last_state = np.array(self.init_state) # 记录上一时刻的状态
         self.total_t = 0
         self.step_num = 0 # 计数器
         self.total_reward = 0
@@ -149,7 +148,8 @@ class TranslationOscillator(gym.Env):
         if self.acc_state:
             state = np.append(self.init_state,[0,0])
         else:
-            state = self.last_state
+            state = self.init_state
+        self.last_state = np.array(state) # 记录上一时刻的状态
         return np.array(state,dtype=np.float32)
     
     @property
@@ -175,7 +175,7 @@ class TranslationOscillator(gym.Env):
         info = {"is_success":self.success}
         
         scale = np.array([5,5,np.pi,5])
-        state = state / scale
+        #state = state / scale
         if self.acc_state:
             acc = np.array([self.last_xdd,self.last_qdd])
             state = np.concatenate((state,acc) )

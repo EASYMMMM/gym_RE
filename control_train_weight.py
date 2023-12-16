@@ -42,7 +42,7 @@ if __name__ == "__main__":
     env_id = 'TranslationOscillatorEnv-v0'
     n_timesteps = 1000000
     model_name = 't1_wr41_Square_acc_sr1_randinit'+ "_"  #41 表示4 0.4 1 0.1
-    algo = 'ppo'
+    algo = 'sac'
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
 

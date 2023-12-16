@@ -169,7 +169,7 @@ class TranslationOscillator(gym.Env):
 
     def step(self, action):
         state = self.__simulation(action)
-        self.total_t += self.dt
+        self.total_t += self.dt*self.frame_skip
         self.last_state = state # 记录当前状态
         reward = self.reward(state)
         self.total_reward += reward

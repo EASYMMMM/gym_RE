@@ -1,7 +1,7 @@
 T1_name = 't1_wr41_Square_acc_sr1_randinit_ppo_';
 T2_name = 't1_wr41_Square_acc_sr1_randinit_sac_';
-T3_name = 't1_wr41_Square_ppo_';
-T4_name = 't1_Square_ppo_';
+T3_name = 'no_ctrl_0init';
+T4_name = 'no_ctrl_1init';
 T5_name = 't1_wr41_Square_acc_sr1_0init_ppo_';
 T6_name = 't1_wr41_Square_acc_sr2_0init_ppo_';
 
@@ -13,14 +13,23 @@ T5 = readtable([T5_name,'.csv']);
 T6 = readtable([T6_name,'.csv']);
 
 
-drawT1 = 1  ;
-drawT2 = 1  ;
-drawT3 = 0  ;
-drawT4 = 0  ;
-drawT5 = 1  ;
-drawT6 = 1  ;
+drawT1 = 0  ;
+drawT2 = 0  ;
+drawT3 = 1  ;
+drawT4 = 1  ;
+drawT5 = 0  ;
+drawT6 = 0  ;
+
+T1_name = 't1_wr41_Square_acc_sr1_randinit_ppo_';
+T2_name = 't1_wr41_Square_acc_sr1_randinit_sac_';
+T3_name = 'Init: 0 0 0 0';
+T4_name = 'Init: 1 0 1 0';
+T5_name = 't1_wr41_Square_acc_sr1_0init_ppo_';
+T6_name = 't1_wr41_Square_acc_sr2_0init_ppo_';
+
 %% 
 figure(1)
+
 subplot(2,2,1)
 if drawT1
     plot(T1.x1,'Linewidth',2,'DisplayName',T1_name);
@@ -44,6 +53,8 @@ end
 title('x1')
 legend()
 grid on
+xlim([0,300])
+set(gca, 'linewidth', 1.1, 'fontsize', 17, 'fontname', 'times','color','#E6E8E9') %去掉x，y坐标轴的刻度
 
 subplot(2,2,2)
 if drawT1
@@ -66,9 +77,10 @@ if drawT6
     plot(T6.x2,'Linewidth',2,'DisplayName',T6_name);
 end
 title('x2')
-legend()
+%legend()
 grid on
-
+xlim([0,300])
+set(gca, 'linewidth', 1.1, 'fontsize', 17, 'fontname', 'times','color','#E6E8E9') %去掉x，y坐标轴的刻度
 
 subplot(2,2,3)
 if drawT1
@@ -91,8 +103,12 @@ if drawT6
     plot(T6.x3,'Linewidth',2,'DisplayName',T6_name);
 end
 title('x3')
-legend()
+%legend()
 grid on
+xlim([0,300])
+ylim([-3,3])
+set(gca, 'linewidth', 1.1, 'fontsize', 17, 'fontname', 'times','color','#E6E8E9') %去掉x，y坐标轴的刻度
+
 
 subplot(2,2,4)
 if drawT1
@@ -115,5 +131,8 @@ if drawT6
     plot(T6.x4,'Linewidth',2,'DisplayName',T6_name);
 end
 title('x4')
-legend()
+%legend()
 grid on
+xlim([0,300])
+set(gca, 'linewidth', 1.1, 'fontsize', 17, 'fontname', 'times','color','#E6E8E9') %去掉x，y坐标轴的刻度
+

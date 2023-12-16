@@ -32,7 +32,7 @@ from stable_baselines3.common.callbacks import EvalCallback, CheckpointCallback
 from stable_baselines3.common.monitor import Monitor
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser("Train an RL agent using Stable Baselines3")
 
     # 随机种子
@@ -41,8 +41,8 @@ if __name__ == "__main__":
     # 环境名
     env_id = 'TranslationOscillatorEnv-v0'
     n_timesteps = 1000000
-    model_name = 't2_wr41_Square_acc_sr1_0init'+ "_"  #41 表示4 0.4 1 0.1
-    algo = 'ppo'
+    model_name = 't2_wr41_Square_acc_sr1_0init_'+ "_"  #41 表示4 0.4 1 0.1
+    algo = 'sac'
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
 
@@ -119,7 +119,7 @@ if __name__ == "__main__":
     print('Ended at: ' + end_time)
     print('=====================================')
 
-
+    return
 #####################################################################################
     # 2倍
     model_name = 't2_wr41_Square_acc_sr05_0init'+ "_"
@@ -157,3 +157,5 @@ if __name__ == "__main__":
     print('Started at: ' + begin_time)
     print('Ended at: ' + end_time)
     print('=====================================')
+if __name__ == '__main__':
+    main()

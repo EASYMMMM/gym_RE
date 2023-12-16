@@ -16,14 +16,14 @@ T6 = readtable([T6_name,'.csv']);
 drawT1 = 0  ;
 drawT2 = 0  ;
 drawT3 = 1  ;
-drawT4 = 1  ;
+drawT4 = 1 ;
 drawT5 = 0  ;
 drawT6 = 0  ;
 
 T1_name = 't1_wr41_Square_acc_sr1_randinit_ppo_';
 T2_name = 't1_wr41_Square_acc_sr1_randinit_sac_';
 T3_name = 'Init: 0 0 0 0';
-T4_name = 'Init: 1 0 1 0';
+T4_name = 'Init: 0.5 0 0 0';
 T5_name = 't1_wr41_Square_acc_sr1_0init_ppo_';
 T6_name = 't1_wr41_Square_acc_sr2_0init_ppo_';
 
@@ -106,7 +106,7 @@ title('x3')
 %legend()
 grid on
 xlim([0,300])
-ylim([-3,3])
+ ylim([-0.5,0.5])
 set(gca, 'linewidth', 1.1, 'fontsize', 17, 'fontname', 'times','color','#E6E8E9') %去掉x，y坐标轴的刻度
 
 
@@ -134,5 +134,6 @@ title('x4')
 %legend()
 grid on
 xlim([0,300])
+ ylim([-0.5,0.5])
 set(gca, 'linewidth', 1.1, 'fontsize', 17, 'fontname', 'times','color','#E6E8E9') %去掉x，y坐标轴的刻度
 

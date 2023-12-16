@@ -41,13 +41,13 @@ def main():
     # 环境名
     env_id = 'TranslationOscillatorEnv-v0'
     n_timesteps = 1000000
-    model_name = 't2_wr41_Square_acc_sr1_0init_'+ "_"  #41 表示4 0.4 1 0.1
-    algo = 'sac'
+    model_name = 't3_wr41_Square_acc_sr1_0init'+ "_"  #41 表示4 0.4 1 0.1
+    algo = 'ppo'
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
 
     # tensorboard log 路径
-    tensorboard_log_path = f"tensorboard_log/{env_id}/t2/{model_name}{algo}_{env_id}"
+    tensorboard_log_path = f"tensorboard_log/{env_id}/t3/"
     tensorboard_log_name = f"{model_name}{algo}_{env_id}"
 
     # Instantiate and wrap the environment
@@ -119,10 +119,10 @@ def main():
     print('Ended at: ' + end_time)
     print('=====================================')
 
-    return
+
 #####################################################################################
     # 2倍
-    model_name = 't2_wr41_Square_acc_sr05_0init'+ "_"
+    model_name = 't3_wr41_Square_acc_sr1_randinit'+ "_"
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
 
@@ -134,8 +134,8 @@ def main():
                    suqare_reward=True ,
                    acc_state=True, 
                    stable_reward = 2,
-                   stable_limit = 0.05,
-                   #random_init = True,
+                   stable_limit = 0.1,
+                   random_init = True,
                    reward_weight = [4,0.4,1,0.1])
     # Create the evaluation environment and callbacks
     eval_env = Monitor(gym.make(env_id, 

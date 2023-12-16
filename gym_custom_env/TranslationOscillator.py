@@ -104,6 +104,8 @@ class TranslationOscillator(gym.Env):
         '''
         w = self.reward_weight
         r = 0
+        x[0] = x[0]*10
+        x[2] = x[2]*10
         if self.suqare_reward:
             r += -w[0]*np.abs(x[0])*np.abs(x[0])/2/2 
             r += -w[1]*np.abs(x[1])*np.abs(x[1])/2/2
@@ -135,7 +137,7 @@ class TranslationOscillator(gym.Env):
             # 在[+1, 0, +1, 0]的范围内随机初始化
             r = np.random.rand()
             if r > 0.5:  # 一半初始状态，一半目标状态
-                self.init_state = np.array([1,0,1,0])
+                self.init_state = np.array([0.25,0,0,0])
             else:
                 self.init_state = np.array([0,0,0,0])
             # self.init_state = [(np.random.random()-0.5)*2,0, (np.random.random()-0.5)*2 ,0]
@@ -155,7 +157,7 @@ class TranslationOscillator(gym.Env):
     @property
     def done(self):
         d = False
-        if self.total_reward < -300: # 当负值奖励积累的太大时，提前终止训练
+        if self.total_reward < -400: # 当负值奖励积累的太大时，提前终止训练
             d = True
         if self.total_reward > 1500: # 总奖励达到1500，认为训练成功
             d = True

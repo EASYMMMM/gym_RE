@@ -59,7 +59,7 @@ if __name__ == "__main__":
     #env = gym.make(env_id) 
     env = gym.make(env_id,
                    suqare_reward=True ,
-                   acc_state=True, 
+                   #acc_state=True, 
                    reward_weight = [4,0.4,1,0.1])
     
     algo = {
@@ -75,6 +75,7 @@ if __name__ == "__main__":
     #save_path = f"sb3model/{env_id}/{model_name}{args.algo}_{env_id}.zip"
     #save_path = 'sb3model\\TranslationOscillatorEnv-v0\\t1_Square_ppo_TranslationOscillatorEnv-v0.zip'
     model_name =  't2_wr41_Square_acc_sr1_0init__sac_'
+    model_name =  't1_Square_ppo_'
     save_path = 'sb3model\\TranslationOscillatorEnv-v0\\'+ model_name + 'TranslationOscillatorEnv-v0.zip'
     
     print('load from:')
@@ -93,7 +94,7 @@ if __name__ == "__main__":
     try:
         # Use deterministic actions for evaluation
         #play(env,model,init_state=[1,1,1,1])
-        play(env,model,csv_path='TORA_DATA/'+model_name+'.csv')
+        play(env,model,csv_path='TORA_DATA/'+'no_ctrl_1init'+'.csv')
 
 
     except KeyboardInterrupt:

@@ -74,7 +74,7 @@ if __name__ == "__main__":
      # 存放在sb3model/文件夹下
     #save_path = f"sb3model/{env_id}/{model_name}{args.algo}_{env_id}.zip"
     #save_path = 'sb3model\\TranslationOscillatorEnv-v0\\t1_Square_ppo_TranslationOscillatorEnv-v0.zip'
-    model_name =  't2_wr41_Square_acc_sr05_0init_ppo_'
+    model_name =  't2_wr41_Square_acc_sr1_0init__sac_'
     save_path = 'sb3model\\TranslationOscillatorEnv-v0\\'+ model_name + 'TranslationOscillatorEnv-v0.zip'
     
     print('load from:')

@@ -104,6 +104,8 @@ class TranslationOscillator(gym.Env):
         '''
         w = self.reward_weight
         r = 0
+        x[0] = x[0]*10
+        x[3] = x[3]*10
         if self.suqare_reward:
             r += -w[0]*np.abs(x[0])*np.abs(x[0])/2/2 
             r += -w[1]*np.abs(x[1])*np.abs(x[1])/2/2
@@ -140,7 +142,7 @@ class TranslationOscillator(gym.Env):
                 self.init_state = np.array([0,0,0,0])
             # self.init_state = [(np.random.random()-0.5)*2,0, (np.random.random()-0.5)*2 ,0]
         else:
-            self.init_state = np.array([1,0,1,0])
+            self.init_state = np.array([0,0,0,0])
         self.total_t = 0
         self.step_num = 0 # 计数器
         self.total_reward = 0

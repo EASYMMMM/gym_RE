@@ -106,8 +106,9 @@ class TranslationOscillator(gym.Env):
         '''
         w = self.reward_weight
         r = 0
-        a = x[0]*10
-        b = x[2]*10
+        scale = 1/self.stable_limit
+        a = x[0]*scale
+        b = x[2]*scale
         if self.suqare_reward:
             r += -w[0]*np.abs(a)*np.abs(a)/2/2 
             r += -w[1]*np.abs(x[1])*np.abs(x[1])/2/2

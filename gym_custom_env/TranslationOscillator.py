@@ -23,6 +23,7 @@ class TranslationOscillator(gym.Env):
                  acc_state = False,     # 观测状态中是否添加两个加速度
                  stable_reward = 0,     # 稳定额外奖励
                  stable_limit = 0.1,    # 稳定阈值  
+                 init_state = [0,0,0,0],# 初始状态 （仅当random_init  = False）
                  ):
         self._render = render
         # 定义动作空间
@@ -57,6 +58,7 @@ class TranslationOscillator(gym.Env):
         self.last_qdd = 0 # 记录小球的加速度
         self.stable_reward = stable_reward # 额外奖励
         self.stable_limit = stable_limit
+        self.init_state = init_state
         self.reset()
         
     
@@ -137,20 +139,20 @@ class TranslationOscillator(gym.Env):
             # 在[+1, 0, +1, 0]的范围内随机初始化
             r = np.random.rand()
             # if r > 0.5:  # 一半初始状态，一半目标状态
-            #     self.init_state = np.array([0.25,0,0,0])
+            #     init_state = np.array([0.25,0,0,0])
             # else:
-            #     self.init_state = np.array([0,0,0,0])
-            self.init_state = [r*0.25, 0, 0 ,0]
+            #     init_state = np.array([0,0,0,0])
+            init_state = [r*0.25, 0, 0 ,0]
         else:
-            self.init_state = np.array([0.25,0,0,0])
+            init_state = np.array(self.init_state)
         self.total_t = 0
         self.step_num = 0 # 计数器
         self.total_reward = 0
         self.success = False
         if self.acc_state:
-            state = np.append(self.init_state,[0,0])
+            state = np.append(init_state,[0,0])
         else:
-            state = self.init_state
+            state = init_state
         self.last_state = np.array(state) # 记录上一时刻的状态
         return np.array(state,dtype=np.float32)
     

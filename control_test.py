@@ -62,6 +62,7 @@ if __name__ == "__main__":
                    acc_state=True,
                     stable_reward = 2,
                     stable_limit = 0.1, 
+                    init_state=[0.25,0,0,0],
                    reward_weight = [4,0.4,1,0.1])
     
     algo = {

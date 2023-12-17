@@ -56,6 +56,7 @@ def main():
                    acc_state=True, 
                    stable_reward = 2,
                    stable_limit = 0.05,
+                   init_state = [0.25,0,0,0],
                    #random_init = True,
                    reward_weight = [4,0.4,1,0.1])
 
@@ -85,6 +86,7 @@ def main():
             learning_starts=10000,
             buffer_size=int(3e5),
             tau=0.01,
+            device='cuda:1'
         ),
         "td3": dict(
             batch_size=100,

@@ -42,34 +42,25 @@ def main():
     # 环境名
     env_id = 'TranslationOscillatorEnv-v0'
     n_timesteps = 5000000
-    model_name = 't4_wr41_Square_acc_01init'+ "_"  #41 表示4 0.4 1 0.1
+    model_name = 'Task1_wr41_Square_acc_sr08_0init'+ "_"  #41 表示4 0.4 1 0.1
     algo = 'ppo'
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
 
     # tensorboard log 路径
-    tensorboard_log_path = f"tensorboard_log/{env_id}/t4/"
+    tensorboard_log_path = f"tensorboard_log/{env_id}/Task1/"
     tensorboard_log_name = f"{model_name}{algo}_{env_id}"
 
     env_kwargs = { "suqare_reward":True ,
                    "acc_state":True, 
-                   "init_state" : [0.1,0,0,0],
-                   "stable_reward":  0,
-                   "stable_limit" : 0.025,
+                   "init_state" : [0,0,0,0],
+                   "stable_reward":  2,
+                   "stable_limit" : 0.08,
                    #"random_init" : True,
                    "reward_weight": [4,0.4,1,0.1]}
                    
     # Instantiate and wrap the environment
     env = make_vec_env(env_id = env_id, n_envs = 12, env_kwargs = env_kwargs)
-
-    # Create the evaluation environment and callbacks
-    eval_env = Monitor(gym.make(env_id, 
-                                suqare_reward=True ,
-                                acc_state=True, 
-                                stable_reward = 2,
-                                stable_limit = 0.1,
-                                #random_init = True,
-                                reward_weight = [4,0.4,1,0.1]))
 
     #callbacks = [EvalCallback(eval_env, best_model_save_path=save_path)]
 
@@ -125,9 +116,80 @@ def main():
 
     
 #####################################################################################
-    # 2倍
-    return
-    model_name = 't4_wr41_Square_acc_sr001_0init'+ "_"
+    
+    
+    model_name = 'Task1_wr41_Square_acc_sr04_0init'+ "_"
+    # 存放在sb3model/文件夹下
+    save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
+
+    # tensorboard log 路径
+    tensorboard_log_name = f"{model_name}{algo}_{env_id}"
+
+    env_kwargs = { "suqare_reward":True ,
+                   "acc_state":True, 
+                   "init_state" : [0,0,0,0],
+                   "stable_reward":  2,
+                   "stable_limit" : 0.040,
+                   #"random_init" : True,
+                   "reward_weight": [4,0.4,1,0.1]}
+                   
+    # Instantiate and wrap the environment
+    env = make_vec_env(env_id = env_id, n_envs = 12, env_kwargs = env_kwargs)
+
+
+    begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    model = RLalgo("MlpPolicy", env, verbose=1, tensorboard_log = tensorboard_log_path, **hyperparams,seed = seed)
+    try:
+        model.learn(n_timesteps, tb_log_name = tensorboard_log_name )
+    except KeyboardInterrupt:
+        pass
+    print('=====================================')
+    print(f"Saving to {save_path}.zip")
+    model.save(save_path)
+    end_time = time.strftime('%Y_%m_%d_%H_%M_%S', time.localtime())
+    print('Started at: ' + begin_time)
+    print('Ended at: ' + end_time)
+    print('=====================================')
+
+#####################################################################################
+    
+    
+    model_name = 'Task1_wr41_Square_acc_sr02_0init'+ "_"
+    # 存放在sb3model/文件夹下
+    save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
+
+    # tensorboard log 路径
+    tensorboard_log_name = f"{model_name}{algo}_{env_id}"
+
+    env_kwargs = { "suqare_reward":True ,
+                   "acc_state":True, 
+                   "init_state" : [0,0,0,0],
+                   "stable_reward":  2,
+                   "stable_limit" : 0.020,
+                   #"random_init" : True,
+                   "reward_weight": [4,0.4,1,0.1]}
+                   
+    # Instantiate and wrap the environment
+    env = make_vec_env(env_id = env_id, n_envs = 12, env_kwargs = env_kwargs)
+
+
+    begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    model = RLalgo("MlpPolicy", env, verbose=1, tensorboard_log = tensorboard_log_path, **hyperparams,seed = seed)
+    try:
+        model.learn(n_timesteps, tb_log_name = tensorboard_log_name )
+    except KeyboardInterrupt:
+        pass
+    print('=====================================')
+    print(f"Saving to {save_path}.zip")
+    model.save(save_path)
+    end_time = time.strftime('%Y_%m_%d_%H_%M_%S', time.localtime())
+    print('Started at: ' + begin_time)
+    print('Ended at: ' + end_time)
+    print('=====================================')
+
+#####################################################################################
+    
+    model_name = 'Task1_wr41_Square_acc_sr01_0init'+ "_"
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
 
@@ -159,5 +221,6 @@ def main():
     print('Started at: ' + begin_time)
     print('Ended at: ' + end_time)
     print('=====================================')
+    
 if __name__ == '__main__':
     main()

@@ -41,20 +41,20 @@ def main():
 
     # 环境名
     env_id = 'TranslationOscillatorEnv-v0'
-    n_timesteps = 2000000
-    model_name = 't4_wr41_Square_acc_sr025_randinit'+ "_"  #41 表示4 0.4 1 0.1
-    algo = 'sac'
+    n_timesteps = 5000000
+    model_name = 't4_wr41_Square_acc_01init'+ "_"  #41 表示4 0.4 1 0.1
+    algo = 'ppo'
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
 
     # tensorboard log 路径
-    tensorboard_log_path = f"tensorboard_log/{env_id}/t4_sac/"
+    tensorboard_log_path = f"tensorboard_log/{env_id}/t4/"
     tensorboard_log_name = f"{model_name}{algo}_{env_id}"
 
     env_kwargs = { "suqare_reward":True ,
                    "acc_state":True, 
-                   "init_state" : [0,0,0,0],
-                   "stable_reward":  2,
+                   "init_state" : [0.1,0,0,0],
+                   "stable_reward":  0,
                    "stable_limit" : 0.025,
                    #"random_init" : True,
                    "reward_weight": [4,0.4,1,0.1]}
@@ -68,10 +68,10 @@ def main():
                                 acc_state=True, 
                                 stable_reward = 2,
                                 stable_limit = 0.1,
-                                random_init = True,
+                                #random_init = True,
                                 reward_weight = [4,0.4,1,0.1]))
 
-    callbacks = [EvalCallback(eval_env, best_model_save_path=save_path)]
+    #callbacks = [EvalCallback(eval_env, best_model_save_path=save_path)]
 
     RLalgo = {
         "sac": SAC,
@@ -112,7 +112,7 @@ def main():
     begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     model = RLalgo("MlpPolicy", env, verbose=1, tensorboard_log = tensorboard_log_path, **hyperparams,seed = seed)
     try:
-        model.learn(n_timesteps, callback=callbacks , tb_log_name = tensorboard_log_name )
+        model.learn(n_timesteps , tb_log_name = tensorboard_log_name )
     except KeyboardInterrupt:
         pass
     print('=====================================')
@@ -123,35 +123,33 @@ def main():
     print('Ended at: ' + end_time)
     print('=====================================')
 
-    return
+    
 #####################################################################################
     # 2倍
-    model_name = 't3_wr41_Square_acc_sr05_randinit'+ "_"
+    return
+    model_name = 't4_wr41_Square_acc_sr001_0init'+ "_"
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
 
     # tensorboard log 路径
     tensorboard_log_name = f"{model_name}{algo}_{env_id}"
 
+    env_kwargs = { "suqare_reward":True ,
+                   "acc_state":True, 
+                   "init_state" : [0,0,0,0],
+                   "stable_reward":  2,
+                   "stable_limit" : 0.010,
+                   #"random_init" : True,
+                   "reward_weight": [4,0.4,1,0.1]}
+                   
     # Instantiate and wrap the environment
-    env = gym.make(env_id, 
-                   suqare_reward=True ,
-                   acc_state=True, 
-                   stable_reward = 2,
-                   stable_limit = 0.05,
-                   random_init = True,
-                   reward_weight = [4,0.4,1,0.1])
-    # Create the evaluation environment and callbacks
-    eval_env = Monitor(gym.make(env_id, 
-                                suqare_reward=True ,
-                                acc_state=True, 
-                                stable_reward = 2,
-                                stable_limit = 0.2,
-                                reward_weight = [4,0.4,1,0.1]))
+    env = make_vec_env(env_id = env_id, n_envs = 12, env_kwargs = env_kwargs)
+
+
     begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     model = RLalgo("MlpPolicy", env, verbose=1, tensorboard_log = tensorboard_log_path, **hyperparams,seed = seed)
     try:
-        model.learn(n_timesteps, callback=callbacks , tb_log_name = tensorboard_log_name )
+        model.learn(n_timesteps, tb_log_name = tensorboard_log_name )
     except KeyboardInterrupt:
         pass
     print('=====================================')

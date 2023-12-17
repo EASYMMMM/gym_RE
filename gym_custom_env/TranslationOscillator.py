@@ -160,7 +160,7 @@ class TranslationOscillator(gym.Env):
     @property
     def done(self):
         d = False
-        if self.total_reward < -400: # 当负值奖励积累的太大时，提前终止训练
+        if self.total_reward < -1000: # 当负值奖励积累的太大时，提前终止训练
             d = True
         if self.total_reward > 1500: # 总奖励达到1500，认为训练成功
             d = True

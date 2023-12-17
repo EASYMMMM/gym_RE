@@ -104,17 +104,17 @@ class TranslationOscillator(gym.Env):
         '''
         w = self.reward_weight
         r = 0
-        x[0] = x[0]*10
-        x[2] = x[2]*10
+        a = x[0]*10
+        b = x[2]*10
         if self.suqare_reward:
-            r += -w[0]*np.abs(x[0])*np.abs(x[0])/2/2 
+            r += -w[0]*np.abs(a)*np.abs(a)/2/2 
             r += -w[1]*np.abs(x[1])*np.abs(x[1])/2/2
-            r += -w[2]*np.abs(x[2])*np.abs(x[2])/np.pi/np.pi
+            r += -w[2]*np.abs(b)*np.abs(b)/np.pi/np.pi
             r += -w[3]*np.abs(x[3])*np.abs(x[3])/2/2 
         else:
-            r += -w[0]*np.abs(x[0])/2 
+            r += -w[0]*np.abs(a)/2 
             r += -w[1]*np.abs(x[1])/2 
-            r += -w[2]*np.abs(x[2])/np.pi 
+            r += -w[2]*np.abs(b)/np.pi 
             r += -w[3]*np.abs(x[3])/2 
 
         stable_limit = self.stable_limit
@@ -136,13 +136,13 @@ class TranslationOscillator(gym.Env):
         if self.random_init:
             # 在[+1, 0, +1, 0]的范围内随机初始化
             r = np.random.rand()
-            if r > 0.5:  # 一半初始状态，一半目标状态
-                self.init_state = np.array([0.25,0,0,0])
-            else:
-                self.init_state = np.array([0,0,0,0])
-            # self.init_state = [(np.random.random()-0.5)*2,0, (np.random.random()-0.5)*2 ,0]
+            # if r > 0.5:  # 一半初始状态，一半目标状态
+            #     self.init_state = np.array([0.25,0,0,0])
+            # else:
+            #     self.init_state = np.array([0,0,0,0])
+            self.init_state = [r*0.25, 0, 0 ,0]
         else:
-            self.init_state = np.array([0,0,0,0])
+            self.init_state = np.array([0.25,0,0,0])
         self.total_t = 0
         self.step_num = 0 # 计数器
         self.total_reward = 0

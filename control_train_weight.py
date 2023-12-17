@@ -41,7 +41,7 @@ def main():
     # 环境名
     env_id = 'TranslationOscillatorEnv-v0'
     n_timesteps = 1000000
-    model_name = 't3_wr41_Square_acc_sr1_0init'+ "_"  #41 表示4 0.4 1 0.1
+    model_name = 't3_wr41_Square_acc_sr1_025init'+ "_"  #41 表示4 0.4 1 0.1
     algo = 'ppo'
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"

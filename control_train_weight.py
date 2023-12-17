@@ -6,7 +6,8 @@
 # MIT License
 
 '''
-作出部分更改
+使用服务器进行训练 cuda1
+
 
 python control_train.py --algo ppo --env TranslationOscillatorEnv-v0 --n-timesteps 2000000 --model-name t3
 
@@ -30,7 +31,7 @@ from stable_baselines3 import SAC, TD3, PPO
 from stable_baselines3.common.noise import NormalActionNoise
 from stable_baselines3.common.callbacks import EvalCallback, CheckpointCallback
 from stable_baselines3.common.monitor import Monitor
-
+from stable_baselines3.common.env_util import make_vec_env
 
 def main():
     parser = argparse.ArgumentParser("Train an RL agent using Stable Baselines3")
@@ -40,8 +41,8 @@ def main():
 
     # 环境名
     env_id = 'TranslationOscillatorEnv-v0'
-    n_timesteps = 1000000
-    model_name = 't3_wr41_Square_acc_sr05_025init'+ "_"  #41 表示4 0.4 1 0.1
+    n_timesteps = 3000000
+    model_name = 't3_wr41_Square_acc_sr05_randinit'+ "_"  #41 表示4 0.4 1 0.1
     algo = 'sac'
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
@@ -50,15 +51,16 @@ def main():
     tensorboard_log_path = f"tensorboard_log/{env_id}/t3/"
     tensorboard_log_name = f"{model_name}{algo}_{env_id}"
 
+    env_kwargs = { "suqare_reward":True ,
+                   "acc_state":True, 
+                   "init_state" : [0,0,0,0],
+                   "stable_reward":  2,
+                   "stable_limit" : 0.05,
+                   "random_init" : True,
+                   "reward_weight": [4,0.4,1,0.1]}
+                   
     # Instantiate and wrap the environment
-    env = gym.make(env_id, 
-                   suqare_reward=True ,
-                   acc_state=True, 
-                   stable_reward = 2,
-                   stable_limit = 0.05,
-                   init_state = [0.25,0,0,0],
-                   #random_init = True,
-                   reward_weight = [4,0.4,1,0.1])
+    env = make_vec_env(env_id = env_id, n_envs = 12, env_kwargs = env_kwargs)
 
     # Create the evaluation environment and callbacks
     eval_env = Monitor(gym.make(env_id, 
@@ -121,7 +123,7 @@ def main():
     print('Ended at: ' + end_time)
     print('=====================================')
 
-
+    return
 #####################################################################################
     # 2倍
     model_name = 't3_wr41_Square_acc_sr05_randinit'+ "_"

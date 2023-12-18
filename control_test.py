@@ -61,8 +61,8 @@ if __name__ == "__main__":
                    suqare_reward=True ,
                    acc_state=True,
                     stable_reward = 2,
-                    stable_limit = 0.08, 
-                    init_state=[0,0,0,0],
+                    stable_limit = 0.05, 
+                    init_state=[0.50,0,0,0],
                    reward_weight = [4,0.4,1,0.1])
     
     algo = {
@@ -77,7 +77,7 @@ if __name__ == "__main__":
      # 存放在sb3model/文件夹下
     #save_path = f"sb3model/{env_id}/{model_name}{args.algo}_{env_id}.zip"
     #save_path = 'sb3model\\TranslationOscillatorEnv-v0\\t1_Square_ppo_TranslationOscillatorEnv-v0.zip'
-    model_name =  'Task1_wr41_Square_acc_sr01_0init_ppo_'
+    model_name =  'Task2_wr41_Square_acc_sr05_randinit_ppo_'
 
     save_path = 'sb3model/TranslationOscillatorEnv-v0/'+ model_name + 'TranslationOscillatorEnv-v0.zip'
     

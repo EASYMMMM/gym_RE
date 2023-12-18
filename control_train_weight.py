@@ -42,21 +42,21 @@ def main():
     # 环境名
     env_id = 'TranslationOscillatorEnv-v0'
     n_timesteps = 5000000
-    model_name = 'Task1_wr41_Square_acc_sr08_0init'+ "_"  #41 表示4 0.4 1 0.1
+    model_name = 'Task2_wr41_Square_acc_sr05_randinit'+ "_"  #41 表示4 0.4 1 0.1
     algo = 'ppo'
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
 
     # tensorboard log 路径
-    tensorboard_log_path = f"tensorboard_log/{env_id}/Task1/"
+    tensorboard_log_path = f"tensorboard_log/{env_id}/Task2/"
     tensorboard_log_name = f"{model_name}{algo}_{env_id}"
 
     env_kwargs = { "suqare_reward":True ,
                    "acc_state":True, 
-                   "init_state" : [0,0,0,0],
-                   "stable_reward":  2,
-                   "stable_limit" : 0.08,
-                   #"random_init" : True,
+                   "init_state" : [0.50,0,0,0],
+                   "stable_reward": 2,
+                   "stable_limit" : 0.05,
+                   "random_init" : True,
                    "reward_weight": [4,0.4,1,0.1]}
                    
     # Instantiate and wrap the environment
@@ -118,7 +118,8 @@ def main():
 #####################################################################################
     
     
-    model_name = 'Task1_wr41_Square_acc_sr04_0init'+ "_"
+    model_name = 'Task2_wr41_Square_acc_sr05_randinit'+ "_"
+    algo = 'sac'
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
 
@@ -127,12 +128,46 @@ def main():
 
     env_kwargs = { "suqare_reward":True ,
                    "acc_state":True, 
-                   "init_state" : [0,0,0,0],
+                   "init_state" : [0.50,0,0,0],
                    "stable_reward":  2,
-                   "stable_limit" : 0.040,
+                   "stable_limit" : 0.050,
                    #"random_init" : True,
                    "reward_weight": [4,0.4,1,0.1]}
-                   
+    RLalgo = {
+        "sac": SAC,
+        "td3": TD3,
+        "ppo": PPO,
+    }[algo]
+
+    n_actions = env.action_space.shape[0]
+    hyperparams = {
+        "sac": dict(
+            batch_size=256,
+            gamma=0.98,
+            policy_kwargs=dict(net_arch=[256, 256]),
+            learning_starts=10000,
+            buffer_size=int(3e5),
+            tau=0.01,
+            device='cuda:1'
+        ),
+        "td3": dict(
+            batch_size=100,
+            policy_kwargs=dict(net_arch=[400, 300]),
+            learning_rate=1e-3,
+            learning_starts=10000,
+            buffer_size=int(1e6),
+            train_freq=1,
+            gradient_steps=1,
+            action_noise=NormalActionNoise(
+                mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions)
+            ),
+        ),
+        "ppo": dict(
+            batch_size=512,
+            learning_rate=2.5e-4,
+            gamma=0.99
+        )
+    }[algo]               
     # Instantiate and wrap the environment
     env = make_vec_env(env_id = env_id, n_envs = 12, env_kwargs = env_kwargs)
 
@@ -152,7 +187,7 @@ def main():
     print('=====================================')
 
 #####################################################################################
-    
+    return
     
     model_name = 'Task1_wr41_Square_acc_sr02_0init'+ "_"
     # 存放在sb3model/文件夹下

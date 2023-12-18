@@ -41,19 +41,19 @@ def main():
 
     # 环境名
     env_id = 'TranslationOscillatorEnv-v0'
-    n_timesteps = 2000000
-    model_name = 't5_wr41_Square_acc_sr02_025init_xtheta'+ "_"  #41 表示4 0.4 1 0.1
+    n_timesteps = 3000000
+    model_name = 'FTask1_wr41_Square_acc_sr02_0init_xtheta'+ "_"  #41 表示4 0.4 1 0.1
     algo = 'ppo'
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
 
     # tensorboard log 路径
-    tensorboard_log_path = f"tensorboard_log/{env_id}/t5/"
+    tensorboard_log_path = f"tensorboard_log/{env_id}/FinalTask1/"
     tensorboard_log_name = f"{model_name}{algo}_{env_id}"
 
     env_kwargs = { "suqare_reward":True ,
                    "acc_state":True, 
-                   "init_state" : [0.25,0,0,0],
+                   "init_state" : [0,0,0,0],
                    "stable_reward": 2,
                    "stable_limit" : 0.02,
                    "random_init" : False,
@@ -96,7 +96,8 @@ def main():
         "ppo": dict(
             batch_size=512,
             learning_rate=2.5e-4,
-            gamma=0.99
+            gamma=0.99,
+            device='cuda:1'
         )
     }[algo]
 
@@ -116,10 +117,10 @@ def main():
 
     
 #####################################################################################
-    return
     
-    model_name = 'Task2_wr41_Square_acc_sr05_randinit'+ "_"
-    algo = 'sac'
+   
+    model_name = 'FTask1_wr41_Square_acc_sr01_0init_xtheta'+ "_"
+    algo = 'ppo'
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
 
@@ -128,9 +129,9 @@ def main():
 
     env_kwargs = { "suqare_reward":True ,
                    "acc_state":True, 
-                   "init_state" : [0.50,0,0,0],
+                   "init_state" : [0,0,0,0],
                    "stable_reward":  2,
-                   "stable_limit" : 0.050,
+                   "stable_limit" : 0.01,
                    #"random_init" : True,
                    "reward_weight": [4,0.4,1,0.1]}
     RLalgo = {
@@ -187,9 +188,9 @@ def main():
     print('=====================================')
 
 #####################################################################################
-    return
     
-    model_name = 'Task1_wr41_Square_acc_sr02_0init'+ "_"
+    
+    model_name = 'FTask1_wr41_Square_acc_sr005_0init_xtheta'+ "_"
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
 
@@ -200,7 +201,7 @@ def main():
                    "acc_state":True, 
                    "init_state" : [0,0,0,0],
                    "stable_reward":  2,
-                   "stable_limit" : 0.020,
+                   "stable_limit" : 0.005,
                    #"random_init" : True,
                    "reward_weight": [4,0.4,1,0.1]}
                    
@@ -223,8 +224,8 @@ def main():
     print('=====================================')
 
 #####################################################################################
-    
-    model_name = 'Task1_wr41_Square_acc_sr01_0init'+ "_"
+    return
+    model_name = 'FTask2_wr41_Square_acc_sr01_025init03_xtheta'+ "_"
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
 
@@ -233,7 +234,7 @@ def main():
 
     env_kwargs = { "suqare_reward":True ,
                    "acc_state":True, 
-                   "init_state" : [0,0,0,0],
+                   "init_state" : [0.25,0,0.3,0],
                    "stable_reward":  2,
                    "stable_limit" : 0.010,
                    #"random_init" : True,

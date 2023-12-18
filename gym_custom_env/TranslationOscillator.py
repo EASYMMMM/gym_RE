@@ -123,8 +123,10 @@ class TranslationOscillator(gym.Env):
 
         stable_limit = self.stable_limit
         # 鼓励稳定在原点附近
-        if (x[0]<stable_limit and x[0]>-stable_limit) and (x[1]<stable_limit and x[1]>-stable_limit) and (x[2]<stable_limit and x[2]>-stable_limit) and (x[3]<stable_limit and x[3]>-stable_limit):
+        if  (x[0]<stable_limit and x[0]>-stable_limit) :
             r += self.stable_reward
+            if  (x[2]<stable_limit and x[2]>-stable_limit) :
+                r += self.stable_reward
 
         # 每步仿真奖励值[-2.2,0]，每秒（50Hz）最大得到100奖励值\
 
@@ -241,10 +243,10 @@ def play( env, model, init_state: np.ndarray = None ,csv_path = 'TORA.csv'):
     print('************************')    
     plt.figure(_)
     plt.plot(all_x1, label = 'x1')
-    plt.plot(all_x2, label = 'x2')
+    #plt.plot(all_x2, label = 'x2')
     plt.plot(all_x3, label = 'x3')
-    plt.plot(all_x4, label = 'x4')
-    plt.plot(output, linestyle = '-',label = 'output')
+    #plt.plot(all_x4, label = 'x4')
+    #plt.plot(output, linestyle = '-',label = 'output')
     plt.legend()
     plt.grid(True,linestyle = '--')
     plt.show()

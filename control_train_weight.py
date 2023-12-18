@@ -41,22 +41,22 @@ def main():
 
     # 环境名
     env_id = 'TranslationOscillatorEnv-v0'
-    n_timesteps = 5000000
-    model_name = 'Task2_wr41_Square_acc_sr05_randinit'+ "_"  #41 表示4 0.4 1 0.1
+    n_timesteps = 2000000
+    model_name = 't5_wr41_Square_acc_sr02_025init_xtheta'+ "_"  #41 表示4 0.4 1 0.1
     algo = 'ppo'
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
 
     # tensorboard log 路径
-    tensorboard_log_path = f"tensorboard_log/{env_id}/Task2/"
+    tensorboard_log_path = f"tensorboard_log/{env_id}/t5/"
     tensorboard_log_name = f"{model_name}{algo}_{env_id}"
 
     env_kwargs = { "suqare_reward":True ,
                    "acc_state":True, 
-                   "init_state" : [0.50,0,0,0],
+                   "init_state" : [0.25,0,0,0],
                    "stable_reward": 2,
-                   "stable_limit" : 0.05,
-                   "random_init" : True,
+                   "stable_limit" : 0.02,
+                   "random_init" : False,
                    "reward_weight": [4,0.4,1,0.1]}
                    
     # Instantiate and wrap the environment
@@ -116,7 +116,7 @@ def main():
 
     
 #####################################################################################
-    
+    return
     
     model_name = 'Task2_wr41_Square_acc_sr05_randinit'+ "_"
     algo = 'sac'

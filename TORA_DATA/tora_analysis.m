@@ -1,7 +1,7 @@
-T1_name = 't3_wr41_Square_acc_sr1_0init_ppo_';
-T2_name = 't3_wr41_Square_acc_sr025_0init_ppo_';
-T3_name = 'no_ctrl_0init';
-T4_name = 'no_ctrl_1init';
+T1_name = 'FTask1_wr41_Square_acc_sr005_0init_xtheta_ppo_';
+T2_name = 'FTask1_wr41_Square_acc_sr01_0init_xtheta_ppo_';
+T3_name = 'FTask1_wr41_Square_acc_sr02_0init_xtheta_ppo_';
+T4_name = 'no_ctrl_0init';
 T5_name = 't1_wr41_Square_acc_sr1_0init_ppo_';
 T6_name = 't1_wr41_Square_acc_sr2_0init_ppo_';
 
@@ -16,14 +16,14 @@ T6 = readtable([T6_name,'.csv']);
 drawT1 = 1  ;
 drawT2 = 1  ;
 drawT3 = 1  ;
-drawT4 = 0 ;
+drawT4 = 1 ;
 drawT5 = 0  ;
 drawT6 = 0  ;
 
-T1_name = 't3 wr41 Square acc sr1 0init ppo ';
-T2_name = 't3 wr41 Square acc sr025 0init ppo ';
-T3_name = 'no ctrl  0init';
-T4_name = 'Init: 0.5 0 0 0';
+T1_name = 'a_s: 0.005 ';
+T2_name = 'a_s: 0.01';
+T3_name = 'a_s: 0.02';
+T4_name = 'No control';
 T5_name = 't1_wr41_Square_acc_sr1_0init_ppo_';
 T6_name = 't1_wr41_Square_acc_sr2_0init_ppo_';
 
@@ -39,7 +39,7 @@ if drawT2
     plot(T2.x1,'Linewidth',2,'DisplayName',T2_name);
 end
 if drawT3
-    plot(T3.x1,'Linewidth',2,'DisplayName',T3_name);
+    plot(T3.x1,'Linewidth',2,'DisplayName',T3_name,'Color','#0ABE4A');
 end
 if drawT4
     plot(T4.x1,'Linewidth',2,'DisplayName',T4_name);
@@ -51,7 +51,7 @@ if drawT6
     plot(T6.x1,'Linewidth',2,'DisplayName',T6_name);
 end
 title('x1')
-legend()
+% legend()
 grid on
 xlim([0,300])
 set(gca, 'linewidth', 1.1, 'fontsize', 17, 'fontname', 'times','color','#E6E8E9') %去掉x，y坐标轴的刻度
@@ -65,7 +65,7 @@ if drawT2
     plot(T2.x2,'Linewidth',2,'DisplayName',T2_name);
 end
 if drawT3
-    plot(T3.x2,'Linewidth',2,'DisplayName',T3_name);
+    plot(T3.x2,'Linewidth',2,'DisplayName',T3_name,'Color','#0ABE4A');
 end
 if drawT4
     plot(T4.x2,'Linewidth',2,'DisplayName',T4_name);
@@ -91,7 +91,7 @@ if drawT2
     plot(T2.x3,'Linewidth',2,'DisplayName',T2_name);
 end
 if drawT3
-    plot(T3.x3,'Linewidth',2,'DisplayName',T3_name);
+    plot(T3.x3,'Linewidth',2,'DisplayName',T3_name,'Color','#0ABE4A');
 end
 if drawT4
     plot(T4.x3,'Linewidth',2,'DisplayName',T4_name);
@@ -106,7 +106,7 @@ title('x3')
 %legend()
 grid on
 xlim([0,300])
- ylim([-0.1,0.1])
+ylim([-1.5,1.5])
 set(gca, 'linewidth', 1.1, 'fontsize', 17, 'fontname', 'times','color','#E6E8E9') %去掉x，y坐标轴的刻度
 
 
@@ -119,7 +119,7 @@ if drawT2
     plot(T2.x4,'Linewidth',2,'DisplayName',T2_name);
 end
 if drawT3
-    plot(T3.x4,'Linewidth',2,'DisplayName',T3_name);
+    plot(T3.x4,'Linewidth',2,'DisplayName',T3_name,'Color','#0ABE4A');
 end
 if drawT4
     plot(T4.x4,'Linewidth',2,'DisplayName',T4_name);
@@ -131,9 +131,9 @@ if drawT6
     plot(T6.x4,'Linewidth',2,'DisplayName',T6_name);
 end
 title('x4')
-%legend()
+legend()
 grid on
 xlim([0,300])
-ylim([-0.1,0.1])
+ylim([-1,1])
 set(gca, 'linewidth', 1.1, 'fontsize', 17, 'fontname', 'times','color','#E6E8E9') %去掉x，y坐标轴的刻度
 

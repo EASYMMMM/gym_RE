@@ -16,7 +16,7 @@ class InvertedPendulum(gym.Env):
                  random_seed = None, 
                  simulation_dt : float = 0.005,
                  frame_skip :int = 5,
-                 init_pos: float = -np.pi
+                 init_pos: float = np.pi
                  ):
         self._render = render
         # 物理参数
@@ -29,11 +29,14 @@ class InvertedPendulum(gym.Env):
         self.R = 9.5   # resistance      
         self.init_pos = init_pos # 初始角度
         # 定义动作空间 (-3,3)
-        self.action_space = spaces.Box(
-            low=np.array([-3.]),
-            high=np.array([3.]),
-            dtype=np.float32
-        )
+        #self.action_space = spaces.Box(
+        #    low=np.array([-3.]),
+        #    high=np.array([3.]),
+        #    dtype=np.float32
+        #)
+
+        # 定义动作空间 [-3,0,3]
+        self.action_space = spaces.Discrete(3)
 
         # 定义状态空间 (theta, theta_dot)
         self.observation_space = spaces.Box(
@@ -62,12 +65,12 @@ class InvertedPendulum(gym.Env):
         b = self.b
         K = self.K
         R = self.R
-        u = action
+        u = action*3 - 3
         dt = self.dt
-
+        
         current_a, current_adot =  self.last_state  # 当前状态
         # 倒立摆动力学
-        current_adotdot = 1/J*(m*g*l*np.sin(current_a)-b*current_adot-K*K*current_adot/R+K*u/R)
+        current_adotdot = (1/J)*(m*g*l*np.sin(current_a)-b*current_adot-K*K*current_adot/R+K*u/R)
         # 积分
         next_adot = current_adotdot*dt + current_adot 
         next_a = current_adot*dt + current_a

@@ -1,10 +1,3 @@
-# Code adapted from https://github.com/DLR-RM/rl-baselines3-zoo
-# it requires stable-baselines3 to be installed
-# Colab Notebook: https://colab.research.google.com/github/Stable-Baselines-Team/rl-colab-notebooks/blob/sb3/pybullet.ipynb
-# You can run it using: python -m pybullet_envs.stable_baselines.train --algo td3 --env HalfCheetahBulletEnv-v0
-# Author: Antonin RAFFIN
-# MIT License
-
 '''
 python RL_train/pendulum_train.py 
 '''

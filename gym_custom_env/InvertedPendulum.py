@@ -16,6 +16,7 @@ class InvertedPendulum(gym.Env):
                  random_seed = None, 
                  simulation_dt : float = 0.005,
                  frame_skip :int = 5,
+                 init_pos: float = -np.pi
                  ):
         self._render = render
         # 物理参数
@@ -26,7 +27,7 @@ class InvertedPendulum(gym.Env):
         self.b = 3e-6  # damping
         self.K = 0.0536 # torque constant
         self.R = 9.5   # resistance      
-        
+        self.init_pos = init_pos # 初始角度
         # 定义动作空间 (-3,3)
         self.action_space = spaces.Box(
             low=np.array([-3.]),
@@ -85,7 +86,7 @@ class InvertedPendulum(gym.Env):
         self.step_num = 0 # 计数器
         self.total_reward = 0
         self.success = False
-        self.init_state = np.array([-np.pi,0],dtype=np.float32)
+        self.init_state = np.array([self.init_pos,0],dtype=np.float32)
 
         self.last_state = self.init_state # 记录上一时刻的状态
         return self.init_state
@@ -115,83 +116,74 @@ class InvertedPendulum(gym.Env):
 ''' 
 使用训练好的模型，进行测试
 '''
-def play( env, model, init_state: np.ndarray = None ,csv_path = 'TORA.csv'):
-    import pandas as pd
-    all_x1 = list()
-    all_x2 = list()
-    all_x3 = list()
-    all_x4 = list()
-    output = list()
-    episode_rewards, episode_lengths, = [], []
-    
-    
-    obs = env.reset(init_state = init_state)   
-    all_x1.append(obs[0])
-    all_x2.append(obs[1])
-    all_x3.append(obs[2])
-    all_x4.append(obs[3])
-    done = False
-    episode_reward = 0.0
-    episode_length = 0
-    while not done:
-        action, _ = model.predict(obs, deterministic=True)
-        obs, reward, done, info = env.step(action)
-        print(reward)
-        episode_reward += reward
-        episode_length += 1
-        output.append(action)
-        all_x1.append(obs[0])
-        all_x2.append(obs[1])
-        all_x3.append(obs[2])
-        all_x4.append(obs[3])
-    output.append(action)
-    is_success       = info['is_success']
-    episode_rewards.append(episode_reward)
-    episode_lengths.append(episode_length)
-    print('************************')    
-    print(
-        f"Episode {len(episode_rewards)} reward={episode_reward}, length={episode_length}"
-    )
-    print('success:',is_success)
-    print('************************')    
-    plt.figure(_)
-    plt.plot(all_x1, label = 'x1')
-    plt.plot(all_x2, label = 'x2')
-    plt.plot(all_x3, label = 'x3')
-    plt.plot(all_x4, label = 'x4')
-    #plt.plot(output, linestyle = '-',label = 'output')
-    plt.legend()
-    plt.grid(True,linestyle = '--')
-    plt.show()
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
-    data ={'x1':all_x1,
-           'x2':all_x2,
-           'x3':all_x3,
-           'x4':all_x4,
-           'output':output}
-    df = pd.DataFrame(data)
-    filename = csv_path
-    df.to_csv(filename,index=False)
-    print(f'Write data to {filename}.')
+def pendulum_animation(theta):
+    # 倒立摆参数
+    l = 0.42  # 摆长
+
+    # 创建画布
+    fig = plt.figure()
+    ax = fig.add_subplot(111, aspect='equal', autoscale_on=False, xlim=(-0.5, 0.5), ylim=(-0.5, 0.5))
+    ax.grid()
+
+    # 初始化倒立摆
+    line, = ax.plot([], [], 'o-', lw=2)
+    time_text = ax.text(0.02, 0.95, '', transform=ax.transAxes)
+    pendulum_center, = ax.plot([], [], 'o', color='red')
+
+    # 初始化函数
+    def init():
+        line.set_data([], [])
+        time_text.set_text('')
+        return line, time_text
+
+    # 更新函数
+    def update(frame):
+        x = [0, -l * np.sin(frame)]
+        y = [0, l * np.cos(frame)]
+        line.set_data(x, y)
+        time_text.set_text('Theta = %.2f' % np.degrees(frame))
+        pendulum_center.set_data([0], [0])
+        return line, time_text
+
+    # 动画
+    ani = animation.FuncAnimation(fig, update, frames=theta, init_func=init, blit=True)
+    
+    return ani
+
+# 保存为GIF
+def save_gif(ani, filename, fps=200):
+    ani.save(filename, writer='imagemagick', fps=fps)
+
 
 
         
 
 
 if __name__ == "__main__":
-    env = InvertedPendulum(render=True)
+    env = InvertedPendulum(render=True, init_pos=0)
     from stable_baselines3.common.env_checker import check_env
     print('=='*20)
     print(env.observation_space)
     print(env.observation_space.sample())
     print('=='*20)
     check_env(env)  #使用sb3自带的检查env函数来检查
-
-    obs = env.reset()
-    while True:
-        action = np.random.uniform(-3, 3, size=(1,))
+    pend_a = list()
+    i = 0
+    while i<200:
+        action = 0
         obs, reward, done, _ = env.step(action)
         if done:
             break
-
         print(f"state : {obs}, reward : {reward}")
+        pend_a.append(obs[0])
+        i = i+1
+
+    obs = env.reset()
+    # 测试代码
+    animation = pendulum_animation(pend_a)
+    save_gif(animation, 'pendulum_animation.gif')
+    plt.show()
+

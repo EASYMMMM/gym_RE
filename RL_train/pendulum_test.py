@@ -40,7 +40,7 @@ if __name__ == "__main__":
 
     model_name =  'InvPend_1'
 
-    save_path = 'sb3model/InvertedPendulumEnv-v0/'+ model_name + 'ppo'+'InvertedPendulumEnv-v0.zip'
+    save_path = 'sb3model/InvertedPendulumEnv-v0/'+ model_name + 'ppo_'+'InvertedPendulumEnv-v0.zip'
     
     print('load from:')
 
@@ -50,8 +50,8 @@ if __name__ == "__main__":
 
 
     print("==============================")
-    print(f"Method: {args.algo}")
-    print(f"Time steps: {args.model_name}")
+    print(f"Method: ppo")
+    print(f"Time steps: 0.005")
     # print(f"gradient steps:{model.gradient_steps}")
     print("model path:"+save_path)
     print("==============================")

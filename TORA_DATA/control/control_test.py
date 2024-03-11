@@ -62,7 +62,7 @@ if __name__ == "__main__":
                    acc_state=True,
                     stable_reward = 2,
                     stable_limit = 0.02, 
-                    init_state=[0.25,0,0.25,0],
+                    init_state=[0.25,0,0,0],
                    reward_weight = [4,0.4,1,0.1])
     
     algo = {
@@ -74,7 +74,7 @@ if __name__ == "__main__":
     # We assume that the saved model is in the same folder
      # 存放在sb3model/文件夹下
     #save_path = f"sb3model/{env_id}/{model_name}{args.algo}_{env_id}.zip"
-    model_name =  'FTask2_wr41_Square_acc_sr02_025init025_xtheta_ppo_'
+    model_name =  'FTask2_wr41_Square_acc_sr005_025init_xtheta_ppo_'
 
     save_path = 'sb3model/TranslationOscillatorEnv-v0/'+ model_name + 'TranslationOscillatorEnv-v0.zip'
     

@@ -42,7 +42,7 @@ def main():
     # 环境名
     env_id = 'TranslationOscillatorEnv-v0'
     n_timesteps = 4000000
-    model_name = 'FTask2_wr41_Square_acc_sr02_025init025_xtheta'+ "_"  #41 表示4 0.4 1 0.1
+    model_name = 'FTask2_wr41_Square_acc_sr02_025init_xortheta'+ "_"  #41 表示4 0.4 1 0.1
     algo = 'ppo'
     # 存放在sb3model/文件夹下
     save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
@@ -53,7 +53,7 @@ def main():
 
     env_kwargs = { "suqare_reward":True ,
                    "acc_state":True, 
-                   "init_state" : [0.25,0,0.25,0],
+                   "init_state" : [0.25,0,0,0],
                    "stable_reward": 2,
                    "stable_limit" : 0.02,
                    "random_init" : False,

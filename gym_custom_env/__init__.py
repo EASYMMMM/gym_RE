@@ -10,7 +10,7 @@ def register(id, *args, **kvargs):
 # ----------- 自定义的env环境 -------------
 
 register(  
-    id='InvertedPendulum-v0',
+    id='InvertedPendulumEnv-v0',
     entry_point='gym_custom_env.InvertedPendulum:InvertedPendulum',
     max_episode_steps=300,
     reward_threshold=500.0,

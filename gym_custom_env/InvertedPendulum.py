@@ -144,7 +144,7 @@ def pendulum_animation(theta):
 
     # 更新函数
     def update(frame):
-        x = [0, -l * np.sin(frame)]
+        x = [0, l * np.sin(frame)]
         y = [0, l * np.cos(frame)]
         line.set_data(x, y)
         time_text.set_text('Theta = %.2f' % np.degrees(frame))
@@ -166,7 +166,8 @@ def save_gif(ani, filename, fps=200):
 
 
 if __name__ == "__main__":
-    env = InvertedPendulum(render=True, init_pos=0)
+    # env = InvertedPendulum(render=True, init_pos=0)
+    env = InvertedPendulum(render=True)
     from stable_baselines3.common.env_checker import check_env
     print('=='*20)
     print(env.observation_space)
@@ -176,7 +177,7 @@ if __name__ == "__main__":
     pend_a = list()
     i = 0
     while i<200:
-        action = 0
+        action = 1
         obs, reward, done, _ = env.step(action)
         if done:
             break
@@ -187,6 +188,6 @@ if __name__ == "__main__":
     obs = env.reset()
     # 测试代码
     animation = pendulum_animation(pend_a)
-    save_gif(animation, 'pendulum_animation.gif')
-    plt.show()
+    save_gif(animation, 'pendulum_animation_test_2.gif')
+    #plt.show()
 

@@ -59,15 +59,15 @@ if __name__ == "__main__":
         obs = env.reset()
         pend_a = []
         i = 0
+        frame_skip=10
         while i<200:
             i = i+1
             action, _ = model.predict(obs, deterministic=True)
-            obs, reward, done, info = env.step(action)
-            pend_a.append(obs[0])   
-            if action>0:  
-                print(action)
+            obs, reward, done, info = env.step(action)   
+            if i%frame_skip == 0:   # 降低绘图帧数
+                pend_a.append(obs[0]) 
         animation = pendulum_animation(pend_a)
-        save_gif(animation, 'RL_train/pendulum_animation'+model_name+'.gif')
+        save_gif(animation, 'RL_train/pendulum_animation'+model_name+'.gif',fps=200/frame_skip)
 
 
     except KeyboardInterrupt:

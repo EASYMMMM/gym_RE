@@ -57,7 +57,6 @@ def main():
         "ppo": PPO,
     }[algo]
 
-    n_actions = env.action_space.shape[0]
     hyperparams = {
         "sac": dict(
             batch_size=256,
@@ -66,18 +65,6 @@ def main():
             learning_starts=10000,
             buffer_size=int(3e5),
             tau=0.01,
-        ),
-        "td3": dict(
-            batch_size=100,
-            policy_kwargs=dict(net_arch=[400, 300]),
-            learning_rate=1e-3,
-            learning_starts=10000,
-            buffer_size=int(1e6),
-            train_freq=1,
-            gradient_steps=1,
-            action_noise=NormalActionNoise(
-                mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions)
-            ),
         ),
         "ppo": dict(
             batch_size=512,

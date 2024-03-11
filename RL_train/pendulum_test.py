@@ -63,7 +63,9 @@ if __name__ == "__main__":
             i = i+1
             action, _ = model.predict(obs, deterministic=True)
             obs, reward, done, info = env.step(action)
-            pend_a.append(obs[0])     
+            pend_a.append(obs[0])   
+            if action>0:  
+                print(action)
         animation = pendulum_animation(pend_a)
         save_gif(animation, 'RL_train/pendulum_animation'+model_name+'.gif')
 

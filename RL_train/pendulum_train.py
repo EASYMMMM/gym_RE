@@ -30,7 +30,7 @@ def main():
 
     # 环境名
     env_id = 'InvertedPendulumEnv-v0'
-    n_timesteps = 5000000
+    n_timesteps = 3000000
     model_name = 'InvPend'+ "_2"  #41 表示4 0.4 1 0.1
     algo = 'ppo'
     # 存放在sb3model/文件夹下

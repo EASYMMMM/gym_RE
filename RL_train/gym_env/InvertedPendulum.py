@@ -95,7 +95,7 @@ class InvertedPendulum(gym.Env):
         v = current_a * self.l
         R_E = self.m*self.g*h + 0.5*self.m*v*v   
 
-        R = R_1 + R_2 + 10*R_E
+        R = R_1 + R_2 + 200*R_E
         return float(R)
 
     def reset(self):
@@ -108,7 +108,7 @@ class InvertedPendulum(gym.Env):
         self.last_state = self.init_state # 记录上一时刻的状态
         return self.init_state
     
-    @property
+    
     def done(self,state):  
         current_a, _, _ = state
         if current_a < -np.pi or current_a > 2*np.pi: # 限幅

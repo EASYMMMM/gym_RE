@@ -26,7 +26,7 @@ def main():
     parser = argparse.ArgumentParser("Train an RL agent using Stable Baselines3")
 
     # 随机种子
-    seed = 2
+    seed = 1
 
     # 环境名
     env_id = 'InvertedPendulumEnv-v0'

@@ -41,7 +41,7 @@ class InvertedPendulum(gym.Env):
         # 定义状态空间 (theta, theta_dot)
         self.observation_space = spaces.Box(
             low=np.array([-np.pi, -15*np.pi, -np.pi]),
-            high=np.array([np.pi, 15*np.pi, np.pi]),
+            high=np.array([2*np.pi, 15*np.pi, np.pi]),
         )
 
         if random_seed != None:
@@ -83,7 +83,12 @@ class InvertedPendulum(gym.Env):
         current_a, current_adot, t = state
         if current_a>np.pi:  # 角度处理
             current_a = 2*np.pi - current_a
-        R = -8*t*t - 0.1*current_adot*current_adot- action*action
+        R_1 = -5*t*t - 0.1*current_adot*current_adot- action*action  # 题目给定的奖励函数
+        if -0.2< current_a and current_a < 0.2 :
+            R_2 = 30
+        else:
+            R_2 = 0
+        R = R_1 + R_2
         return float(R)
 
     def reset(self):

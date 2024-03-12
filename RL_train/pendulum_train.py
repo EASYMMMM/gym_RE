@@ -1,5 +1,5 @@
 '''
-python RL_train/pendulum_train.py 
+python pendulum_train.py 
 '''
 import argparse
 
@@ -26,11 +26,11 @@ def main():
     parser = argparse.ArgumentParser("Train an RL agent using Stable Baselines3")
 
     # 随机种子
-    seed = 1
+    seed = 2
 
     # 环境名
     env_id = 'InvertedPendulumEnv-v0'
-    n_timesteps = 2000000
+    n_timesteps = 5000000
     model_name = 'InvPend'+ "_2"  #41 表示4 0.4 1 0.1
     algo = 'ppo'
     # 存放在sb3model/文件夹下

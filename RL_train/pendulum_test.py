@@ -1,5 +1,5 @@
 '''
-python RL_train/pendulum_test.py 
+python pendulum_test.py 
 '''
 # ------- 来自于mujoco150在win+py3.9下的矫情的要求 --------
 # 手动添加mujoco路径
@@ -9,7 +9,7 @@ import time
 import argparse
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-import gym_custom_env       # 注册自定义环境
+import gym_env       # 注册自定义环境
 import gym
 import numpy as np
 from gym_env.InvertedPendulum import pendulum_animation, save_gif
@@ -40,7 +40,7 @@ if __name__ == "__main__":
 
     model_name =  'InvPend_2'
 
-    save_path = 'sb3model/InvertedPendulumEnv-v0/'+ model_name + 'ppo_'+'InvertedPendulumEnv-v0.zip'
+    save_path = 'trained_model/InvertedPendulumEnv-v0/'+ model_name + 'ppo_'+'InvertedPendulumEnv-v0.zip'
     
     print('load from:')
 
@@ -68,7 +68,7 @@ if __name__ == "__main__":
             if i%frame_skip == 0:   # 降低绘图帧数
                 pend_a.append(obs[0]) 
         animation = pendulum_animation(pend_a)
-        save_gif(animation, 'RL_train/pendulum_animation'+model_name+'.gif',fps=200/frame_skip)
+        save_gif(animation, 'result_GIF/pendulum_animation'+model_name+'.gif',fps=200/frame_skip)
 
 
     except KeyboardInterrupt:

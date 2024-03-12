@@ -1,6 +1,6 @@
 import gym
 from gym.envs.registration import registry, make, spec
-from gym_custom_env.generateXML import HumanoidXML
+
 def register(id, *args, **kvargs):
   if id in registry.env_specs:
     return
@@ -11,7 +11,7 @@ def register(id, *args, **kvargs):
 
 register(  
     id='InvertedPendulumEnv-v0',
-    entry_point='gym_custom_env.InvertedPendulum:InvertedPendulum',
+    entry_point='gym_env.InvertedPendulum:InvertedPendulum',
     max_episode_steps=10000,
-    reward_threshold=500.0,
+    reward_threshold=50000.0,
 )

@@ -40,8 +40,8 @@ class InvertedPendulum(gym.Env):
 
         # 定义状态空间 (theta, theta_dot)
         self.observation_space = spaces.Box(
-            low=np.array([-np.pi, -15*np.pi]),
-            high=np.array([np.pi, 15*np.pi]),
+            low=np.array([-np.pi, -15*np.pi, -np.pi]),
+            high=np.array([np.pi, 15*np.pi, np.pi]),
         )
 
         if random_seed != None:
@@ -68,20 +68,22 @@ class InvertedPendulum(gym.Env):
         u = action*3 - 3
         dt = self.dt
         
-        current_a, current_adot =  self.last_state  # 当前状态
+        current_a, current_adot, t =  self.last_state  # 当前状态
         # 倒立摆动力学
         current_adotdot = (1/J)*(m*g*l*np.sin(current_a)-b*current_adot-K*K*current_adot/R+K*u/R)
         # 积分
         next_adot = current_adotdot*dt + current_adot 
         next_a = current_adot*dt + current_a
-        return np.array([next_a,next_adot],dtype=np.float32)
+        return np.array([next_a,next_adot, self.angle_to_target(next_a)],dtype=np.float32)
 
     def reward(self, state, action):
         '''
         计算reward
         '''
-        current_a, current_adot = state
-        R = -5*current_a*current_a -0.1*current_adot*current_adot- action*action
+        current_a, current_adot, t = state
+        if current_a>np.pi:  # 角度处理
+            current_a = 2*np.pi - current_a
+        R = -5*t*t - 0.1*current_adot*current_adot- action*action
         return float(R)
 
     def reset(self):
@@ -89,7 +91,7 @@ class InvertedPendulum(gym.Env):
         self.step_num = 0 # 计数器
         self.total_reward = 0
         self.success = False
-        self.init_state = np.array([self.init_pos,0],dtype=np.float32)
+        self.init_state = np.array([self.init_pos, 0 , self.angle_to_target(self.init_pos)],dtype=np.float32)
 
         self.last_state = self.init_state # 记录上一时刻的状态
         return self.init_state
@@ -114,7 +116,15 @@ class InvertedPendulum(gym.Env):
 
     def render(self, mode='human'):
         pass
-    
+
+    def angle_to_target(self,ang):
+        # 旋转角度处理
+        t = ang
+        if ang>np.pi:  
+            t = 2*np.pi - ang
+        if ang<0 :
+            t = -ang
+        return t
 
 ''' 
 使用训练好的模型，进行测试
@@ -172,22 +182,26 @@ if __name__ == "__main__":
     print('=='*20)
     print(env.observation_space)
     print(env.observation_space.sample())
+    print(env.action_space.sample())
     print('=='*20)
     check_env(env)  #使用sb3自带的检查env函数来检查
+
     pend_a = list()
     i = 0
-    while i<200:
-        action = 1
+    frame_skip=10
+    while i<2000:
+        action = 2
         obs, reward, done, _ = env.step(action)
-        if done:
-            break
+        
         print(f"state : {obs}, reward : {reward}")
-        pend_a.append(obs[0])
+        if i%frame_skip == 0:   # 降低绘图帧数
+            pend_a.append(obs[0]) 
+        
         i = i+1
 
     obs = env.reset()
     # 测试代码
     animation = pendulum_animation(pend_a)
-    save_gif(animation, 'pendulum_animation_test_2.gif')
+    save_gif(animation, 'RL_train/pendulum_animation_test_3.gif')
     #plt.show()
 

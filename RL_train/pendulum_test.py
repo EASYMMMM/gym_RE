@@ -38,7 +38,7 @@ if __name__ == "__main__":
         "ppo": PPO,
     }["ppo"]
 
-    model_name =  'InvPend_1'
+    model_name =  'InvPend_2'
 
     save_path = 'sb3model/InvertedPendulumEnv-v0/'+ model_name + 'ppo_'+'InvertedPendulumEnv-v0.zip'
     
@@ -60,9 +60,10 @@ if __name__ == "__main__":
         pend_a = []
         i = 0
         frame_skip=10
-        while i<200:
+        while i<10000:
             i = i+1
             action, _ = model.predict(obs, deterministic=True)
+            #print(action)
             obs, reward, done, info = env.step(action)   
             if i%frame_skip == 0:   # 降低绘图帧数
                 pend_a.append(obs[0]) 

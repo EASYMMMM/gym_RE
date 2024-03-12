@@ -10,13 +10,6 @@ def register(id, *args, **kvargs):
 # ----------- 自定义的env环境 -------------
 
 register(  
-    id='InvertedPendulumEnv-v0',
-    entry_point='gym_custom_env.InvertedPendulum:InvertedPendulum',
-    max_episode_steps=10000,
-    reward_threshold=500.0,
-)
-
-register(  
     id='TranslationOscillatorEnv-v0',
     entry_point='gym_custom_env.TranslationOscillator:TranslationOscillator',
     max_episode_steps=300,

@@ -1,5 +1,6 @@
 # 存储训练模型的文件夹
 sb3model/
+RL_train/trained_model
 # 存储视频的文件夹
 video/
 **/humanoid_exp.xml

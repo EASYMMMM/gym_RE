@@ -91,9 +91,7 @@ class InvertedPendulum(gym.Env):
         else:
             R_2 = 0
         # 能量奖励
-        h = np.cos(current_a)*self.l 
-        v = current_a * self.l
-        R_E = self.m*self.g*h + 0.5*self.m*v*v   
+        R_E = self.system_energy
 
         R = R_1 + R_2 + 200*R_E
         return float(R)
@@ -140,6 +138,14 @@ class InvertedPendulum(gym.Env):
         if ang<0 :
             t = -ang
         return t
+    
+    @property
+    def system_energy(self):
+        current_a, current_adot, _ = self.last_state
+        h = np.cos(current_a)*self.l 
+        v = current_adot * self.l
+        r_e = self.m*self.g*h + 0.5*self.m*v*v  
+        return r_e
 
 ''' 
 使用训练好的模型，进行测试

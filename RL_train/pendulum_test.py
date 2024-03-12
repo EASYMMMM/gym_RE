@@ -12,7 +12,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 import gym_custom_env       # 注册自定义环境
 import gym
 import numpy as np
-from gym_custom_env.InvertedPendulum import pendulum_animation, save_gif
+from gym_env.InvertedPendulum import pendulum_animation, save_gif
 from stable_baselines3 import SAC, TD3, PPO
 
 

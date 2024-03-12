@@ -10,7 +10,7 @@ from getpass import getuser
 user_id = getuser()
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-import gym_custom_env       # 注册自定义环境
+import gym_env       # 注册自定义环境
 import time
 import gym
 import torch
@@ -34,7 +34,7 @@ def main():
     model_name = 'InvPend'+ "_2"  #41 表示4 0.4 1 0.1
     algo = 'ppo'
     # 存放在sb3model/文件夹下
-    save_path = f"sb3model/{env_id}/{model_name}{algo}_{env_id}"
+    save_path = f"trained_model/{env_id}/{model_name}{algo}_{env_id}"
 
     # tensorboard log 路径
     tensorboard_log_path = f"tensorboard_log/{env_id}/"

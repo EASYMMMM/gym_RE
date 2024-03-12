@@ -83,7 +83,7 @@ class InvertedPendulum(gym.Env):
         current_a, current_adot, t = state
         if current_a>np.pi:  # 角度处理
             current_a = 2*np.pi - current_a
-        R = -5*t*t - 0.1*current_adot*current_adot- action*action
+        R = -8*t*t - 0.1*current_adot*current_adot- action*action
         return float(R)
 
     def reset(self):

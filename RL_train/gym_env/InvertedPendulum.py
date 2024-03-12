@@ -109,7 +109,10 @@ class InvertedPendulum(gym.Env):
         return self.init_state
     
     @property
-    def done(self):                         
+    def done(self,state):  
+        current_a, _, _ = state
+        if current_a < -np.pi or current_a > 2*np.pi: # 限幅
+            return True                      
         return False
 
     def step(self, action):
@@ -118,7 +121,7 @@ class InvertedPendulum(gym.Env):
         self.last_state = state # 记录当前状态
         reward = self.reward(state,action)
         self.total_reward += reward
-        done = self.done
+        done = self.done(state)
         info = {"is_done":done}
         return state, reward, done, info
     

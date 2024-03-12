@@ -83,12 +83,19 @@ class InvertedPendulum(gym.Env):
         current_a, current_adot, t = state
         if current_a>np.pi:  # 角度处理
             current_a = 2*np.pi - current_a
-        R_1 = -5*t*t - 0.1*current_adot*current_adot- action*action  # 题目给定的奖励函数
+        # 题目给定的奖励函数 
+        R_1 = -5*t*t - 0.1*current_adot*current_adot- action*action  
+        # 达到目标位置的额外奖励
         if -0.2< current_a and current_a < 0.2 :
             R_2 = 30
         else:
             R_2 = 0
-        R = R_1 + R_2
+        # 能量奖励
+        h = np.cos(current_a)*self.l 
+        v = current_a * self.l
+        R_E = self.m*self.g*h + 0.5*self.m*v*v   
+
+        R = R_1 + R_2 + 10*R_E
         return float(R)
 
     def reset(self):

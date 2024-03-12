@@ -1,43 +1,53 @@
 '''
 python pendulum_train.py 
 '''
-import argparse
+import hydra
+from omegaconf import DictConfig, OmegaConf
 
-# ------- 来自于mujoco150在win+py3.9下的矫情的要求 --------
-# 手动添加mujoco路径
-import os
-from getpass import getuser
-user_id = getuser()
-import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-import gym_env       # 注册自定义环境
-import time
-import gym
-import torch
-import numpy as np
-from stable_baselines3 import SAC, TD3, PPO
-from stable_baselines3.common.noise import NormalActionNoise
-from stable_baselines3.common.callbacks import EvalCallback, CheckpointCallback
-from stable_baselines3.common.monitor import Monitor
-from stable_baselines3.common.env_util import make_vec_env
-
-
-def main():
-    parser = argparse.ArgumentParser("Train an RL agent using Stable Baselines3")
+@hydra.main(version_base=None, config_path="cfg", config_name="InvertedPendulumCfg.yaml")
+def main(cfg : DictConfig) -> None:
+    # ------- 来自于mujoco150在win+py3.9下的矫情的要求 --------
+    # 手动添加mujoco路径
+    import os
+    from getpass import getuser
+    user_id = getuser()
+    import sys
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+    import gym_env       # 注册自定义环境
+    import time
+    import gym
+    import torch
+    import numpy as np
+    import datetime
+    from stable_baselines3 import SAC, TD3, PPO
+    from stable_baselines3.common.noise import NormalActionNoise
+    from stable_baselines3.common.callbacks import EvalCallback, CheckpointCallback
+    from stable_baselines3.common.monitor import Monitor
+    from stable_baselines3.common.env_util import make_vec_env
+    
+    print(OmegaConf.to_yaml(cfg)) # 打印配置
 
     # 随机种子
     seed = 2
 
     # 环境名
-    env_id = 'InvertedPendulumEnv-v0'
-    n_timesteps = 3000000
-    model_name = 'InvPend'+ "_2"  #41 表示4 0.4 1 0.1
+    env_id = cfg.env.env_id
+    n_timesteps = cfg.env.n_timesteps
+    model_name = cfg.env.model_name  #41 表示4 0.4 1 0.1
     algo = 'ppo'
+
+    # dump config dict
+    experiment_dir = os.path.join('runs', model_name + 
+    '_{date:%d-%H-%M-%S}'.format(date=datetime.now()))
+    os.makedirs(experiment_dir, exist_ok=True)
+    with open(os.path.join(experiment_dir, 'config.yaml'), 'w') as f:
+        f.write(OmegaConf.to_yaml(cfg))
+        
     # 存放在sb3model/文件夹下
-    save_path = f"trained_model/{env_id}/{model_name}{algo}_{env_id}"
+    save_path = experiment_dir + f"\\{model_name}{algo}_{env_id}"
 
     # tensorboard log 路径
-    tensorboard_log_path = f"tensorboard_log/{env_id}/"
+    tensorboard_log_path = experiment_dir
     tensorboard_log_name = f"{model_name}{algo}_{env_id}"
 
 
@@ -57,21 +67,13 @@ def main():
         "ppo": PPO,
     }[algo]
 
-    hyperparams = {
-        "sac": dict(
-            batch_size=256,
-            gamma=0.98,
-            policy_kwargs=dict(net_arch=[256, 256]),
-            learning_starts=10000,
-            buffer_size=int(3e5),
-            tau=0.01,
-        ),
-        "ppo": dict(
-            batch_size=512,
-            learning_rate=2.5e-4,
-            gamma=0.98
+    hyperparams = dict(
+            batch_size=cfg.train.batch_size,
+            learning_rate=cfg.train.learning_rate,
+            gamma=cfg.train.gammas
         )
-    }[algo]
+
+
 
     begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     model = RLalgo("MlpPolicy", env, verbose=1, tensorboard_log = tensorboard_log_path, **hyperparams,seed = seed)

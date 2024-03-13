@@ -16,7 +16,11 @@ class InvertedPendulum(gym.Env):
                  random_seed = None, 
                  simulation_dt : float = 0.005,
                  frame_skip :int = 5,
-                 init_pos: float = np.pi
+                 init_pos: float = np.pi,
+                 w_e = 200,
+                 w_q1 = 5,
+                 w_q2 = 0.1,
+                 w_r = 1, 
                  ):
         self._render = render
         # 物理参数
@@ -28,6 +32,11 @@ class InvertedPendulum(gym.Env):
         self.K = 0.0536 # torque constant
         self.R = 9.5   # resistance      
         self.init_pos = init_pos # 初始角度
+        # reward系数
+        self.w_e = w_e
+        self.w_q1 = w_q1
+        self.w_q2 = w_q2
+        self.w_r = w_r
         # 定义动作空间 (-3,3)
         #self.action_space = spaces.Box(
         #    low=np.array([-3.]),
@@ -84,7 +93,7 @@ class InvertedPendulum(gym.Env):
         if current_a>np.pi:  # 角度处理
             current_a = 2*np.pi - current_a
         # 题目给定的奖励函数 
-        R_1 = -5*t*t - 0.1*current_adot*current_adot- action*action  
+        R_1 = -self.w_q1*t*t - self.w_q2*current_adot*current_adot- self.w_r*action*action  
         # 达到目标位置的额外奖励
         if -0.2< current_a and current_a < 0.2 :
             R_2 = 30
@@ -93,7 +102,7 @@ class InvertedPendulum(gym.Env):
         # 能量奖励
         R_E = self.system_energy
 
-        R = R_1 + R_2 + 200*R_E
+        R = R_1 + R_2 + self.w_e*R_E
         return float(R)
 
     def reset(self):

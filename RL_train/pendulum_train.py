@@ -18,7 +18,7 @@ def main(cfg : DictConfig) -> None:
     import gym
     import torch
     import numpy as np
-    import datetime
+    from datetime import datetime
     from stable_baselines3 import SAC, TD3, PPO
     from stable_baselines3.common.noise import NormalActionNoise
     from stable_baselines3.common.callbacks import EvalCallback, CheckpointCallback
@@ -32,7 +32,7 @@ def main(cfg : DictConfig) -> None:
 
     # 环境名
     env_id = cfg.env.env_id
-    n_timesteps = cfg.env.n_timesteps
+    n_timesteps = cfg.train.n_timesteps
     model_name = cfg.env.model_name  #41 表示4 0.4 1 0.1
     algo = 'ppo'
 
@@ -44,16 +44,20 @@ def main(cfg : DictConfig) -> None:
         f.write(OmegaConf.to_yaml(cfg))
         
     # 存放在sb3model/文件夹下
-    save_path = experiment_dir + f"\\{model_name}{algo}_{env_id}"
+    save_path = experiment_dir + f"/{model_name}{algo}_{env_id}"
 
     # tensorboard log 路径
-    tensorboard_log_path = experiment_dir
+    tensorboard_log_path = experiment_dir+'/tensorboard_log'
     tensorboard_log_name = f"{model_name}{algo}_{env_id}"
 
 
+    env_kwargs = { "w_e":cfg.env.w_e,
+                   "w_q1":cfg.env.w_q1,
+                   "w_q2":cfg.env.w_q2,
+                   "w_r":cfg.env.w_r}
                    
     # Instantiate and wrap the environment
-    env = make_vec_env(env_id = env_id, n_envs = 15)
+    env = make_vec_env(env_id = env_id, n_envs = 15,env_kwargs = env_kwargs)
 
 
     # Create the evaluation environment and callbacks
@@ -70,7 +74,8 @@ def main(cfg : DictConfig) -> None:
     hyperparams = dict(
             batch_size=cfg.train.batch_size,
             learning_rate=cfg.train.learning_rate,
-            gamma=cfg.train.gammas
+            gamma=cfg.train.gamma,
+            device=cfg.train.device
         )
 
 

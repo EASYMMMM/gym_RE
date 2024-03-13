@@ -1,0 +1,13 @@
+env:
+  env_id: InvertedPendulumEnv-v0
+  model_name: InvPend_0
+  w_e: 200
+  w_q1: 5
+  w_q2: 0.1
+  w_r: 1
+train:
+  n_timesteps: 20000
+  batch_size: 512
+  gamma: 0.98
+  learning_rate: 0.00025
+  device: cuda:1

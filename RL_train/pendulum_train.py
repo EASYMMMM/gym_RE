@@ -54,14 +54,16 @@ def main(cfg : DictConfig) -> None:
     env_kwargs = { "w_e":cfg.env.w_e,
                    "w_q1":cfg.env.w_q1,
                    "w_q2":cfg.env.w_q2,
-                   "w_r":cfg.env.w_r}
+                   "w_r":cfg.env.w_r,
+                   "w_t":cfg.env.w_t,
+                   "energy_obs":cfg.env.energy_obs}
                    
     # Instantiate and wrap the environment
     env = make_vec_env(env_id = env_id, n_envs = 15,env_kwargs = env_kwargs)
 
 
     # Create the evaluation environment and callbacks
-    eval_env = Monitor(gym.make(env_id))
+    eval_env = Monitor(gym.make(env_id, **env_kwargs))
 
     callbacks = [EvalCallback(eval_env, best_model_save_path=save_path)]
 

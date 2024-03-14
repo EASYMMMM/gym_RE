@@ -28,7 +28,7 @@ if __name__ == "__main__":
     # 环境名
     env_id = 'InvertedPendulumEnv-v0'
 
-    env_kwargs = { "energy_obs":False}
+    env_kwargs = { "energy_obs":True}
     
     # Create an env similar to the training env
     #env = gym.make(env_id) 
@@ -43,7 +43,7 @@ if __name__ == "__main__":
     model_name =  'InvPend_2'
 
     #save_path = 'trained_model/InvertedPendulumEnv-v0/'+ model_name + 'ppo_'+'InvertedPendulumEnv-v0.zip'
-    save_path = 'runs/InvPend_0_13-11-39-45/InvPend_0ppo_InvertedPendulumEnv-v0.zip'
+    save_path = 'runs/InvPend_0_14-20-11-17/InvPend_0ppo_InvertedPendulumEnv-v0.zip'
     
     print('load from:')
 
@@ -66,11 +66,14 @@ if __name__ == "__main__":
         while i<10000:
             i = i+1
             action, _ = model.predict(obs, deterministic=True)
-            if action== 0:
+            action = 2
+            if action== 2:
                 print(action)
             obs, reward, done, info = env.step(action)   
             if i%frame_skip == 0:   # 降低绘图帧数
                 pend_a.append(obs[0]) 
+            if done:
+                break
         animation = pendulum_animation(pend_a)
         save_gif(animation, 'result_GIF/pendulum_animation'+model_name+'.gif',fps=200/frame_skip)
 

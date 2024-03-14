@@ -4,7 +4,7 @@ env:
   w_e: 200
   w_q1: 5
   w_q2: 0.1
-  w_r: 1
+  w_r: 3
   w_t: 30
   energy_obs: true
 train:

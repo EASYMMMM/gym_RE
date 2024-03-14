@@ -87,9 +87,9 @@ class InvertedPendulum(gym.Env):
         R = self.R
         u = action*3 - 3
         dt = self.dt
-        
-        current_a, current_adot, t =  self.last_state  # 当前状态
         # 倒立摆动力学
+        current_a = self.last_state[0]
+        current_adot = self.last_state[1]        
         current_adotdot = (1/J)*(m*g*l*np.sin(current_a)-b*current_adot-K*K*current_adot/R+K*u/R)
         # 积分
         next_adot = current_adotdot*dt + current_adot 
@@ -105,7 +105,9 @@ class InvertedPendulum(gym.Env):
         '''
         计算reward
         '''
-        current_a, current_adot, t = state
+        current_a = state[0]
+        current_adot = state[1]
+        t = state[2]
         if current_a>np.pi:  # 角度处理
             current_a = 2*np.pi - current_a
         # 题目给定的奖励函数 
@@ -127,8 +129,11 @@ class InvertedPendulum(gym.Env):
         self.total_reward = 0
         self.success = False
 
+        h = np.cos(self.init_pos)*self.l 
+        v = 0 * self.l
+        r_e = self.m*self.g*h + 0.5*self.m*v*v  
         if self.energy_obs:
-            self.init_state = np.array([self.init_pos, 0 , self.angle_to_target(self.init_pos), self.system_energy],dtype=np.float32)
+            self.init_state = np.array([self.init_pos, 0 , self.angle_to_target(self.init_pos), r_e],dtype=np.float32)
         else:
             self.init_state = np.array([self.init_pos, 0 , self.angle_to_target(self.init_pos)],dtype=np.float32)
         self.last_state = self.init_state # 记录上一时刻的状态
@@ -169,7 +174,8 @@ class InvertedPendulum(gym.Env):
     
     @property
     def system_energy(self):
-        current_a, current_adot, _ = self.last_state
+        current_a = self.last_state[0]
+        current_adot = self.last_state[1]
         h = np.cos(current_a)*self.l 
         v = current_adot * self.l
         r_e = self.m*self.g*h + 0.5*self.m*v*v  

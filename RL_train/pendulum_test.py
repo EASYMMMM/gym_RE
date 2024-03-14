@@ -28,9 +28,11 @@ if __name__ == "__main__":
     # 环境名
     env_id = 'InvertedPendulumEnv-v0'
 
+    env_kwargs = { "energy_obs":False}
+    
     # Create an env similar to the training env
     #env = gym.make(env_id) 
-    env = gym.make(env_id,)
+    env = gym.make(env_id,**env_kwargs)
     
     algo = {
         "sac": SAC,
@@ -64,7 +66,7 @@ if __name__ == "__main__":
         while i<10000:
             i = i+1
             action, _ = model.predict(obs, deterministic=True)
-            if action== 2:
+            if action== 0:
                 print(action)
             obs, reward, done, info = env.step(action)   
             if i%frame_skip == 0:   # 降低绘图帧数

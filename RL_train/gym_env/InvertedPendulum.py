@@ -95,9 +95,9 @@ class InvertedPendulum(gym.Env):
         next_adot = current_adotdot*dt + current_adot 
         next_a = current_adot*dt + current_a
         if self.energy_obs:
-            obs = np.array([self.init_pos, 0 , self.angle_to_target(self.init_pos), self.system_energy],dtype=np.float32)
+            obs = np.array([next_a, next_adot , self.angle_to_target(next_a), self.system_energy],dtype=np.float32)
         else:
-            obs = np.array([self.init_pos, 0 , self.angle_to_target(self.init_pos)],dtype=np.float32)
+            obs = np.array([next_a, next_adot , self.angle_to_target(next_a)],dtype=np.float32)
 
         return obs
 

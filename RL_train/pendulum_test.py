@@ -79,11 +79,12 @@ if __name__ == "__main__":
                 pend_energy.append(env.system_energy)
             if done:
                 break
-        plt.figure(_)
-        plt.plot(pend_a, label = 'theta')
-        plt.plot(pend_adot, label = 'theta_dot')
-        plt.plot(Action, label = 'action')
-        plt.plot(pend_energy, label = 'energy')
+        fig, axs = plt.subplots(2,2, )
+        
+        axs[0][0].plot(pend_a, label = 'theta')
+        axs[0][1].plot(pend_adot, label = 'theta_dot')
+        axs[1][0].plot(Action, label = 'action')
+        axs[1][1].plot(pend_energy, label = 'energy')
         plt.legend()
         plt.grid(True,linestyle = '--')
         plt.show()

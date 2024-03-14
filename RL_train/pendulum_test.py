@@ -14,7 +14,7 @@ import gym
 import numpy as np
 from gym_env.InvertedPendulum import pendulum_animation, save_gif
 from stable_baselines3 import SAC, TD3, PPO
-
+import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -60,20 +60,33 @@ if __name__ == "__main__":
     print("==============================")
     try:
         obs = env.reset()
-        pend_a = []
         i = 0
         frame_skip=10
-        while i<10000:
+        pend_a = []
+        Action = []
+        pend_adot = []
+        pend_energy = []
+        while i<3000:
             i = i+1
             action, _ = model.predict(obs, deterministic=True)
-            action = 2
             if action== 2:
                 print(action)
             obs, reward, done, info = env.step(action)   
             if i%frame_skip == 0:   # 降低绘图帧数
                 pend_a.append(obs[0]) 
+                Action.append(action)
+                pend_adot.append(obs[1])
+                pend_energy.append(env.system_energy)
             if done:
                 break
+        plt.figure(_)
+        plt.plot(pend_a, label = 'theta')
+        plt.plot(pend_adot, label = 'theta_dot')
+        plt.plot(Action, label = 'action')
+        plt.plot(pend_energy, label = 'energy')
+        plt.legend()
+        plt.grid(True,linestyle = '--')
+        plt.show()
         animation = pendulum_animation(pend_a)
         save_gif(animation, 'result_GIF/pendulum_animation'+model_name+'.gif',fps=200/frame_skip)
 

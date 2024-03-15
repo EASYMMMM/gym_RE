@@ -28,7 +28,8 @@ if __name__ == "__main__":
     # 环境名
     env_id = 'InvertedPendulumEnv-v0'
 
-    env_kwargs = { "energy_obs":True}
+    env_kwargs = { "energy_obs":True,
+                   "init_pos":4.18}
     
     # Create an env similar to the training env
     #env = gym.make(env_id) 
@@ -43,7 +44,7 @@ if __name__ == "__main__":
     model_name =  'InvPend_2'
 
     #save_path = 'trained_model/InvertedPendulumEnv-v0/'+ model_name + 'ppo_'+'InvertedPendulumEnv-v0.zip'
-    save_path = 'runs/InvPend_0_14-20-11-17/InvPend_0ppo_InvertedPendulumEnv-v0.zip'
+    save_path = 'runs/InvPend_0_15-13-46-24/InvPend_0ppo_InvertedPendulumEnv-v0.zip'
     
     print('load from:')
 

@@ -8,6 +8,7 @@ env:
     w_r: 1
     w_t: 30
     w_c: 5
+    init_pos: 3.1415
     energy_obs: True
 
 

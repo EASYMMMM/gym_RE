@@ -24,6 +24,7 @@ class InvertedPendulum(gym.Env):
                  w_t = 0,
                  w_c = 0,
                  energy_obs = False,
+                 random_init = False,
                  ):
         self._render = render
         # 物理参数
@@ -36,6 +37,7 @@ class InvertedPendulum(gym.Env):
         self.R = 9.5   # resistance      
         self.init_pos = init_pos # 初始角度
         self.energy_obs = energy_obs # 是否在观测空间中添加系统能量
+        self.random_init = random_init # 是否随机初始化状态
         # reward系数
         self.w_e = w_e
         self.w_q1 = w_q1
@@ -134,13 +136,21 @@ class InvertedPendulum(gym.Env):
         self.total_reward = 0
         self.success = False
 
-        h = np.cos(self.init_pos)*self.l 
+        if self.random_init:
+            if np.random.rand() < 0.3:
+                init_pos = self.init_pos + np.pi/3 # 放在更容易成功的位置
+            else:
+                init_pos = self.init_pos
+        else:
+            init_pos = self.init_pos
+
+        h = np.cos(init_pos)*self.l 
         v = 0 * self.l
         r_e = self.m*self.g*h + 0.5*self.m*v*v  
         if self.energy_obs:
-            self.init_state = np.array([self.init_pos, 0 , r_e],dtype=np.float32)
+            self.init_state = np.array([init_pos, 0 , r_e],dtype=np.float32)
         else:
-            self.init_state = np.array([self.init_pos, 0 , ],dtype=np.float32)
+            self.init_state = np.array([init_pos, 0 , ],dtype=np.float32)
         self.last_state = self.init_state # 记录上一时刻的状态
         return self.init_state
     

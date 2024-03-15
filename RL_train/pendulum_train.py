@@ -58,6 +58,7 @@ def main(cfg : DictConfig) -> None:
                    "w_t":cfg.env.w_t,
                    "w_c":cfg.env.w_c,
                    "init_pos":cfg.env.init_pos,
+                   "random_init":cfg.env.random_init,
                    "energy_obs":cfg.env.energy_obs}
                    
     # Instantiate and wrap the environment

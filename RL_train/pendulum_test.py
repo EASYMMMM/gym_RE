@@ -20,6 +20,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         "Enjoy an RL agent trained using Stable Baselines3"
     ) 
+    parser.add_argument(
+        "--model",
+        help="model name",
+        type=str,
+    )
     args = parser.parse_args()
 
     # 随机种子
@@ -44,7 +49,7 @@ if __name__ == "__main__":
     model_name =  'InvPend_2'
 
     #save_path = 'trained_model/InvertedPendulumEnv-v0/'+ model_name + 'ppo_'+'InvertedPendulumEnv-v0.zip'
-    save_path = 'runs/InvPend_0_15-13-46-24/InvPend_0ppo_InvertedPendulumEnv-v0.zip'
+    save_path = 'runs/'+args.model+'/InvPend_0ppo_InvertedPendulumEnv-v0.zip'
     
     print('load from:')
 
@@ -96,8 +101,10 @@ if __name__ == "__main__":
         axs[1][1].grid(True,linestyle = '--')
 
         plt.show()
+        plt.savefig('runs/'+args.model+'/result_curve.png', dpi=300)
+
         animation = pendulum_animation(pend_a)
-        save_gif(animation, 'result_GIF/pendulum_animation'+model_name+'.gif',fps=200/frame_skip)
+        save_gif(animation, 'runs/'+args.model+'/pendulum_animation'+model_name+'.gif',fps=200/frame_skip)
 
 
     except KeyboardInterrupt:

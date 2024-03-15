@@ -10,6 +10,7 @@ env:
     w_c: 5
     init_pos: 3.1415
     energy_obs: True
+    random_init: False
 
 
 train:

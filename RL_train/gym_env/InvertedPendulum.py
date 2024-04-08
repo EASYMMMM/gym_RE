@@ -137,8 +137,9 @@ class InvertedPendulum(gym.Env):
         self.success = False
 
         if self.random_init:
-            if np.random.rand() < 0.3:
-                init_pos = self.init_pos + np.pi/3 # 放在更容易成功的位置
+            if np.random.rand() < 0.5:
+                scale = np.random.rand()
+                init_pos = self.init_pos-np.pi/3 + 2*np.pi/3 * scale # 放在更容易成功的位置
             else:
                 init_pos = self.init_pos
         else:

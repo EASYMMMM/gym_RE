@@ -34,7 +34,7 @@ if __name__ == "__main__":
     env_id = 'InvertedPendulumEnv-v0'
 
     env_kwargs = { "energy_obs":True,
-                   "init_pos":4.18}
+                   "init_pos":3.1415}
     
     # Create an env similar to the training env
     #env = gym.make(env_id) 
@@ -100,8 +100,8 @@ if __name__ == "__main__":
         axs[1][1].legend()
         axs[1][1].grid(True,linestyle = '--')
 
-        plt.show()
-        plt.savefig('runs/'+args.model+'/result_curve.png', dpi=300)
+        fig.show()
+        fig.savefig('runs/'+args.model+'/result_curve.png', dpi=300)
 
         animation = pendulum_animation(pend_a)
         save_gif(animation, 'runs/'+args.model+'/pendulum_animation'+model_name+'.gif',fps=200/frame_skip)

@@ -124,10 +124,10 @@ class InvertedPendulum(gym.Env):
         # 能量奖励
         R_E = self.system_energy
         R_C = 0 # 次优状态惩罚
-        if current_adot<0.2 and current_adot>-0.2:
-            if current_a > np.pi/2 or current_a < -np.pi/2:
-               R_C = 1 
-        R = R_1 + R_2 + self.w_e*R_E + self.w_c*R_C
+        if current_a>4.8 :
+            # 防止反方向蓄力
+            R_C =  self.w_c*5000
+        R = R_1 + R_2 + self.w_e*R_E + R_C
         return float(R)
 
     def reset(self):
@@ -190,6 +190,7 @@ class InvertedPendulum(gym.Env):
     
     @property
     def system_energy(self):
+        # 计算系统总能量
         current_a = self.last_state[0]
         current_adot = self.last_state[1]
         h = np.cos(current_a)*self.l 

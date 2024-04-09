@@ -112,10 +112,12 @@ class InvertedPendulum(gym.Env):
         current_a = state[0]
         current_adot = state[1]
         t = self.angle_to_target(current_a)  # 相对角度
-        if current_a>np.pi:  # 角度处理
-            current_a = 2*np.pi - current_a
+        #if current_a>np.pi:  # 角度处理
+        #    current_a = 2*np.pi - current_a
+
         # 题目给定的奖励函数 
-        R_1 = -self.w_q1*t*t - self.w_q2*current_adot*current_adot- self.w_r*action*action  
+        # R_1 = -self.w_q1*t*t - self.w_q2*current_adot*current_adot- self.w_r*action*action  
+        R_1 = -self.w_q1*current_a*current_a - self.w_q2*current_adot*current_adot- self.w_r*action*action 
         # 达到目标位置的额外奖励
         if -0.2< current_a and current_a < 0.2 :
             R_2 = self.w_t  # target reward

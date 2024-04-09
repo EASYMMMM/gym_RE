@@ -28,7 +28,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # 随机种子
-    seed = 1
+    seed = 2
 
     # 环境名
     env_id = 'InvertedPendulumEnv-v0'

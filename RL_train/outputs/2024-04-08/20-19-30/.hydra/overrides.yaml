@@ -1,0 +1,3 @@
+- env.w_e=2000
+- env.w_c=1
+- train.n_timesteps=2000000

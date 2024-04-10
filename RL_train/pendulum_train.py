@@ -28,7 +28,7 @@ def main(cfg : DictConfig) -> None:
     print(OmegaConf.to_yaml(cfg)) # 打印配置
 
     # 随机种子
-    seed = 1
+    seed = 2
 
     # 环境名
     env_id = cfg.env.env_id

@@ -1,10 +1,15 @@
 env:
   env_id: InvertedPendulumEnv-v0
   model_name: InvPend_0
-  w_e: 200
+  w_e: 3000
   w_q1: 5
   w_q2: 0.1
   w_r: 1
+  w_t: 30
+  w_c: 1
+  init_pos: 3.1415
+  energy_obs: true
+  random_init: false
 train:
   n_timesteps: 2000000
   batch_size: 512

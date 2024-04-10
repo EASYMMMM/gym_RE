@@ -128,7 +128,7 @@ class InvertedPendulum(gym.Env):
         R_C = 0 # 次优状态惩罚
         if current_a>4.8 :
             # 防止反方向蓄力
-            R_C =  self.w_c*5000
+            R_C =  -self.w_c*5000
         R = R_1 + R_2 + self.w_e*R_E + R_C
         return float(R)
 

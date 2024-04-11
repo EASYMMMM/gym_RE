@@ -15,7 +15,7 @@ class InvertedPendulum(gym.Env):
     def __init__(self, render : bool = False, 
                  random_seed = None, 
                  simulation_dt : float = 0.005,
-                 frame_skip :int = 5,
+                 frame_skip :int = 1,
                  init_pos: float = np.pi,
                  w_e = 200,
                  w_q1 = 5,
@@ -45,6 +45,7 @@ class InvertedPendulum(gym.Env):
         self.w_r = w_r
         self.w_t = w_t
         self.w_c = w_c
+        self.total_reward = 0
         # 定义动作空间 (-3,3)
         #self.action_space = spaces.Box(
         #    low=np.array([-3.]),
@@ -58,13 +59,13 @@ class InvertedPendulum(gym.Env):
         # 定义状态空间 (theta, theta_dot)
         if self.energy_obs:
             self.observation_space = spaces.Box(
-                low=np.array([-np.pi, -15*np.pi,  -200]),
-                high=np.array([2*np.pi, 15*np.pi,  200]),
+                low=np.array([-np.pi, -15*np.pi, -25*np.pi, -200]),
+                high=np.array([2*np.pi, 15*np.pi, 25*np.pi, 200]),
             )
         else:
             self.observation_space = spaces.Box(
-                low=np.array([-np.pi, -15*np.pi, ]),
-                high=np.array([2*np.pi, 15*np.pi,]),
+                low=np.array([-np.pi, -15*np.pi, -25*np.pi, ]),
+                high=np.array([2*np.pi, 15*np.pi, 25*np.pi,]),
             )
 
         if random_seed != None:
@@ -93,15 +94,19 @@ class InvertedPendulum(gym.Env):
         dt = self.dt
         # 倒立摆动力学
         current_a = self.last_state[0]
-        current_adot = self.last_state[1]        
-        current_adotdot = (1/J)*(m*g*l*np.sin(current_a)-b*current_adot-K*K*current_adot/R+K*u/R)
-        # 积分
-        next_adot = current_adotdot*dt + current_adot 
-        next_a = current_adot*dt + current_a
+        current_adot = self.last_state[1]  
+        for i in range(self.frame_skip):      
+            current_adotdot = (1/J)*(m*g*l*np.sin(current_a)-b*current_adot-K*K*current_adot/R+K*u/R)
+            # 积分
+            next_adot = current_adotdot*dt + current_adot 
+            next_a = current_adot*dt + current_a
+            current_a = next_a
+            current_adot = next_adot
+
         if self.energy_obs:
-            obs = np.array([next_a, next_adot , self.system_energy],dtype=np.float32)
+            obs = np.array([next_a, next_adot , current_adotdot, self.system_energy],dtype=np.float32)
         else:
-            obs = np.array([next_a, next_adot ],dtype=np.float32)
+            obs = np.array([next_a, next_adot , current_adotdot],dtype=np.float32)
 
         return obs
 
@@ -151,9 +156,9 @@ class InvertedPendulum(gym.Env):
         v = 0 * self.l
         r_e = self.m*self.g*h + 0.5*self.m*v*v  
         if self.energy_obs:
-            self.init_state = np.array([init_pos, 0 , r_e],dtype=np.float32)
+            self.init_state = np.array([init_pos, 0 , 0, r_e],dtype=np.float32)
         else:
-            self.init_state = np.array([init_pos, 0 , ],dtype=np.float32)
+            self.init_state = np.array([init_pos, 0 , 0, ],dtype=np.float32)
         self.last_state = self.init_state # 记录上一时刻的状态
         return self.init_state
     
@@ -161,7 +166,9 @@ class InvertedPendulum(gym.Env):
     def done(self,state):  
         current_a = state[0]
         if current_a < -np.pi or current_a > 2*np.pi: # 限幅
-            return True                      
+            return True  
+        if self.total_reward < -20000: # 提前终止
+            return True                    
         return False
 
     def step(self, action):

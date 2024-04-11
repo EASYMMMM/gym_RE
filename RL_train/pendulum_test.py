@@ -33,7 +33,7 @@ if __name__ == "__main__":
     # 环境名
     env_id = 'InvertedPendulumEnv-v0'
 
-    env_kwargs = { "energy_obs":True,
+    env_kwargs = { "energy_obs":False,
                    "init_pos":3.1415}
     
     # Create an env similar to the training env
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     try:
         obs = env.reset()
         i = 0
-        frame_skip=10
+        frame_skip=1
         pend_a = []
         Action = []
         pend_adot = []

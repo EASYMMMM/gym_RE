@@ -11,6 +11,7 @@ env:
     init_pos: 3.1415
     energy_obs: True
     random_init: False
+    frame_skip: 10
 
 
 train:

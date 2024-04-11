@@ -67,7 +67,7 @@ if __name__ == "__main__":
     try:
         obs = env.reset()
         i = 0
-        frame_skip=1
+        frame_skip=5
         pend_a = []
         Action = []
         pend_adot = []
@@ -84,6 +84,7 @@ if __name__ == "__main__":
                 pend_adot.append(obs[1])
                 pend_energy.append(env.system_energy)
             if done:
+                print('DONE')
                 break
         fig, axs = plt.subplots(2,2, )
         

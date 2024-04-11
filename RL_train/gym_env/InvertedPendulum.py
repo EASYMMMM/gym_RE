@@ -59,12 +59,12 @@ class InvertedPendulum(gym.Env):
         # 定义状态空间 (theta, theta_dot)
         if self.energy_obs:
             self.observation_space = spaces.Box(
-                low=np.array([-np.pi, -15*np.pi, -25*np.pi, -200]),
+                low=np.array([-2*np.pi, -15*np.pi, -25*np.pi, -200]),
                 high=np.array([2*np.pi, 15*np.pi, 25*np.pi, 200]),
             )
         else:
             self.observation_space = spaces.Box(
-                low=np.array([-np.pi, -15*np.pi, -25*np.pi, ]),
+                low=np.array([-2*np.pi, -15*np.pi, -25*np.pi, ]),
                 high=np.array([2*np.pi, 15*np.pi, 25*np.pi,]),
             )
 
@@ -132,7 +132,7 @@ class InvertedPendulum(gym.Env):
         # 能量奖励
         R_E = self.system_energy
         R_C = 0 # 次优状态惩罚
-        if current_a>4.8 :
+        if current_a>4.8 or current_a < -2:
             # 防止反方向蓄力
             R_C =  -self.w_c*5000
         R = R_1 + R_2 + self.w_e*R_E + R_C
@@ -166,10 +166,10 @@ class InvertedPendulum(gym.Env):
     
     def done(self,state):  
         current_a = state[0]
-        if current_a < -np.pi or current_a > 2*np.pi: # 限幅
-            return True  
-        if self.total_reward < -20000: # 提前终止
-            return True                    
+        #if current_a < -np.pi or current_a > 2*np.pi: # 限幅
+        #    return True  
+        #if self.total_reward < -20000: # 提前终止
+        #    return True                    
         return False
 
     def step(self, action):

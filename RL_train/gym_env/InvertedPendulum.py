@@ -59,26 +59,11 @@ class InvertedPendulum(gym.Env):
         # 定义动作空间 [-3,0,3]
         self.action_space = spaces.Discrete(3)
 
-        # 定义状态空间 (theta, theta_dot)
-        if self.energy_obs:
-            #self.observation_space = spaces.Box(
-            #    low=np.array([-2*np.pi, -15*np.pi, -25*np.pi, -200]),
-            #    high=np.array([2*np.pi, 15*np.pi, 25*np.pi, 200]),
-            #)
-            self.observation_space = spaces.Box(
-                low=np.array([-2*np.pi, -2*np.pi, -15*np.pi, -25*np.pi, -200]),
-                high=np.array([2*np.pi, 2*np.pi, 15*np.pi, 25*np.pi, 200]),
-            )
-        else:
-            #self.observation_space = spaces.Box(
-            #    low=np.array([-2*np.pi, -15*np.pi, -25*np.pi, ]),
-            #    high=np.array([2*np.pi, 15*np.pi, 25*np.pi,]),
-            #)
-            self.observation_space = spaces.Box(
-                low=np.array([-2*np.pi, -2*np.pi, -15*np.pi, -25*np.pi]),
-                high=np.array([2*np.pi, 2*np.pi, 15*np.pi, 25*np.pi]),
-            )
-
+        self.observation_space = spaces.Box(
+            low=np.array([  -2*np.pi, -2*np.pi, -15*np.pi, -25*np.pi]),
+            high=np.array([ 2*np.pi, 2*np.pi, 15*np.pi, 25*np.pi]),
+        )
+ 
         if random_seed != None:
             self.seed(random_seed)
         self.dt = simulation_dt # 仿真时间步长
@@ -122,6 +107,11 @@ class InvertedPendulum(gym.Env):
 
         return state
 
+    def get_obs(self):
+        #obs = np.array([init_pos, 0 , 0],dtype=np.float32)
+        obs = np.array([np.cos(self.last_state[0]), np.sin(self.last_state[0]), self.last_state[1] , self.last_state[2], ],dtype=np.float32)
+        return obs
+
     def reward(self, state, action):
         '''
         计算reward
@@ -135,18 +125,18 @@ class InvertedPendulum(gym.Env):
 
         # 题目给定的奖励函数 
         # R_1 = -self.w_q1*t*t - self.w_q2*current_adot*current_adot- self.w_r*action*action  
-        R_1 = -self.w_q1*current_a*current_a - self.w_q2*current_adot*current_adot- self.w_r*u*u 
+        R_1 = -self.w_q1*(self.angle_to_target(current_a)*self.angle_to_target(current_a)) - self.w_q2*current_adot*current_adot- self.w_r*u*u 
         # 达到目标位置的额外奖励
-        if -0.2< current_a and current_a < 0.2 :
+        if  abs(self.angle_to_target(current_a)) < 0.2 :
             R_2 = self.w_t  # target reward
         else:
             R_2 = 0
         # 能量奖励
         R_E = self.system_energy
         R_C = 0 # 次优状态惩罚
-        if current_a>4.8 or current_a < -2:
+        if current_a>3*np.pi or current_a < -3*np.pi:
             # 防止反方向蓄力
-            R_C =  -self.w_c*5000
+            R_C =  -self.w_c*current_a
         R = R_1 + R_2 + self.w_e*R_E + R_C
         return float(R)
 
@@ -169,15 +159,15 @@ class InvertedPendulum(gym.Env):
         h = np.cos(init_pos)*self.l 
         v = 0 * self.l
         r_e = self.m*self.g*h + 0.5*self.m*v*v  
-        if self.energy_obs:
+        #if self.energy_obs:
             #obs = np.array([init_pos, 0 , 0, r_e],dtype=np.float32)
-            obs = np.array([np.cos(init_pos), np.sin(init_pos), 0 , 0, r_e],dtype=np.float32)
-            self.last_state = np.array([init_pos, 0 , 0, r_e],dtype=np.float32) # 记录上一时刻的状态
-        else:
+        #    self.last_state = np.array([init_pos, 0 , 0, r_e],dtype=np.float32) # 记录上一时刻的状态
+        #else:
             #obs = np.array([init_pos, 0 , 0],dtype=np.float32)
-            obs = np.array([np.cos(init_pos), np.sin(init_pos), 0 , 0, ],dtype=np.float32)
-            self.last_state = np.array([init_pos, 0 , 0],dtype=np.float32) # 记录上一时刻的状态
-        #self.last_state = np.array([init_pos, 0 , 0],dtype=np.float32) # 记录上一时刻的状态
+        #    obs = np.array([np.cos(init_pos), np.sin(init_pos), 0 , 0, ],dtype=np.float32)
+        #    self.last_state = np.array([init_pos, 0 , 0],dtype=np.float32) # 记录上一时刻的状态
+        self.last_state = np.array([init_pos, 0 , 0, r_e],dtype=np.float32) # 记录上一时刻的状态
+        obs = self.get_obs()
         return obs
     
     
@@ -200,14 +190,14 @@ class InvertedPendulum(gym.Env):
         done = self.done(state)
         info = {"is_done":done,
                 "state":state}
-        if self.energy_obs:
+        #if self.energy_obs:
             #obs = np.array([init_pos, 0 , 0, r_e],dtype=np.float32)
-            obs = np.array([np.cos(state[0]), np.sin(state[0]), state[1] , state[2], state[3]],dtype=np.float32)
-        else:
+        #    obs = np.array([np.cos(state[0]), np.sin(state[0]), state[1] , state[2], state[3]],dtype=np.float32)
+        #else:
             #obs = np.array([init_pos, 0 , 0],dtype=np.float32)
-            obs = np.array([np.cos(state[0]), np.sin(state[0]), state[1] , state[2], ],dtype=np.float32)
+        #    obs = np.array([np.cos(state[0]), np.sin(state[0]), state[1] , state[2], ],dtype=np.float32)
 
-        return obs, reward, done, info
+        return self.get_obs(), reward, done, info
     
     def seed(self, seed=None):
         self.np_random, seed = gym.utils.seeding.np_random(seed)
@@ -217,12 +207,8 @@ class InvertedPendulum(gym.Env):
         pass
 
     def angle_to_target(self,ang):
-        # 旋转角度处理
-        t = ang
-        if ang>np.pi:  
-            t = 2*np.pi - ang
-        if ang<0 :
-            t = -ang
+        # 旋转角度处理 限制幅度到正负pi
+        t = ((ang+np.pi) % (2*np.pi) ) - np.pi
         return t
     
     @property

@@ -82,7 +82,9 @@ def main(cfg : DictConfig) -> None:
             batch_size=cfg.train.batch_size,
             learning_rate=cfg.train.learning_rate,
             gamma=cfg.train.gamma,
-            device=cfg.train.device
+            device=cfg.train.device,
+            use_sde = cfg.train.use_sde,
+            ent_coef = cfg.train.ent_coef
         )
 
 

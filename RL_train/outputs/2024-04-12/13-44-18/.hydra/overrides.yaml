@@ -1,0 +1,4 @@
+- env.w_e=2000
+- env.energy_obs=False
+- train.n_timesteps=2000000
+- train.ent_coef=0.2

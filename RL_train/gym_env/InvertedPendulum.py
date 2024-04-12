@@ -26,6 +26,7 @@ class InvertedPendulum(gym.Env):
                  energy_obs = False,
                  random_init = False,
                  max_episode_steps = 2000,
+                 discrete_action = True,
                  ):
         self._render = render
         # 物理参数
@@ -49,6 +50,7 @@ class InvertedPendulum(gym.Env):
         self.total_reward = 0
         self.max_episode_steps = max_episode_steps
         self.episode_steps = 0
+        self.discrete_action = discrete_action
         # 定义动作空间 (-3,3)
         #self.action_space = spaces.Box(
         #    low=np.array([-3.]),
@@ -57,8 +59,10 @@ class InvertedPendulum(gym.Env):
         #)
 
         # 定义动作空间 [-3,0,3]
-        self.action_space = spaces.Discrete(3)
-
+        if self.discrete_action:
+            self.action_space = spaces.Discrete(3)
+        else:
+            self.action_space = spaces.Box(low=-3,high=3,shape=(1,))
         self.observation_space = spaces.Box(
             low=np.array([  -2*np.pi, -2*np.pi, -15*np.pi, -25*np.pi]),
             high=np.array([ 2*np.pi, 2*np.pi, 15*np.pi, 25*np.pi]),
@@ -119,12 +123,13 @@ class InvertedPendulum(gym.Env):
         current_a = state[0]
         current_adot = state[1]
         t = self.angle_to_target(current_a)  # 相对角度
-        u = action*3 - 3
-        #if current_a>np.pi:  # 角度处理
-        #    current_a = 2*np.pi - current_a
+        if self.discrete_action:
+            u = action*3 - 3
+        else:
+            u = np.clip(action[0],-3,3)
 
         # 题目给定的奖励函数 
-        # R_1 = -self.w_q1*t*t - self.w_q2*current_adot*current_adot- self.w_r*action*action  
+        
         R_1 = -self.w_q1*(self.angle_to_target(current_a)*self.angle_to_target(current_a)) - self.w_q2*current_adot*current_adot- self.w_r*u*u 
         # 达到目标位置的额外奖励
         if  abs(self.angle_to_target(current_a)) < 0.2 :

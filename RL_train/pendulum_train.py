@@ -61,7 +61,8 @@ def main(cfg : DictConfig) -> None:
                    "random_init":cfg.env.random_init,
                    "energy_obs":cfg.env.energy_obs,
                    "frame_skip":cfg.env.frame_skip,
-                   "max_episode_steps":cfg.env.max_episode_steps}
+                   "max_episode_steps":cfg.env.max_episode_steps,
+                   "discrete_action":cfg.env.discrete_action}
                    
     # Instantiate and wrap the environment
     env = make_vec_env(env_id = env_id, n_envs = 15,env_kwargs = env_kwargs)

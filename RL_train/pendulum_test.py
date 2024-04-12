@@ -79,9 +79,10 @@ if __name__ == "__main__":
                 print(action)
             obs, reward, done, info = env.step(action)   
             if i%frame_skip == 0:   # 降低绘图帧数
-                pend_a.append(obs[0]) 
+                state = info["state"]
+                pend_a.append(state[0]) 
                 Action.append(action)
-                pend_adot.append(obs[1])
+                pend_adot.append(state[1])
                 pend_energy.append(env.system_energy)
             if done:
                 print('DONE')

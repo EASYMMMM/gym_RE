@@ -12,6 +12,6 @@ def register(id, *args, **kvargs):
 register(  
     id='InvertedPendulumEnv-v0',
     entry_point='gym_env.InvertedPendulum:InvertedPendulum',
-    max_episode_steps=2000,  # dt=0.005s
+    max_episode_steps=2001,  # dt=0.005s
     reward_threshold=5000.0,
 )

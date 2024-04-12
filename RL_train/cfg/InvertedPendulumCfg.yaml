@@ -12,6 +12,7 @@ env:
     energy_obs: True
     random_init: False
     frame_skip: 10
+    max_episode_steps: 2000
 
 
 train:

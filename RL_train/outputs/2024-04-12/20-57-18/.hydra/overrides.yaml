@@ -1,0 +1,3 @@
+- train.n_timesteps=3000000
+- train.ent_coef=0.1
+- env.discrete_action=False

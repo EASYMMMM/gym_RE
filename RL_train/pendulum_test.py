@@ -34,7 +34,8 @@ if __name__ == "__main__":
     env_id = 'InvertedPendulumEnv-v0'
 
     env_kwargs = { "energy_obs":False,
-                   "init_pos":3.1415}
+                   "init_pos":3.1415,
+                   "discrete_action":False}
     
     # Create an env similar to the training env
     #env = gym.make(env_id) 

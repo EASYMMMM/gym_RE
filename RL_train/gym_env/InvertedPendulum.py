@@ -90,8 +90,11 @@ class InvertedPendulum(gym.Env):
         b = self.b
         K = self.K
         R = self.R
-        u = action*3 - 3
         dt = self.dt
+        if self.discrete_action:
+            u = action*3 - 3
+        else:
+            u = np.clip(3*action[0],-3,3)
         # 倒立摆动力学
         current_a = self.last_state[0]
         current_adot = self.last_state[1]  
@@ -142,7 +145,8 @@ class InvertedPendulum(gym.Env):
         if current_a>3*np.pi or current_a < -3*np.pi:
             # 防止反方向蓄力
             R_C =  -self.w_c*current_a
-        R = R_1 + R_2 + self.w_e*R_E + R_C
+        R = (R_1 + R_2 + self.w_e*R_E + R_C)
+        R = (R+8)/8
         return float(R)
 
     def reset(self):

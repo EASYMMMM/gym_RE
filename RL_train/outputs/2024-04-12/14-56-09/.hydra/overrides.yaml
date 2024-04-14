@@ -1,3 +1,0 @@
-- train.n_timesteps=3000000
-- train.ent_coef=0.1
-- env.w_q2=0.5

@@ -46,11 +46,12 @@ class InvertedPendulum(gym.Env):
         self.episode_steps = 0
         self.discrete_action = discrete_action
 
-        # 定义动作空间 [-3,0,3]
+        # 定义动作空间
         if self.discrete_action:
             self.action_space = spaces.Discrete(3)
         else:
             self.action_space = spaces.Box(low=-3,high=3,shape=(1,))
+        # 定义观测空间
         self.observation_space = spaces.Box(
             low=np.array([  -2*np.pi, -2*np.pi, -15*np.pi, -25*np.pi]),
             high=np.array([ 2*np.pi, 2*np.pi, 15*np.pi, 25*np.pi]),
@@ -66,8 +67,7 @@ class InvertedPendulum(gym.Env):
     
     def __simulation(self, action):
         '''
-        根据给定的公式 x' = f(x) + g(x)N + q(x)f
-        进行一步仿真计算
+        根据给定的公式进行仿真计算
         计算出下一时刻的状态
         return: state (observation)
         '''        

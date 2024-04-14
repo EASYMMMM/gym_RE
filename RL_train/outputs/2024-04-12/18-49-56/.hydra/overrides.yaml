@@ -1,4 +1,0 @@
-- train.n_timesteps=3000000
-- train.ent_coef=0.1
-- env.frame_skip=10
-- env.w_c=1

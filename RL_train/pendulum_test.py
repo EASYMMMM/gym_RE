@@ -33,8 +33,7 @@ if __name__ == "__main__":
     # 环境名
     env_id = 'InvertedPendulumEnv-v0'
 
-    env_kwargs = { "energy_obs":False,
-                   "init_pos":3.1415,
+    env_kwargs = { "init_pos":3.1415,
                    "discrete_action":False}
     
     # Create an env similar to the training env
@@ -50,8 +49,8 @@ if __name__ == "__main__":
     model_name =  'InvPend_2'
 
     #save_path = 'trained_model/InvertedPendulumEnv-v0/'+ model_name + 'ppo_'+'InvertedPendulumEnv-v0.zip'
-    save_path = 'runs/'+args.model+'/InvPend_0ppo_InvertedPendulumEnv-v0.zip'
-    
+    save_path = 'runs/'+args.model+'/InvPendppo_InvertedPendulumEnv-v0.zip'
+
     print('load from:')
 
     print(save_path)
@@ -72,7 +71,7 @@ if __name__ == "__main__":
         pend_a = []
         Action = []
         pend_adot = []
-        pend_energy = []
+        theta_error = []
         while i<3000:
             i = i+1
             action, _ = model.predict(obs, deterministic=True)
@@ -84,7 +83,7 @@ if __name__ == "__main__":
                 pend_a.append(state[0]) 
                 Action.append(action)
                 pend_adot.append(state[1])
-                pend_energy.append(env.system_energy)
+                theta_error.append(info["theta_error"])
             if done:
                 print('DONE')
                 break
@@ -99,7 +98,7 @@ if __name__ == "__main__":
         axs[1][0].plot(Action, label = 'action')
         axs[1][0].legend()
         axs[1][0].grid(True,linestyle = '--')
-        axs[1][1].plot(pend_energy, label = 'energy')
+        axs[1][1].plot(theta_error, label = 'theta error')
         axs[1][1].legend()
         axs[1][1].grid(True,linestyle = '--')
 

@@ -20,9 +20,8 @@ class InvertedPendulum(gym.Env):
                  w_q1 = 5,
                  w_q2 = 0.1,
                  w_r = 1, 
-                 w_t = 0,
-                 random_init = False,
                  max_episode_steps = 2000,
+                 reward_scaling = True,
                  discrete_action = True,
                  ):
         self._render = render
@@ -35,13 +34,14 @@ class InvertedPendulum(gym.Env):
         self.K = 0.0536 # torque constant
         self.R = 9.5   # resistance      
         self.init_pos = init_pos # 初始角度
-        self.random_init = random_init # 是否随机初始化状态
         # reward系数
         self.w_q1 = w_q1
         self.w_q2 = w_q2
         self.w_r = w_r
-        self.w_t = w_t
+        self.reward_scaling = reward_scaling
         self.total_reward = 0
+
+
         self.max_episode_steps = max_episode_steps
         self.episode_steps = 0
         self.discrete_action = discrete_action
@@ -109,22 +109,14 @@ class InvertedPendulum(gym.Env):
         '''
         current_a = state[0]
         current_adot = state[1]
-        t = self.angle_to_target(current_a)  # 相对角度
         if self.discrete_action:
             u = action*3 - 3
         else:
             u = np.clip(action[0],-3,3)
-
         # 题目给定的奖励函数 
-        
-        R_1 = -self.w_q1*(self.angle_to_target(current_a)*self.angle_to_target(current_a)) - self.w_q2*current_adot*current_adot- self.w_r*u*u 
-        # 达到目标位置的额外奖励
-        if  abs(self.angle_to_target(current_a)) < 0.2 :
-            R_2 = self.w_t  # target reward
-        else:
-            R_2 = 0
-        R = (R_1 + R_2)
-        R = (R+8)/8
+        R = -self.w_q1*(self.angle_to_target(current_a)*self.angle_to_target(current_a)) - self.w_q2*current_adot*current_adot- self.w_r*u*u 
+        if self.reward_scaling:
+            R = (R+8)/8
         return float(R)
 
     def reset(self):
@@ -134,14 +126,7 @@ class InvertedPendulum(gym.Env):
         self.episode_steps = 0
         self.success = False
 
-        if self.random_init:
-            if np.random.rand() < 0.5:
-                scale = np.random.rand()
-                init_pos = self.init_pos-np.pi/3 + 2*np.pi/3 * scale # 放在更容易成功的位置
-            else:
-                init_pos = self.init_pos
-        else:
-            init_pos = self.init_pos
+        init_pos = self.init_pos
 
         h = np.cos(init_pos)*self.l 
         v = 0 * self.l

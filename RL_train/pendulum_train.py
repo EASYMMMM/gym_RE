@@ -48,36 +48,25 @@ def main(cfg : DictConfig) -> None:
 
     # tensorboard log 路径
     tensorboard_log_path = experiment_dir+'/tensorboard_log'
-    tensorboard_log_name = f"{model_name}{algo}_{env_id}"
+    tensorboard_log_name = f"{model_name}_{algo}"
 
 
-    env_kwargs = { "w_e":cfg.env.w_e,
-                   "w_q1":cfg.env.w_q1,
+    env_kwargs = { "w_q1":cfg.env.w_q1,
                    "w_q2":cfg.env.w_q2,
                    "w_r":cfg.env.w_r,
-                   "w_t":cfg.env.w_t,
-                   "w_c":cfg.env.w_c,
                    "init_pos":cfg.env.init_pos,
-                   "random_init":cfg.env.random_init,
-                   "energy_obs":cfg.env.energy_obs,
                    "frame_skip":cfg.env.frame_skip,
                    "max_episode_steps":cfg.env.max_episode_steps,
-                   "discrete_action":cfg.env.discrete_action}
+                   "discrete_action":cfg.env.discrete_action,
+                   "reward_scaling":cfg.env.reward_scaling}
                    
     # Instantiate and wrap the environment
     env = make_vec_env(env_id = env_id, n_envs = 15,env_kwargs = env_kwargs)
-
 
     # Create the evaluation environment and callbacks
     eval_env = Monitor(gym.make(env_id, **env_kwargs))
 
     callbacks = [EvalCallback(eval_env, best_model_save_path=save_path)]
-
-    RLalgo = {
-        "sac": SAC,
-        "td3": TD3,
-        "ppo": PPO,
-    }[algo]
 
     hyperparams = dict(
             batch_size=cfg.train.batch_size,
@@ -88,10 +77,8 @@ def main(cfg : DictConfig) -> None:
             ent_coef = cfg.train.ent_coef
         )
 
-
-
     begin_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-    model = RLalgo("MlpPolicy", env, verbose=1, tensorboard_log = tensorboard_log_path, **hyperparams,seed = seed)
+    model = PPO("MlpPolicy", env, verbose=1, tensorboard_log = tensorboard_log_path, **hyperparams,seed = seed)
     try:
         model.learn(n_timesteps, callback=callbacks , tb_log_name = tensorboard_log_name )
     except KeyboardInterrupt:

@@ -106,7 +106,7 @@ if __name__ == "__main__":
         fig.savefig('runs/'+args.model+'/result_curve.png', dpi=300)
 
         animation = pendulum_animation(pend_a)
-        save_gif(animation, 'runs/'+args.model+'/pendulum_animation'+model_name+'.gif',fps=200/frame_skip)
+        save_gif(animation, 'runs/'+args.model+'/pendulum_animation.gif',fps=200/frame_skip)
 
 
     except KeyboardInterrupt:

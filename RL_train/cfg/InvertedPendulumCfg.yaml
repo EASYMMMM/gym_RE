@@ -9,7 +9,7 @@ env:
     frame_skip: 10
     reward_scaling: True
     max_episode_steps: 2000
-    discrete_action: True
+    discrete_action: False
 
 
 train:
@@ -20,4 +20,4 @@ train:
     device: 'cuda:1'
     seed: 1
     use_sde: False
-    ent_coef: 0
+    ent_coef: 0.1
